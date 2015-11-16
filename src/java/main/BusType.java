@@ -7,10 +7,10 @@ public class BusType {
 	private String model;
 	private int seatedCapacity;
 	private int standingCapacity;
-	private ArrayList<BusType> type;
 
 	
 	public BusType(String make, String model, int seatedcapacity, int standingcapacity){
+		ArrayList<BusType> type;
 		type = new ArrayList<BusType>();
 		this.make = make;
 		this.model = model;

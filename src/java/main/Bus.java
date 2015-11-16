@@ -37,6 +37,4 @@ public class Bus {
 	public void allocateType(BusType bustype) {
 		this.busType = bustype;
 	}
-	
-	
 }
