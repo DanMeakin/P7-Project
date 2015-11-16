@@ -1,16 +1,14 @@
 package main;
 
 public class Bus {
-	private String acquisitionDate;
-	private String saleDate;
 	private int fleetNumber;
 	private int numOfPassengers;
 	private BusType busType;
+	private Route route;
 	private boolean onRoute;
 	private boolean atStop;
 	
-	public Bus(String acquisitiondate, int fleetnumber, BusType bustype) {
-		this.acquisitionDate = acquisitiondate;
+	public Bus(int fleetnumber, BusType bustype) {
 		this.fleetNumber = fleetnumber;
 		this.busType = bustype;
 	}
@@ -23,18 +21,18 @@ public class Bus {
 		this.atStop = false;
 	}
 	
-	public void StartRoute() {
+	public void StartRoute(Route route) {
+		this.route = route;
 		this.onRoute = true;
 	}
 	
 	public void EndRoute() {
+		this.route = null;
 		this.onRoute = false;
 	}
 	
-	public void Sold() {
-	}
-	
-	public void AllocatedType() {
+	public void AllocateType(BusType bustype) {
+		this.busType = bustype;
 	}
 	
 	
