@@ -11,4 +11,16 @@ public class BusStop {
 		this.location = location;
 	}
 
+	public int getID(){
+		return id;
+	}
+	
+	public String getName(){
+		return name;
+	}
+
+	public String getLocation(){
+		return location;
+	}
+
 }
