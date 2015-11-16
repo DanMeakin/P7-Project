@@ -4,7 +4,8 @@ public class Bus {
 	private int fleetNumber;
 	private int numOfPassengers;
 	private BusType busType;
-	private Route route;
+	private RouteTimetable route;
+	private BusStop stop;
 	private boolean onRoute;
 	private boolean atStop;
 	
@@ -13,25 +14,27 @@ public class Bus {
 		this.busType = bustype;
 	}
 	
-	public void ArrivesAtStop() {
+	public void arrivesAtStop(BusStop stop) {
+		this.stop = stop;
 		this.atStop = true;
 	}
 	
-	public void LeavesStop() {
+	public void leavesStop() {
+		this.stop = null;
 		this.atStop = false;
 	}
 	
-	public void StartRoute(Route route) {
+	public void startRoute(RouteTimetable route) {
 		this.route = route;
 		this.onRoute = true;
 	}
 	
-	public void EndRoute() {
+	public void endRoute() {
 		this.route = null;
 		this.onRoute = false;
 	}
 	
-	public void AllocateType(BusType bustype) {
+	public void allocateType(BusType bustype) {
 		this.busType = bustype;
 	}
 	
