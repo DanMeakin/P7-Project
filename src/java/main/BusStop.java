@@ -1,9 +1,9 @@
 package main;
 
 public class BusStop {
-	private int id;
-	private String name;
-	private String location;
+	private final int id;
+	private final String name;
+	private final String location;
 	
 	public BusStop(int id, String name, String location) {
 		this.id = id;

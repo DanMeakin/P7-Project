@@ -3,11 +3,11 @@ package main;
 import java.util.ArrayList;
 
 public class BusType {
-	private String make;
-	private String model;
-	private int seatedCapacity;
-	private int standingCapacity;
-	ArrayList<BusType> type = new ArrayList<BusType>();
+	private final String make;
+	private final String model;
+	private final int seatedCapacity;
+	private final int standingCapacity;
+	private static ArrayList<BusType> type = new ArrayList<BusType>();
 	
 	public BusType(String make, String model, int seatedcapacity, int standingcapacity){
 		this.make = make;
@@ -25,13 +25,17 @@ public class BusType {
 			System.out.println("");
 			}
 		System.out.println("End of list");
-		
-		if (type.size() > 2) {
-			System.out.println("Arraylist has greater than two items stored in it!");
+		System.out.println("number of entries in ArrayList type: " + type.size());
+		System.out.println("");
 		//end test
 		}
-	}
 
+	/*
+	public void addType(){
+		type.add(this);
+	}
+	*/
+	
 	public String getMake(){
 		return make;
 	}

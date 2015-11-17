@@ -1,9 +1,9 @@
 package main;
 
 public class Bus {
-	private int fleetNumber;
+	private final int fleetNumber;
+	private final BusType busType;
 	private int numOfPassengers;
-	private BusType busType;
 	private RouteTimetable route;
 	private BusStop stop;
 	private boolean onRoute;
@@ -34,7 +34,10 @@ public class Bus {
 		this.onRoute = false;
 	}
 	
+	/*
+	//Not in use
 	public void allocateType(BusType bustype) {
 		this.busType = bustype;
 	}
+	*/
 }
