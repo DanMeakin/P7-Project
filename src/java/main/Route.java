@@ -7,7 +7,7 @@ public class Route {
 	private final String description;
 	private ArrayList<BusStop> stops = new ArrayList<BusStop>();
 	private ArrayList<Integer> timeBetweenStops = new ArrayList<Integer>(); 
-	private ArrayList<Integer> rushOurBetweenStops = new ArraList<Integer>();
+	private ArrayList<Integer> rushHourTimeBetweenStops = new ArrayList<Integer>();
 	
 	public Route(int number, String description){
 		this.number = number;
@@ -17,7 +17,7 @@ public class Route {
 	public void addStop(BusStop stop, int time, int rushHourTime) {
 		stops.add(stop);
 		timeBetweenStops.add(time);
-		rushOurBetweenStops.add(rushOurTime);
+		rushHourTimeBetweenStops.add(rushHourTime);
 		//For testing whether entries are stored in ArrayList stops
 		for (int i=0; i<stops.size(); i++){
 			System.out.print(stops.get(i).getID() + " ");

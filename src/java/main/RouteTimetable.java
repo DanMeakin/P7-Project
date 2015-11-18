@@ -1,12 +1,10 @@
 package main;
 
-/*int starttime;
-int endtime */
 
 public class RouteTimetable {
 	private int starttime;
 	private int endtime;
-	private Route;
+	private String Route;
 	
 	public RouteTimetable(int starttime, int endtime){
 		this.starttime = starttime;
@@ -19,13 +17,13 @@ public class RouteTimetable {
 	public int getEndTime() {
 		return endtime;
 	}
-	public addRoute() {
+	public void addRoute() {
 
 	}
-	public removeRoute() {
+	public void removeRoute() {
 	
 	}
-	public tableTime(){
+	public void tableTime(){
 		
 	}
 

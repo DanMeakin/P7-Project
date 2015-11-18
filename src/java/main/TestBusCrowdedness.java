@@ -19,12 +19,12 @@ public class TestBusCrowdedness {
 		Route route2 = new Route(2, "University-Centre");
 		Route route3 = new Route(3, "University-Nordkraft");
 		
-		route1.addStop(stop1);
-		route1.addStop(stop4);
-		route1.addStop(stop3);
+		route1.addStop(stop1, 1, 2);
+		route1.addStop(stop4, 1, 2);
+		route1.addStop(stop3, 1, 2);
 		
-		route2.addStop(stop1);
-		route2.addStop(stop2);
+		route2.addStop(stop1, 1, 2);
+		route2.addStop(stop2, 1, 2);
 	}
 }
 
