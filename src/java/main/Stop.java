@@ -1,11 +1,11 @@
 package main;
 
-public class BusStop {
+public class Stop {
 	private final int id;
 	private final String name;
 	private final String location;
 	
-	public BusStop(int id, String name, String location) {
+	public Stop(int id, String name, String location) {
 		this.id = id;
 		this.name = name;
 		this.location = location;
