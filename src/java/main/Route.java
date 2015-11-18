@@ -1,4 +1,4 @@
 package main;
 
-public class Route {
+public class Route{
 }
