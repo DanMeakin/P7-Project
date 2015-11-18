@@ -3,12 +3,14 @@ package main;
 public class Stop {
 	private final int id;
 	private final String name;
-	private final String location;
+	private final double latitude;
+  private final double longitude;
 	
-	public Stop(int id, String name, String location) {
+	public Stop(int id, String name, double latitude, double longitude) {
 		this.id = id;
 		this.name = name;
-		this.location = location;
+		this.latitude = latitude;
+    this.longitude = longitude; 
 	}
 
 	public int getID(){
@@ -19,8 +21,8 @@ public class Stop {
 		return name;
 	}
 
-	public String getLocation(){
-		return location;
+	public double[] getLocation(){
+		return new double[]{latitude, longitude};
 	}
 
 }

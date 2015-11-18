@@ -5,7 +5,7 @@ public class Bus {
 	private final BusType busType;
 	private int numOfPassengers;
 	private RouteTimetable route;
-	private BusStop stop;
+	private Stop stop;
 	private boolean onRoute;
 	private boolean atStop;
 	
@@ -14,7 +14,7 @@ public class Bus {
 		this.busType = bustype;
 	}
 	
-	public void arrivesAtStop(BusStop stop) {
+	public void arrivesAtStop(Stop stop) {
 		this.stop = stop;
 		this.atStop = true;
 	}
