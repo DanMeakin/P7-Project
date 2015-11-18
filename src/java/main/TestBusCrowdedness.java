@@ -25,6 +25,9 @@ public class TestBusCrowdedness {
 		
 		route2.addStop(stop1, 1, 2);
 		route2.addStop(stop2, 1, 2);
+		
+		RouteTimetable routetimetable1 = new RouteTimetable(12, true, route1);
+		
 	}
 }
 

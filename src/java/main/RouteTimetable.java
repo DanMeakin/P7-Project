@@ -2,16 +2,23 @@ package main;
 
 
 public class RouteTimetable {
-	private int starttime;
-	private int endtime;
-	private String Route;
+	private int startTime;
+	private boolean isRushHour;
+
 	
-	public RouteTimetable(int starttime, int endtime){
-		this.starttime = starttime;
-		this.endtime = endtime;
+	public RouteTimetable(int starttime, boolean isrushhour, Route route){
+		this.startTime = starttime;
+		this.isRushHour = isrushhour;
+	
+	
 	}
+	
+	
+}	
+	
+	
 			
-	public int getStartTime() {
+	/*public int getStartTime() {
 		return starttime;
 	}
 	public int getEndTime() {
@@ -27,4 +34,4 @@ public class RouteTimetable {
 		
 	}
 
-}
+}*/
