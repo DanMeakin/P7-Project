@@ -25,5 +25,8 @@ public class RouteTimetable {
 	public removeRoute() {
 	
 	}
+	public tableTime(){
+		
+	}
 
 }
