@@ -1,21 +1,30 @@
 package main;
 
-int starttime;
-int endtime
 
-public class RouteTimetable(int starttime, int endtime) {
-	starttime = TimeOfStartTime;
-	endtime = TimeOfEndTime;
+public class RouteTimetable {
+	private int starttime;
+	private int endtime;
+	private String Route;
+	
+	public RouteTimetable(int starttime, int endtime){
+		this.starttime = starttime;
+		this.endtime = endtime;
+	}
 			
-}
-public void routeAdded() {
-	System.out.println("New route added");
-}
+	public int getStartTime() {
+		return starttime;
+	}
+	public int getEndTime() {
+		return endtime;
+	}
+	public void addRoute() {
 
-public void routeRemoved() {
-	System.out.println("Route removed");
-}
-public void tableTime() {
-	System.out.println("Time Tabled");
-}
+	}
+	public void removeRoute() {
+	
+	}
+	public void tableTime(){
+		
+	}
 
+}
