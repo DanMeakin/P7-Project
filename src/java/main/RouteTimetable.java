@@ -13,25 +13,4 @@ public class RouteTimetable {
 	
 	}
 	
-	
 }	
-	
-	
-			
-	/*public int getStartTime() {
-		return starttime;
-	}
-	public int getEndTime() {
-		return endtime;
-	}
-	public void addRoute() {
-
-	}
-	public void removeRoute() {
-	
-	}
-	public void tableTime(){
-		
-	}
-
-}*/

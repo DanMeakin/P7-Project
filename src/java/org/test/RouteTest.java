@@ -64,8 +64,7 @@ public class RouteTest {
     route.addStop(routeEnd, 10);
 
     routeWithStops = new Route(
-        routeWithStopsNumber, routeWithStopsDescription, routeWithStopsStart
-        );
+        routeWithStopsNumber, routeWithStopsDescription, routeWithStopsStart);
     routeWithStops.addStop(stop1, 3, 4);
     routeWithStops.addStop(stop2, 5, 6);
     routeWithStops.addStop(stop3, 11, 13);

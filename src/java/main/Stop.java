@@ -10,7 +10,7 @@ public class Stop {
 		this.id = id;
 		this.name = name;
 		this.latitude = latitude;
-    this.longitude = longitude; 
+		this.longitude = longitude; 
 	}
 
 	public int getID(){
