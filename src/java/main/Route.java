@@ -3,15 +3,15 @@ package main;
 import java.util.ArrayList;
 
 public class Route {
-	private final int number;
-	private final String description;
+	private final String routeNumber;
+	private final String routeDescription;
 	private ArrayList<Stop> stops = new ArrayList<Stop>();
 	private ArrayList<Integer> timeBetweenStops = new ArrayList<Integer>(); 
 	private ArrayList<Integer> rushHourTimeBetweenStops = new ArrayList<Integer>();
 	
-	public Route(int number, String description){
-		this.number = number;
-		this.description = description;
+	public Route(String routeNumber, String routeDescription, Stop routeStart){
+		this.routeNumber = routeNumber;
+		this.routeDescription = routeDescription;
 	}
 
 	public void addStop(Stop stop, int time, int rushHourTime) {

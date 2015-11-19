@@ -61,10 +61,9 @@ public class RouteTest {
   @Before
   public void setUp() {
     route = new Route(routeNumber, routeDescription, routeStart);
-    route.addStop(routeEnd, 10);
+    route.addStop(routeEnd, 10, 13);
 
-    routeWithStops = new Route(
-        routeWithStopsNumber, routeWithStopsDescription, routeWithStopsStart);
+    routeWithStops = new Route(routeWithStopsNumber, routeWithStopsDescription, routeWithStopsStart);
     routeWithStops.addStop(stop1, 3, 4);
     routeWithStops.addStop(stop2, 5, 6);
     routeWithStops.addStop(stop3, 11, 13);
