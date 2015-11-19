@@ -1,13 +1,14 @@
 package main;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Route {
 	private final String routeNumber;
 	private final String routeDescription;
 	private ArrayList<Stop> stops = new ArrayList<Stop>();
-	private ArrayList<Integer> timeBetweenStops = new ArrayList<Integer>(); 
-	private ArrayList<Integer> rushHourTimeBetweenStops = new ArrayList<Integer>();
+	private HashMap<Stop, Integer> timeBetweenStops = new HashMap<Stop, Integer>(); 
+	private HashMap<Stop, Integer> rushHourTimeBetweenStops = new HashMap<Stop, Integer>();
 	
 	public Route(String routeNumber, String routeDescription, Stop routeStart){
 		this.routeNumber = routeNumber;
@@ -39,5 +40,12 @@ public class Route {
 		return stops;
 	
 	}
+	public HashMap<Stop, Integer> viewStopTimes(){
+		return timeBetweenStops;
+	}
+	public HashMap<Stop, Integer> viewRushHourStopTimes(){
+		return rushHourTimeBetweenStops;
+	}
+	
 	
 }
