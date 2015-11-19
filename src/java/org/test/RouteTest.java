@@ -1,7 +1,11 @@
 package org.test;
 
 import org.junit.*;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 import main.Route;
 import main.Stop;
@@ -101,17 +105,18 @@ public class RouteTest {
    */
   @Test
   public void testHasStops() {
-    assertArrayEquals(route.getStops(), new Stop[]{
-      routeStart, 
-      routeEnd
-    });
-    assertArrayEquals(routeWithStops.getStops(), new Stop[]{
-      routeWithStopsStart,
-      stop1, 
-      stop2, 
-      stop3, 
-      routeWithStopsEnd
-    });
+    ArrayList<Stop> actualStops = route.getStops();
+    ArrayList<Stop> expectedStops = (ArrayList<Stop>) Arrays.asList(routeStart, routeEnd);
+    assertEquals(actualStops.size(), expectedStops.size()); 
+    for (int i = 0; i < actualStops.size(); i++) {
+      assertTrue(actualStops.equals(expectedStops));
+    }
+
+    actualStops = routeWithStops.getStops();
+    expectedStops = (ArrayList<Stop>) Arrays.asList(routeWithStopsStart, stop1, stop2, stop3, routeWithStopsEnd);
+    for (int i = 0; i < actualStops.size(); i++) {
+      assertTrue(actualStops.equals(expectedStops));
+    }
   }
 
   /** 
@@ -169,6 +174,26 @@ public class RouteTest {
     expectedStopTimes.put(routeWithStopsEnd, 29);
     for (Stop stop : stopTimes.keySet()) {
       assertEquals(stopTimes.get(stop), expectedStopTimes.get(stop));      
+    }
+  }
+
+  /**
+   * Test includesStop method.
+   *
+   * This test ensures that a Route object provides a way of identifying
+   * whether the Route includes a particular Stop.
+   */
+  @Test
+  public void testIncludesStop() {
+    Stop[] routeStops = new Stop[] {routeStart, routeEnd};
+    Stop[] routeWithStopsStops = new Stop[] {routeWithStopsStart, stop1, stop2, stop3, routeWithStopsEnd};
+    for (Stop thisStop : routeStops) {
+      assertTrue(route.includesStop(thisStop));
+      assertFalse(routeWithStops.includesStop(thisStop));
+    }
+    for (Stop thisStop : routeWithStopsStops) {
+      assertTrue(routeWithStops.includesStop(thisStop));
+      assertFalse(route.includesStop(thisStop));
     }
   }
 }
