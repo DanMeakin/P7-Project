@@ -7,10 +7,11 @@ public class Route {
 	private final String routeNumber;
 	private final String routeDescription;
 	private ArrayList<Stop> stops = new ArrayList<Stop>();
-	private HashMap<Stop, Integer> timeBetweenStops = new HashMap<Stop, Integer>(); 
-	private HashMap<Stop, Integer> rushHourTimeBetweenStops = new HashMap<Stop, Integer>();
+	private ArrayList<Integer> timeBetweenStops = new ArrayList<Integer>();
+	private ArrayList<Integer> rushHourTimeBetweenStops = new ArrayList<Integer>();
 	
 	public Route(String routeNumber, String routeDescription, Stop routeStart){
+		stops.add(routeStart);
 		this.routeNumber = routeNumber;
 		this.routeDescription = routeDescription;
 	}
@@ -38,14 +39,45 @@ public class Route {
 	}
 	public ArrayList<Stop> getStops(){
 		return stops;
-	
 	}
-	public HashMap<Stop, Integer> viewStopTimes(){
-		return timeBetweenStops;
+
+	//public HashMap<Stop, Integer> viewStopTimes(){
+	//	return timeBetweenStops;
+	//}
+	//public HashMap<Stop, Integer> viewRushHourStopTimes(){
+	//	return rushHourTimeBetweenStops;
+	//}
+
+	public int getStopTiming(boolean isRushHour, boolean isCumulative) {
+		if(!isRushHour && !isCumulative) {
+			ArrayList<Integer> stopTiming = new ArrayList<>();
+			stopTiming.add(0);
+			for(int i = 0; i < stops.size(); i++ ) {
+				stopTiming.add(timeBetweenStops.get(i));
+			}
+		}
+		else if (!isRushHour && isCumulative) {
+			ArrayList<Integer> stopTimingCulmulative = new ArrayList<>();
+			stopTimingCulmulative.add(0);
+			for(int i = 0; i < stops.size(); i++ ) {
+				stopTimingCulmulative.add(timeBetweenStops.get(i)+timeBetweenStops.get(i-1));
+			}
+		}
+
+		else if (isRushHour && !isCumulative) {
+			ArrayList<Integer> stopTimingRushHour = new ArrayList<>();
+			stopTimingRushHour.add(0);
+			for(int i = 0; i < stops.size(); i++ ) {
+				stopTimingRushHour.add(rushHourTimeBetweenStops.get(i));
+			}
+		}
+		else if (isRushHour && isCumulative) {
+			ArrayList<Integer> stopTimingCulmulativeRushHour = new ArrayList<>();
+			stopTimingCulmulativeRushHour.add(0);
+			for(int i = 0; i < stops.size(); i++ ) {
+				stopTimingCulmulativeRushHour.add(rushHourTimeBetweenStops.get(i)+rushHourTimeBetweenStops.get(i-1));
+			}
+		}
 	}
-	public HashMap<Stop, Integer> viewRushHourStopTimes(){
-		return rushHourTimeBetweenStops;
-	}
-	
 	
 }
