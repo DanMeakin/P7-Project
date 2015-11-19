@@ -1,10 +1,12 @@
 package org.test;
 
 import org.junit.*;
+import static org.junit.Assert.*;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import main.Route;
 import main.Stop;
@@ -108,13 +110,13 @@ public class RouteTest {
     ArrayList<Stop> expectedStops = (ArrayList<Stop>) Arrays.asList(routeStart, routeEnd);
     assertEquals(actualStops.size(), expectedStops.size()); 
     for (int i = 0; i < actualStops.size(); i++) {
-      assertTrue(actualStops.equals(expectedStops));
+      assertTrue(actualStops.get(i).equals(expectedStops.get(i)));
     }
 
     actualStops = routeWithStops.getStops();
     expectedStops = (ArrayList<Stop>) Arrays.asList(routeWithStopsStart, stop1, stop2, stop3, routeWithStopsEnd);
     for (int i = 0; i < actualStops.size(); i++) {
-      assertTrue(actualStops.equals(expectedStops));
+      assertTrue(actualStops.get(i).equals(expectedStops.get(i)));
     }
   }
 
@@ -127,11 +129,12 @@ public class RouteTest {
   @Test
   public void testAddStop() {
     route.addStop(stop3, 5, 7);
-    assertArrayEquals(route.getStops(), new Stop[]{
-      routeStart,
-      routeEnd,
-      stop3
-    });
+    ArrayList<Stop> actualStops = route.getStops();
+    ArrayList<Stop> expectedStops = Arrays.asList(routeStart, routeEnd, stop3);
+    assertEquals(actualStops.size(), expectedStops.size());
+    for (int i = 0; i < actualStops.size(); i++) {
+      assertTrue(actualStops.get(i).equals(expectedStops.get(i)));
+    }
   }
 
   /**
