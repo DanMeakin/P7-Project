@@ -9,8 +9,8 @@ public class Route {
 	private ArrayList<Stop> stops = new ArrayList<Stop>();
 	private ArrayList<Integer> timeBetweenStops = new ArrayList<Integer>();
 	private ArrayList<Integer> rushHourTimeBetweenStops = new ArrayList<Integer>();
-	
-	public Route(String routeNumber, String routeDescription, Stop routeStart){
+
+	public Route(String routeNumber, String routeDescription, Stop routeStart) {
 		stops.add(routeStart);
 		this.routeNumber = routeNumber;
 		this.routeDescription = routeDescription;
@@ -21,23 +21,26 @@ public class Route {
 		timeBetweenStops.add(time);
 		rushHourTimeBetweenStops.add(rushHourTime);
 		//For testing whether entries are stored in ArrayList stops
-		for (int i=0; i<stops.size(); i++){
+		for (int i = 0; i < stops.size(); i++) {
 			System.out.print(stops.get(i).getID() + " ");
 			System.out.print(stops.get(i).getName() + " ");
 			System.out.println(stops.get(i).getLocation() + " ");
-			}
+		}
 		System.out.println("End of list");
 		System.out.println("number of entries in ArrayList route for this route: " + stops.size());
 		System.out.println("");
 		//end test
 	}
-	public String getNumber(){
+
+	public String getNumber() {
 		return routeNumber;
 	}
-	public String getDescription(){
+
+	public String getDescription() {
 		return routeDescription;
 	}
-	public ArrayList<Stop> getStops(){
+
+	public ArrayList<Stop> getStops() {
 		return stops;
 	}
 
@@ -48,36 +51,31 @@ public class Route {
 	//	return rushHourTimeBetweenStops;
 	//}
 
-	public int getStopTiming(boolean isRushHour, boolean isCumulative) {
-		if(!isRushHour && !isCumulative) {
-			ArrayList<Integer> stopTiming = new ArrayList<>();
-			stopTiming.add(0);
-			for(int i = 0; i < stops.size(); i++ ) {
+	public ArrayList<Integer> getStopTiming(boolean isRushHour, boolean isCumulative) {
+		ArrayList<Integer> stopTiming = new ArrayList<>();
+		stopTiming.add(0);
+		if (!isRushHour && !isCumulative) {
+			for (int i = 0; i < stops.size(); i++) {
 				stopTiming.add(timeBetweenStops.get(i));
 			}
-		}
-		else if (!isRushHour && isCumulative) {
-			ArrayList<Integer> stopTimingCulmulative = new ArrayList<>();
-			stopTimingCulmulative.add(0);
-			for(int i = 0; i < stops.size(); i++ ) {
-				stopTimingCulmulative.add(timeBetweenStops.get(i)+timeBetweenStops.get(i-1));
+
+		} else if (!isRushHour && isCumulative) {
+			for (int i = 0; i < stops.size(); i++) {
+				stopTiming.add(timeBetweenStops.get(i) + timeBetweenStops.get(i - 1));
+			}
+
+		} else if (isRushHour && !isCumulative) {
+			for (int i = 0; i < stops.size(); i++) {
+				stopTiming.add(rushHourTimeBetweenStops.get(i));
+			}
+
+		} else if (isRushHour && isCumulative) {
+			for (int i = 0; i < stops.size(); i++) {
+				stopTiming.add(rushHourTimeBetweenStops.get(i) + rushHourTimeBetweenStops.get(i - 1));
 			}
 		}
 
-		else if (isRushHour && !isCumulative) {
-			ArrayList<Integer> stopTimingRushHour = new ArrayList<>();
-			stopTimingRushHour.add(0);
-			for(int i = 0; i < stops.size(); i++ ) {
-				stopTimingRushHour.add(rushHourTimeBetweenStops.get(i));
-			}
-		}
-		else if (isRushHour && isCumulative) {
-			ArrayList<Integer> stopTimingCulmulativeRushHour = new ArrayList<>();
-			stopTimingCulmulativeRushHour.add(0);
-			for(int i = 0; i < stops.size(); i++ ) {
-				stopTimingCulmulativeRushHour.add(rushHourTimeBetweenStops.get(i)+rushHourTimeBetweenStops.get(i-1));
-			}
-		}
+		return stopTiming;
 	}
-	
 }
+
