@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class Route {
 	private final int number;
 	private final String description;
-	private ArrayList<BusStop> stops = new ArrayList<BusStop>();
+	private ArrayList<Stop> stops = new ArrayList<Stop>();
 	private ArrayList<Integer> timeBetweenStops = new ArrayList<Integer>(); 
 	private ArrayList<Integer> rushHourTimeBetweenStops = new ArrayList<Integer>();
 	
@@ -14,7 +14,7 @@ public class Route {
 		this.description = description;
 	}
 
-	public void addStop(BusStop stop, int time, int rushHourTime) {
+	public void addStop(Stop stop, int time, int rushHourTime) {
 		stops.add(stop);
 		timeBetweenStops.add(time);
 		rushHourTimeBetweenStops.add(rushHourTime);
