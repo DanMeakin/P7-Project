@@ -29,5 +29,15 @@ public class Route {
 		System.out.println("");
 		//end test
 	}
+	public String getNumber(){
+		return routeNumber;
+	}
+	public String getDescription(){
+		return routeDescription;
+	}
+	public ArrayList<Stop> getStops(){
+		return stops;
+	
+	}
 	
 }
