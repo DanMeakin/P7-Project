@@ -3,11 +3,7 @@ package org.test;
 import org.junit.*;
 import static org.junit.Assert.*;
 
-import java.util.HashMap;
 import java.util.List;
-
-import static org.junit.Assert.*;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -85,7 +81,7 @@ public class RouteTest {
    * object.
    */
   @Test
-  public void testHasNumber() {
+  public void testGetNumber() {
     assertEquals(route.getNumber(), routeNumber);
     assertEquals(routeWithStops.getNumber(), routeWithStopsNumber);
   }
@@ -97,7 +93,7 @@ public class RouteTest {
    * object.
    */
   @Test
-  public void testHasDescription() {
+  public void testGetDescription() {
     assertEquals(route.getDescription(), routeDescription);
     assertEquals(routeWithStops.getDescription(), routeWithStopsDescription);
   }
@@ -108,9 +104,9 @@ public class RouteTest {
    * This method ensures that a list of stops can be obtained from a route.
    */
   @Test
-  public void testHasStops() {
-    ArrayList<Stop> actualStops = route.getStops();
-    ArrayList<Stop> expectedStops = (ArrayList<Stop>) Arrays.asList(routeStart, routeEnd);
+  public void testGetStops() {
+    List<Stop> actualStops = route.getStops();
+    List<Stop> expectedStops = Arrays.asList(routeStart, routeEnd);
     assertEquals(actualStops.size(), expectedStops.size()); 
     for (int i = 0; i < actualStops.size(); i++) {
       assertTrue(actualStops.get(i).equals(expectedStops.get(i)));
@@ -132,8 +128,8 @@ public class RouteTest {
   @Test
   public void testAddStop() {
     route.addStop(stop3, 5, 7);
-    ArrayList<Stop> actualStops = route.getStops();
-    ArrayList<Stop> expectedStops = Arrays.asList(routeStart, routeEnd, stop3);
+    List<Stop> actualStops = route.getStops();
+    List<Stop> expectedStops = Arrays.asList(routeStart, routeEnd, stop3);
     assertEquals(actualStops.size(), expectedStops.size());
     for (int i = 0; i < actualStops.size(); i++) {
       assertTrue(actualStops.get(i).equals(expectedStops.get(i)));
@@ -141,45 +137,16 @@ public class RouteTest {
   }
 
   /**
-   * Test view stop times.
+   * Test getStopTimings method.
    *
-   * This method tests whether the viewStopTimes method correctly returns the
-   * stops and associated time offsets from the start of a journey on a route.
+   * This test ensures that a Route object provides details of the timing of
+   * stops to a requesting object. The method must accept parameters as to
+   * whether the data relates to rush hour timing, and as to whether figures
+   * are to be cumulative or not.
    */
   @Test
-  public void testViewStopTimes() {
-    HashMap<Stop, Integer> stopTimes = routeWithStops.viewStopTimes();
-    HashMap<Stop, Integer> expectedStopTimes = new HashMap<Stop, Integer>();
-    expectedStopTimes.put(routeWithStopsStart, 0);
-    expectedStopTimes.put(stop1, 3);
-    expectedStopTimes.put(stop2, 8);
-    expectedStopTimes.put(stop3, 19);
-    expectedStopTimes.put(routeWithStopsEnd, 23);
-    for (Stop stop : stopTimes.keySet()) {
-      assertEquals(stopTimes.get(stop), expectedStopTimes.get(stop));      
-    }
-  }
-
-  /** 
-   * Test view rush hour stop times.
-   *
-   * This method tests whether the viewRushHourStopTimes method correctly
-   * returns the stops and associated time offsets from the start of the
-   * journey on a route.
-   *
-   */
-  @Test 
-  public void testViewRushHourStopTimes() {
-    HashMap<Stop, Integer> stopTimes = routeWithStops.viewRushHourStopTimes();
-    HashMap<Stop, Integer> expectedStopTimes = new HashMap<Stop, Integer>();
-    expectedStopTimes.put(routeWithStopsStart, 0);
-    expectedStopTimes.put(stop1, 4);
-    expectedStopTimes.put(stop2, 10);
-    expectedStopTimes.put(stop3, 23);
-    expectedStopTimes.put(routeWithStopsEnd, 29);
-    for (Stop stop : stopTimes.keySet()) {
-      assertEquals(stopTimes.get(stop), expectedStopTimes.get(stop));      
-    }
+  public void testGetStopTimings() {
+    
   }
 
   /**
