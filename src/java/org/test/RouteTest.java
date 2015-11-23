@@ -12,21 +12,21 @@ import main.Stop;
 
 public class RouteTest {
 
-  Route route;
-  String routeNumber;
-  String routeDescription;
-  Stop routeStart;
-  Stop routeEnd;
+  private static Route route;
+  private static String routeNumber;
+  private static String routeDescription;
+  private static Stop routeStart;
+  private static Stop routeEnd;
 
-  Route routeWithStops;
-  String routeWithStopsNumber;
-  String routeWithStopsDescription;
-  Stop routeWithStopsStart;
-  Stop routeWithStopsEnd;
+  private static Route routeWithStops;
+  private static String routeWithStopsNumber;
+  private static String routeWithStopsDescription;
+  private static Stop routeWithStopsStart;
+  private static Stop routeWithStopsEnd;
 
-  Stop stop1;
-  Stop stop2;
-  Stop stop3;
+  private static Stop stop1;
+  private static Stop stop2;
+  private static Stop stop3;
 
   /**
    * Set-up before testing begins.
@@ -36,7 +36,7 @@ public class RouteTest {
    * consistency between tests using the same fixtures.
    */
   @BeforeClass
-  public void setUpClass() {
+  public static void setUpClass() {
     // Create stops to be used in fixtures
     routeStart = new Stop(123, "City Centre", 0, 0);
     routeEnd = new Stop(990, "University", 100, 100);
@@ -113,7 +113,7 @@ public class RouteTest {
     }
 
     actualStops = routeWithStops.getStops();
-    expectedStops = (ArrayList<Stop>) Arrays.asList(routeWithStopsStart, stop1, stop2, stop3, routeWithStopsEnd);
+    expectedStops = Arrays.asList(routeWithStopsStart, stop1, stop2, stop3, routeWithStopsEnd);
     for (int i = 0; i < actualStops.size(); i++) {
       assertTrue(actualStops.get(i).equals(expectedStops.get(i)));
     }
@@ -137,16 +137,75 @@ public class RouteTest {
   }
 
   /**
-   * Test getStopTimings method.
+   * Test getRushHourTiming method.
    *
    * This test ensures that a Route object provides details of the timing of
-   * stops to a requesting object. The method must accept parameters as to
-   * whether the data relates to rush hour timing, and as to whether figures
-   * are to be cumulative or not.
+   * stops to a requesting object. The getRushHourTiming method obtains the bus
+   * stop timings during rush hour periods. 
+   *
+   * This method is one of four similar which tests acquiring timings for buses.
    */
   @Test
-  public void testGetStopTimings() {
-    
+  public void testGetRushHourTiming() {
+    List<Integer> actualTiming = routeWithStops.getRushHourTiming();
+    List<Integer> expectedTiming = Arrays.asList(new Integer[]{0, 4, 6, 13, 6});
+    for (int i = 0; i < actualTiming.size(); i++) {
+      assertEquals(actualTiming.get(i), expectedTiming.get(i));
+    }
+  }
+
+  /**
+   * Test getNonRushHourTiming method.
+   *
+   * This test ensures that a Route object provides details of the timing of
+   * stops to a requesting object. The getNonRushHourTiming method obtains the 
+   * bus stop timings outside of rush hour periods. 
+   *
+   * This method is one of four similar which tests acquiring timings for buses.
+   */
+  @Test
+  public void testGetNonRushHourTiming() {
+    List<Integer> actualTiming = routeWithStops.getNonRushHourTiming();
+    List<Integer> expectedTiming = Arrays.asList(new Integer[]{0, 3, 5, 11, 4});
+    for (int i = 0; i < actualTiming.size(); i++) {
+      assertEquals(actualTiming.get(i), expectedTiming.get(i));
+    }
+  }
+
+  /**
+   * Test getCumulativeRushHourTiming method.
+   *
+   * This test ensures that a Route object provides details of the timing of
+   * stops to a requesting object. The getCumulativeRushHourTiming method 
+   * obtains the cumulative bus stop timings during rush hour periods.
+   *
+   * This method is one of four similar which tests acquiring timings for buses.
+   */
+  @Test
+  public void testGetCumulativeRushHourTiming() {
+    List<Integer> actualTiming = routeWithStops.getCumulativeRushHourTiming();
+    List<Integer> expectedTiming = Arrays.asList(new Integer[]{0, 4, 10, 23, 29});
+    for (int i = 0; i < actualTiming.size(); i++) {
+      assertEquals(actualTiming.get(i), expectedTiming.get(i));
+    }
+  }
+
+  /**
+   * Test getCumulativeNonRushHourTiming method.
+   *
+   * This test ensures that a Route object provides details of the timing of
+   * stops to a requesting object. The getCumulativeRushHourTiming method 
+   * obtains the cumulative bus stop timings during rush hour periods.
+   *
+   * This method is one of four similar which tests acquiring timings for buses.
+   */
+  @Test
+  public void testGetCumulativeNonRushHourTiming() {
+    List<Integer> actualTiming = routeWithStops.getCumulativeNonRushHourTiming();
+    List<Integer> expectedTiming = Arrays.asList(new Integer[]{0, 3, 8, 19, 23});
+    for (int i = 0; i < actualTiming.size(); i++) {
+      assertEquals(actualTiming.get(i), expectedTiming.get(i));
+    }
   }
 
   /**
