@@ -14,3 +14,5 @@ hs_err_pid*
 
 # Misc files
 *.swp
+workbench.xmi 
+.classpath
