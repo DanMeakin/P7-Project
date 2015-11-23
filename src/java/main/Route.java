@@ -12,6 +12,8 @@ public class Route {
 
 	public Route(String routeNumber, String routeDescription, Stop routeStart) {
 		stops.add(routeStart);
+		timeBetweenStops.add(0);
+		rushHourTimeBetweenStops.add(0);
 		this.routeNumber = routeNumber;
 		this.routeDescription = routeDescription;
 	}
@@ -53,25 +55,22 @@ public class Route {
 
 	public ArrayList<Integer> getStopTiming(boolean isRushHour, boolean isCumulative) {
 		ArrayList<Integer> stopTiming = new ArrayList<>();
-		stopTiming.add(0);
-		if (!isRushHour && !isCumulative) {
-			for (int i = 0; i < stops.size(); i++) {
-				stopTiming.add(timeBetweenStops.get(i));
-			}
+		ArrayList<Integer> sourceTiming;
 
-		} else if (!isRushHour && isCumulative) {
-			for (int i = 0; i < stops.size(); i++) {
-				stopTiming.add(timeBetweenStops.get(i) + timeBetweenStops.get(i - 1));
-			}
+		if (isRushHour) {
+			sourceTiming = rushHourTimeBetweenStops;
+		} else {
+			sourceTiming = timeBetweenStops;
+		}
 
-		} else if (isRushHour && !isCumulative) {
-			for (int i = 0; i < stops.size(); i++) {
-				stopTiming.add(rushHourTimeBetweenStops.get(i));
-			}
-
-		} else if (isRushHour && isCumulative) {
-			for (int i = 0; i < stops.size(); i++) {
-				stopTiming.add(rushHourTimeBetweenStops.get(i) + rushHourTimeBetweenStops.get(i - 1));
+		int accumulator = 0;
+		for (int i = 0; i < stops.size(); i++) {
+			int currentTiming = sourceTiming.get(i);
+			if (isCumulative) {
+				accumulator = accumulator + currentTiming;
+				stopTiming.add(accumulator);
+			} else {
+				stopTiming.add(currentTiming);
 			}
 		}
 
