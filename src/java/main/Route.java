@@ -76,5 +76,23 @@ public class Route {
 
 		return stopTiming;
 	}
+
+	public ArrayList<Integer> getNonRushHourTiming() {
+		return getStopTiming(false, false);
+	}
+
+	public ArrayList<Integer> getRushHourTiming() {
+		return getStopTiming(true, false);
+	}
+
+	public ArrayList<Integer> getCumulativeNonRushHourTiming() {
+		return getStopTiming(false, true);
+	}
+
+	public ArrayList<Integer> getCumulativeRushHourTiming() {
+		return getStopTiming(true, true);
+	}
+
+
 }
 
