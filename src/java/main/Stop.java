@@ -21,7 +21,7 @@ public class Stop {
 			Stop currentStop = allStops.get(i);
 			int currentID = currentStop.getID();
 			if ( id == currentID) {
-				throw new IllegalArgumentException("Stop with this ID already exists!");
+				throw new IllegalArgumentException("Stop with ID #" + id + " already exists");
 			}
 		}
 		return new Stop(id, name, latitude, longitude);

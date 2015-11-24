@@ -79,7 +79,6 @@ public class Route {
 	public boolean includesStop(Stop stop){
 		for (int i = 0; i < stops.size(); i++) {
 			Stop thisStop = stops.get(i);
-
 			if(stop == thisStop){
 				return true;
 				
