@@ -3,7 +3,8 @@ package main;
 public class TestBusCrowdedness {
 
 	public static void main(String[] args) {
-		BusType typevolvo = new BusType("Volvo", "B100", 48, 64);
+	/*
+			BusType typevolvo = new BusType("Volvo", "B100", 48, 64);
 		BusType typescania = new BusType("Scania", "C50", 52, 48);
 		BusType typedaf = new BusType("DAF", "A150", 60, 30);
 		
@@ -27,7 +28,9 @@ public class TestBusCrowdedness {
 		route2.addStop(stop2, 1, 2);
 		
 		RouteTimetable routetimetable1 = new RouteTimetable(12, true, route1);
-		
+	*/
 	}
+
 }
+
 
