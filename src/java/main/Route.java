@@ -1,14 +1,14 @@
 package main;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.List;
 
 public class Route {
 	private final String routeNumber;
 	private final String routeDescription;
-	private ArrayList<Stop> stops = new ArrayList<Stop>();
-	private ArrayList<Integer> timeBetweenStops = new ArrayList<Integer>();
-	private ArrayList<Integer> rushHourTimeBetweenStops = new ArrayList<Integer>();
+	private List<Stop> stops = new ArrayList<Stop>();
+	private List<Integer> timeBetweenStops = new ArrayList<Integer>();
+	private List<Integer> rushHourTimeBetweenStops = new ArrayList<Integer>();
 
 	public Route(String routeNumber, String routeDescription, Stop routeStart) {
 		stops.add(routeStart);
@@ -42,7 +42,7 @@ public class Route {
 		return routeDescription;
 	}
 
-	public ArrayList<Stop> getStops() {
+	public List<Stop> getStops() {
 		return stops;
 	}
 
@@ -53,9 +53,9 @@ public class Route {
 	//	return rushHourTimeBetweenStops;
 	//}
 
-	public ArrayList<Integer> getStopTiming(boolean isRushHour, boolean isCumulative) {
-		ArrayList<Integer> stopTiming = new ArrayList<>();
-		ArrayList<Integer> sourceTiming;
+	public List<Integer> getStopTiming(boolean isRushHour, boolean isCumulative) {
+		List<Integer> stopTiming = new ArrayList<>();
+		List<Integer> sourceTiming;
 
 		if (isRushHour) {
 			sourceTiming = rushHourTimeBetweenStops;
@@ -88,19 +88,19 @@ public class Route {
 		return false;
 	}
 
-	public ArrayList<Integer> getNonRushHourTiming() {
+	public List<Integer> getNonRushHourTiming() {
 		return getStopTiming(false, false);
 	}
 
-	public ArrayList<Integer> getRushHourTiming() {
+	public List<Integer> getRushHourTiming() {
 		return getStopTiming(true, false);
 	}
 
-	public ArrayList<Integer> getCumulativeNonRushHourTiming() {
+	public List<Integer> getCumulativeNonRushHourTiming() {
 		return getStopTiming(false, true);
 	}
 
-	public ArrayList<Integer> getCumulativeRushHourTiming() {
+	public List<Integer> getCumulativeRushHourTiming() {
 		return getStopTiming(true, true);
 	}
 
