@@ -28,7 +28,7 @@ public class StopTest {
     stops = new ArrayList<Stop>();
     for (int i = 0; i < stopIDs.size(); i++) {
       stops.add(
-          Stop.createStop(
+          new Stop(
             stopIDs.get(i),
             stopNames.get(i), 
             stopLatitudes.get(i), 
@@ -81,7 +81,7 @@ public class StopTest {
   public void testCreateDuplicateStop() throws IllegalArgumentException {
     thrown.expect(IllegalArgumentException.class);
     thrown.expectMessage("Stop with ID #" + stopIDs.get(0) + " already exists");
-    Stop.createStop(stopIDs.get(0), stopNames.get(0), stopLatitudes.get(0), stopLongitudes.get(0));
+    new Stop(stopIDs.get(0), stopNames.get(0), stopLatitudes.get(0), stopLongitudes.get(0));
   }
 
   /**
@@ -94,7 +94,7 @@ public class StopTest {
   public void testCreateStopWithDuplicateID() throws IllegalArgumentException {
     thrown.expect(IllegalArgumentException.class);
     thrown.expectMessage("Stop with ID #" + stopIDs.get(0) + " already exists");
-    Stop.createStop(stopIDs.get(0), "Another Stop", 999.123, 10.4543);
+    new Stop(stopIDs.get(0), "Another Stop", 999.123, 10.4543);
   }
 
   /**
@@ -106,7 +106,34 @@ public class StopTest {
    */
   @Test
   public void testCreateStopWithDuplicateName() {
-    Stop duplicateNameStop = Stop.createStop(555, stopNames.get(0), 1234.55, 67.12);
+    Stop duplicateNameStop = new Stop(555, stopNames.get(0), 1234.55, 67.12);
     assertEquals(stopNames.get(0), duplicateNameStop.getName());
+  }
+
+  /**
+   * Test removal of an existing stop.
+   *
+   * Existing stops should be removable when no longer in use. This method
+   * tests that stops can be removed after creation.
+   */
+  @Test
+  public void testRemoveStop() {
+    for (Stop s : stops) {
+      Stop.removeStop(s);
+    }
+    assertEquals(Stop.numberOfStops(), 0);
+  }
+
+  /**
+   * Test counting of existing stops.
+   *
+   * Stop provides a rolling count of stops in existence. This method ensures
+   * that the counting method functions correctly. There are three test Stop
+   * objects created for the testing, so the count should equal three when this
+   * test is run.
+   */
+  @Test
+  public void testCountStops() {
+    assertEquals(Stop.numberOfStops(), 3);
   }
 }
