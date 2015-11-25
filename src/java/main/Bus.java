@@ -20,10 +20,11 @@ public class Bus {
 		this.fleetNumber = fleetnumber;
 		this.busType = bustype;
 		this.acquisitionDate = acquisitionDate;
-		this.saveToFile();
+		//this.saveToFile();
 	}
-
+	/*
 	public void saveToFile() {
+
 		File f = new File("busstate.txt");
 		try
 		{
@@ -41,16 +42,16 @@ public class Bus {
 			ex.printStackTrace();
 		}
 	}
-
+	*/
 	public void arrivesAtStop(Stop stop) {
 		this.stop = stop;
 		this.atStop = true;
 	}
-	
+
 	public void leavesStop() {
 		this.stop = null;
 		this.atStop = false;
-		this.saveToFile();
+		//this.saveToFile();
 	}
 	
 	public void startRoute(RouteTimetable route) {
@@ -115,7 +116,7 @@ public class Bus {
 		return this.busType.getModel();
 	}
 
-	public RouteTimetable getRouteTimeTable(){
+	public RouteTimetable getRouteTimetable(){
 		return this.route;
 	}
 
