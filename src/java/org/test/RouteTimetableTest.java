@@ -16,6 +16,7 @@ import main.RouteTimetable;
 import main.Bus;
 import main.Route;
 import main.Schedule;
+import main.Stop;
 
 public class RouteTimetableTest {
 
@@ -26,6 +27,8 @@ public class RouteTimetableTest {
   private static Route mockedRoute;
   private static List<Integer> stopTiming;
   private static List<Integer> rushHourStopTiming;
+
+  private static List<Stop> mockedStops;
 
   private enum ScheduleDays { WEEKDAYS, SATURDAYS, SUNDAYS };
 
@@ -54,6 +57,14 @@ public class RouteTimetableTest {
     rushHourStopTiming = Arrays.asList(new Integer[] {0, 10, 19, 25, 35, 50});
     when(mockedRoute.getCumulativeNonRushHourTiming()).thenReturn(stopTiming);
     when(mockedRoute.getCumulativeRushHourTiming()).thenReturn(rushHourStopTiming);
+
+    mockedStops = Arrays.asList(new Stop[] {
+      mock(Stop.class), 
+      mock(Stop.class), 
+      mock(Stop.class), 
+      mock(Stop.class), 
+      mock(Stop.class)
+    });
 
     mockedSchedule = mock(Schedule.class);
     validFrom = new GregorianCalendar(2015, GregorianCalendar.JANUARY, 1).getTime();
@@ -99,6 +110,21 @@ public class RouteTimetableTest {
       int wrongStopTiming = rushHourStopTiming.get(i) + routeTimetable.getStartTime();
       assertEquals(actualStopTiming, expectedStopTiming);
       assertNotEquals(actualStopTiming, wrongStopTiming);
+    }
+  }
+
+  /**
+   * Test getStops() method.
+   *
+   * A RouteTimetable must provide access to the Stops exposed by the Route.
+   * This test ensures this is provided.
+   */
+  @Test
+  public void testGetStops() {
+    for (int i = 0; i < mockedStops.size(); i++) {
+      Stop actualStop = routeTimetable.getStops().get(i);
+      Stop expectedStop = mockedStops.get(i);
+      assertEquals(actualStop, expectedStop);
     }
   }
 
