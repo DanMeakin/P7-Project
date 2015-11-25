@@ -38,15 +38,15 @@ public class RouteTest {
   @BeforeClass
   public static void setUpClass() {
     // Create stops to be used in fixtures
-    routeStart = createStop(123, "City Centre", 0, 0);
-    routeEnd = createStop(990, "University", 100, 100);
+    routeStart = new Stop(123, "City Centre", 0, 0);
+    routeEnd = new Stop(990, "University", 100, 100);
 
-    routeWithStopsStart = createStop(1, "Klarup", 11, 12);
-    routeWithStopsEnd = createStop(124, "Bus Terminal", 1, 0);
+    routeWithStopsStart = new Stop(1, "Klarup", 11, 12);
+    routeWithStopsEnd = new Stop(124, "Bus Terminal", 1, 0);
 
-    stop1 = createStop(555, "Klarup 2", 10, 10);
-    stop2 = createStop(701, "Second Stop", 5, 6);
-    stop3 = createStop(59, "Jyllandsgade", 0, 1);
+    stop1 = new Stop(555, "Klarup 2", 10, 10);
+    stop2 = new Stop(701, "Second Stop", 5, 6);
+    stop3 = new Stop(59, "Jyllandsgade", 0, 1);
 
     routeNumber = "12";
     routeDescription = "City Centre - University";
