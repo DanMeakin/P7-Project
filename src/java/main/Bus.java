@@ -22,6 +22,7 @@ public class Bus {
 		this.acquisitionDate = acquisitionDate;
 		//this.saveToFile();
 	}
+
 	/*
 	public void saveToFile() {
 
@@ -31,7 +32,7 @@ public class Bus {
 			BufferedWriter writer = new BufferedWriter(new FileWriter(f, true));
 			writer.write(this.getFleetNumber() + "/");
 			writer.write(this.getBusType().toString() + "/");
-			writer.write(this.getRouteTimeTable().toString() + "/");
+			writer.write(this.getRouteTimetable().toString() + "/");
 			writer.write(this.getStop().toString()  + "/");
 			writer.write(this.getNumOfPassengers() + "\n");
 			System.out.println(f.getAbsolutePath());
@@ -43,6 +44,7 @@ public class Bus {
 		}
 	}
 	*/
+
 	public void arrivesAtStop(Stop stop) {
 		this.stop = stop;
 		this.atStop = true;
@@ -123,10 +125,4 @@ public class Bus {
 	public Stop getStop(){
 		return this.stop;
 	}
-	/*
-	//Not in use
-	public void allocateType(BusType bustype) {
-		this.busType = bustype;
-	}
-	*/
 }
