@@ -68,7 +68,7 @@ public class Bus {
 	}
 
 	public int getNumOfPassengersEntered(){
-		return this.numOfPassengersEntered();
+		return this.numOfPassengersEntered;
 	}
 
 	public void setNumOfPassengersExited(int numOfPassengersExited){
@@ -76,7 +76,7 @@ public class Bus {
 	}
 
 	public int getNumOfPassengersExited(){
-		return this.numOfPassengersExited();
+		return this.numOfPassengersExited;
 	}
 
 	public int getNumOfPassengers(){
