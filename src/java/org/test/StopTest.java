@@ -28,7 +28,7 @@ public class StopTest {
     stops = new ArrayList<Stop>();
     for (int i = 0; i < stopIDs.size(); i++) {
       stops.add(
-          new Stop(
+          Stop.createStop(
             stopIDs.get(i),
             stopNames.get(i), 
             stopLatitudes.get(i), 
@@ -81,7 +81,7 @@ public class StopTest {
   public void testCreateDuplicateStop() throws IllegalArgumentException {
     thrown.expect(IllegalArgumentException.class);
     thrown.expectMessage("Stop with ID #" + stopIDs.get(0) + " already exists");
-    new Stop(stopIDs.get(0), stopNames.get(0), stopLatitudes.get(0), stopLongitudes.get(0));
+    Stop.createStop(stopIDs.get(0), stopNames.get(0), stopLatitudes.get(0), stopLongitudes.get(0));
   }
 
   /**
@@ -94,7 +94,7 @@ public class StopTest {
   public void testCreateStopWithDuplicateID() throws IllegalArgumentException {
     thrown.expect(IllegalArgumentException.class);
     thrown.expectMessage("Stop with ID #" + stopIDs.get(0) + " already exists");
-    new Stop(stopIDs.get(0), "Another Stop", 999.123, 10.4543);
+    Stop.createStop(stopIDs.get(0), "Another Stop", 999.123, 10.4543);
   }
 
   /**
@@ -106,7 +106,7 @@ public class StopTest {
    */
   @Test
   public void testCreateStopWithDuplicateName() {
-    Stop duplicateNameStop = new Stop(555, stopNames.get(0), 1234.55, 67.12);
+    Stop duplicateNameStop = Stop.createStop(555, stopNames.get(0), 1234.55, 67.12);
     assertEquals(stopNames.get(0), duplicateNameStop.getName());
   }
 }
