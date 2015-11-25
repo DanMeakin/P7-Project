@@ -135,15 +135,6 @@ public class BusTest {
   }
 
   /**
-   * testGetSaleDate() tests the existence of a getter method.
-   */
-  @Test
-  public void testGetSaleDate() {
-    Date thisSaleDate = bus.getSaleDate();
-    assertNull(thisSaleDate); // Should be no sale date associated with bus
-  }
-
-  /**
    * testGetFleetNumber() tests the existence of a getter method.
    */
   @Test
@@ -197,6 +188,7 @@ public class BusTest {
     assertEquals(totalCapacity, busTypeSeatedCapacity + busTypeStandingCapacity);
   }
 
+
   /**
    * testGetMake() tests that the bus returns its make.
    */
@@ -204,5 +196,23 @@ public class BusTest {
   public void testGetMake() {
     String thisMake = bus.getMake();
     assertEquals(thisMake, busTypeMake);
+  }
+
+  /**
+   * testGetMake() tests that the bus returns its make.
+   */
+  @Test
+  public void testGetModel() {
+    String thisModel = bus.getModel();
+    assertEquals(thisModel, busTypeModel);
+  }
+
+  /**
+   * testGetType() tests that the bus properly returns its type.
+   */
+  @Test
+  public void testGetType() {
+    BusType thisType = bus.getType();
+    assertEquals(thisType, mockedBusType);
   }
 }
