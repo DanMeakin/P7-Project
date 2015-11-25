@@ -9,6 +9,8 @@ public class Bus {
 	private final BusType busType;
 	private final Date acquisitionDate;
 	private int numOfPassengers;
+	private int numOfPassengersEntered;
+	private int numOfPassengersExited;
 	private RouteTimetable route;
 	private Stop stop;
 	private boolean onRoute;
