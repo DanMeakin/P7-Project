@@ -16,3 +16,6 @@ hs_err_pid*
 *.swp
 workbench.xmi 
 .classpath
+.DS_Store
+tags
+types_java.taghl
