@@ -9,6 +9,8 @@ public class Bus {
 	private final BusType busType;
 	private final Date acquisitionDate;
 	private int numOfPassengers;
+	private int numOfPassengersEntered;
+	private int numOfPassengersExited;
 	private RouteTimetable route;
 	private Stop stop;
 	private boolean onRoute;
@@ -18,17 +20,19 @@ public class Bus {
 		this.fleetNumber = fleetnumber;
 		this.busType = bustype;
 		this.acquisitionDate = acquisitionDate;
-		this.saveToFile();
+		//this.saveToFile();
 	}
 
+	/*
 	public void saveToFile() {
+
 		File f = new File("busstate.txt");
 		try
 		{
 			BufferedWriter writer = new BufferedWriter(new FileWriter(f, true));
 			writer.write(this.getFleetNumber() + "/");
 			writer.write(this.getBusType().toString() + "/");
-			writer.write(this.getRouteTimeTable().toString() + "/");
+			writer.write(this.getRouteTimetable().toString() + "/");
 			writer.write(this.getStop().toString()  + "/");
 			writer.write(this.getNumOfPassengers() + "\n");
 			System.out.println(f.getAbsolutePath());
@@ -39,16 +43,17 @@ public class Bus {
 			ex.printStackTrace();
 		}
 	}
+	*/
 
 	public void arrivesAtStop(Stop stop) {
 		this.stop = stop;
 		this.atStop = true;
 	}
-	
+
 	public void leavesStop() {
 		this.stop = null;
 		this.atStop = false;
-		this.saveToFile();
+		//this.saveToFile();
 	}
 	
 	public void startRoute(RouteTimetable route) {
@@ -66,7 +71,7 @@ public class Bus {
 	}
 
 	public int getNumOfPassengersEntered(){
-		return this.getNumOfPassengersEntered();
+		return this.numOfPassengersEntered;
 	}
 
 	public void setNumOfPassengersExited(int numOfPassengersExited){
@@ -74,7 +79,7 @@ public class Bus {
 	}
 
 	public int getNumOfPassengersExited(){
-		return this.getNumOfPassengersExited();
+		return this.numOfPassengersExited;
 	}
 
 	public int getNumOfPassengers(){
@@ -113,17 +118,11 @@ public class Bus {
 		return this.busType.getModel();
 	}
 
-	public RouteTimetable getRouteTimeTable(){
+	public RouteTimetable getRouteTimetable(){
 		return this.route;
 	}
 
 	public Stop getStop(){
 		return this.stop;
 	}
-	/*
-	//Not in use
-	public void allocateType(BusType bustype) {
-		this.busType = bustype;
-	}
-	*/
 }
