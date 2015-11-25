@@ -137,11 +137,13 @@ public class BusTest {
   /**
    * testGetSaleDate() tests the existence of a getter method.
    */
+  /*
   @Test
   public void testGetSaleDate() {
     Date thisSaleDate = bus.getSaleDate();
     assertNull(thisSaleDate); // Should be no sale date associated with bus
   }
+  */
 
   /**
    * testGetFleetNumber() tests the existence of a getter method.
@@ -157,7 +159,7 @@ public class BusTest {
    */
   @Test
   public void testGetNumPassengers() {
-    int numPassengers = bus.getNumPassengers();
+    int numPassengers = bus.getNumOfPassengers();
     assertEquals(numPassengers, 0); // Should be 0, as nobody is on the bus yet
   }
 
@@ -205,4 +207,5 @@ public class BusTest {
     String thisMake = bus.getMake();
     assertEquals(thisMake, busTypeMake);
   }
+
 }

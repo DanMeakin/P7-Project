@@ -1,7 +1,7 @@
 package main;
+import java.io.Serializable;
 
-
-public class RouteTimetable {
+public class RouteTimetable implements Serializable {
 	private int startTime;
 	private boolean isRushHour;
 

@@ -3,7 +3,6 @@ package org.test;
 import org.junit.*;
 import static org.junit.Assert.*;
 
-import static main.Stop.createStop;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;

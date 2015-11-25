@@ -1,18 +1,23 @@
 package main;
 import java.io.*;
+import java.util.*;
+import java.util.GregorianCalendar;
+import java.util.Date;
 
-public class Bus implements java.io.Serializable {
+public class Bus {
 	private final int fleetNumber;
 	private final BusType busType;
+	private final Date acquisitionDate;
 	private int numOfPassengers;
 	private RouteTimetable route;
 	private Stop stop;
 	private boolean onRoute;
 	private boolean atStop;
 
-	public Bus(int fleetnumber, BusType bustype) {
+	public Bus(int fleetnumber, BusType bustype, Date acquisitionDate) {
 		this.fleetNumber = fleetnumber;
 		this.busType = bustype;
+		this.acquisitionDate = acquisitionDate;
 		this.saveToFile();
 	}
 
@@ -22,9 +27,9 @@ public class Bus implements java.io.Serializable {
 		{
 			BufferedWriter writer = new BufferedWriter(new FileWriter(f, true));
 			writer.write(this.getFleetNumber() + "/");
-			//writer.write(this.getBusType().toString() + "/");
-			//writer.write(this.getRouteTimeTable().toString() + "/");
-			//writer.write(this.getStopAsString() + "/");
+			writer.write(this.getBusType().toString() + "/");
+			writer.write(this.getRouteTimeTable().toString() + "/");
+			writer.write(this.getStop().toString()  + "/");
 			writer.write(this.getNumOfPassengers() + "\n");
 			System.out.println(f.getAbsolutePath());
 		}
@@ -56,12 +61,24 @@ public class Bus implements java.io.Serializable {
 		this.onRoute = false;
 	}
 
-	public void passengersEntered(int numOfPassengersEntered){
+	public void setNumOfPassengersEntered(int numOfPassengersEntered){
 		this.numOfPassengers = (numOfPassengers + numOfPassengersEntered);
 	}
 
-	public void passengersExited(int numOfPassengersExited){
+	public int getNumOfPassengersEntered(){
+		return this.getNumOfPassengersEntered();
+	}
+
+	public void setNumOfPassengersExited(int numOfPassengersExited){
 		this.numOfPassengers = (numOfPassengers - numOfPassengersExited);
+	}
+
+	public int getNumOfPassengersExited(){
+		return this.getNumOfPassengersExited();
+	}
+
+	public int getNumOfPassengers(){
+		return this.numOfPassengers;
 	}
 
 	public int getFleetNumber(){
@@ -72,16 +89,32 @@ public class Bus implements java.io.Serializable {
 		return this.busType;
 	}
 
-	public int getNumOfPassengers(){
-		return this.numOfPassengers;
+	public Date getAcquisitionDate() {
+		return this.acquisitionDate;
+	}
+
+	public int getSeatedCapacity(){
+		return this.busType.getSeatedCapacity();
+	}
+
+	public int getStandingCapacity(){
+		return this.busType.getStandingCapacity();
+	}
+
+	public int getTotalCapacity(){
+		return this.busType.getSeatedCapacity() + this.busType.getStandingCapacity();
+	}
+
+	public String getMake(){
+		return this.busType.getMake();
+	}
+
+	public String getModel(){
+		return this.busType.getModel();
 	}
 
 	public RouteTimetable getRouteTimeTable(){
 		return this.route;
-	}
-
-	public String getStopAsString(){
-		return this.stop.toString();
 	}
 
 	public Stop getStop(){
