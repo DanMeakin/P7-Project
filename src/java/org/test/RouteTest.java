@@ -2,9 +2,9 @@ package org.test;
 
 import org.junit.*;
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 import main.Route;
@@ -38,15 +38,15 @@ public class RouteTest {
   @BeforeClass
   public static void setUpClass() {
     // Create stops to be used in fixtures
-    routeStart = new Stop(123, "City Centre", 0, 0);
-    routeEnd = new Stop(990, "University", 100, 100);
+    routeStart = mock(Stop.class);
+    routeEnd = mock(Stop.class);
 
-    routeWithStopsStart = new Stop(1, "Klarup", 11, 12);
-    routeWithStopsEnd = new Stop(124, "Bus Terminal", 1, 0);
+    routeWithStopsStart = mock(Stop.class);
+    routeWithStopsEnd = mock(Stop.class);
 
-    stop1 = new Stop(555, "Klarup 2", 10, 10);
-    stop2 = new Stop(701, "Second Stop", 5, 6);
-    stop3 = new Stop(59, "Jyllandsgade", 0, 1);
+    stop1 = mock(Stop.class);
+    stop2 = mock(Stop.class);
+    stop3 = mock(Stop.class);
 
     routeNumber = "12";
     routeDescription = "City Centre - University";

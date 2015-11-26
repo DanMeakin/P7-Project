@@ -3,7 +3,7 @@ package main;
 import java.util.Date;
 
 public class Schedule {
-	public static enum ScheduledDays {
+	public static enum DayOptions {
 		WEEKDAYS, SATURDAY, SUNDAY
 	}
 
