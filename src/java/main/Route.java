@@ -22,16 +22,6 @@ public class Route {
 		stops.add(stop);
 		timeBetweenStops.add(time);
 		rushHourTimeBetweenStops.add(rushHourTime);
-		//For testing whether entries are stored in ArrayList stops
-		for (int i = 0; i < stops.size(); i++) {
-			System.out.print(stops.get(i).getID() + " ");
-			System.out.print(stops.get(i).getName() + " ");
-			System.out.println(stops.get(i).getLocation() + " ");
-		}
-		System.out.println("End of list");
-		System.out.println("number of entries in ArrayList route for this route: " + stops.size());
-		System.out.println("");
-		//end test
 	}
 
 	public String getNumber() {
