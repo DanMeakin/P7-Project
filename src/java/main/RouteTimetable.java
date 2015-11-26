@@ -1,7 +1,7 @@
-package java.main;
+package main;
 
 
-import java.main.Route;
+import main.Route;
 
 public class RouteTimetable {
 	private final Route route;
@@ -29,6 +29,19 @@ public class RouteTimetable {
 	public static void timetabled(int startTime, int endTime){
 
 	}
+	public void getStartTime(){
+
+	}
+	public boolean isRushHour(){
+
+	}
+    public void getStopTimes(){
+
+    }
+    public void getStops(){
+
+    }
+
 
 
 
