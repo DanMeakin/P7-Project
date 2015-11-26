@@ -1,4 +1,5 @@
 package main;
+//package java.main;
 import java.io.*;
 import java.util.*;
 import java.util.GregorianCalendar;
@@ -15,12 +16,13 @@ public class Bus {
 	private Stop stop;
 	private boolean onRoute;
 	private boolean atStop;
+	private static List<Bus> allBuses = new ArrayList<>();
 
 	public Bus(int fleetnumber, BusType bustype, Date acquisitionDate) {
 		this.fleetNumber = fleetnumber;
 		this.busType = bustype;
 		this.acquisitionDate = acquisitionDate;
-		//this.saveToFile();
+		allBuses.add(this);
 	}
 
 	/*
@@ -124,5 +126,18 @@ public class Bus {
 
 	public Stop getStop(){
 		return this.stop;
+	}
+
+	public static int getNumOfBusesPerType(BusType type){
+		HashMap<BusType, List<Bus>> numOfBusesPerType = new HashMap<BusType, List<Bus>>();
+		for(Bus o : allBuses){
+			List<Bus> temp = numOfBusesPerType.get(o.getBusType());
+			if(temp == null){
+				temp = new ArrayList<Bus>();
+				numOfBusesPerType.put(o.getBusType(), temp);
+			}
+			temp.add(o);
+		}
+		return numOfBusesPerType.get(type).size();
 	}
 }

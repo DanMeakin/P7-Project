@@ -32,6 +32,10 @@ public class BusType {
 		*/
 	}
 
+	public int getTotalCapacity(){
+		return this.getSeatedCapacity() + this.getStandingCapacity();
+	}
+
 	public String getMake(){
 		return make;
 	}

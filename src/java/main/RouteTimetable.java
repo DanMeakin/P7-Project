@@ -1,36 +1,47 @@
 package java.main;
 
 
-import java.main.Route;
+import main.Route;
+
+import java.util.*;
 
 public class RouteTimetable {
-	private final Route route;
-	private int startTime;
-	private int endTime;
-	private boolean isRushHour;
+    private final Route route;
+    private int startTime;
+    private boolean isRushHour;
+    private Schedule schedule;
 
 
-	public RouteTimetable(int starttime, int endtime, boolean isrushhour, Route route) {
-		this.startTime = starttime;
-		this.endTime = endtime;
-		this.isRushHour = isrushhour;
-		this.route = route;
 
-	}
-
-	public static void addRoute(Route route){
+    public RouteTimetable(Route route, Schedule schedule,int starttime, boolean isrushhour) {
+        this.startTime = starttime;
+        this.schedule = schedule;
+        this.isRushHour = isrushhour;
+        this.route = route;
 
 
-	}
-	public static void removeRoute(Route route){
+    }
+    public int getStartTime(){
+        return this.startTime;
 
+    }
+    public boolean isRushHour(){
+        return this.isRushHour;
 
-	}
-	public static void timetabled(int startTime, int endTime){
+    }
+    public List<Integer> getStopTimes(){
+        List<Integer> actualTime = new ArrayList<>();
+        for(int i = 0; i < this.route.getStopTiming(this.isRushHour, true).size(); i++){
+            int cummulativeStopTiming = this.route.getStopTiming(this.isRushHour, true).get(i) + this.startTime;
+            actualTime.add(i, cummulativeStopTiming);
+        }
+        return actualTime;
 
-	}
+    }
+    public List<Stop> getStops(){
+        return this.route.getStops();
 
-
+    }
 
 }
 
