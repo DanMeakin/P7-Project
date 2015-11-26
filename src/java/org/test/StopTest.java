@@ -1,8 +1,7 @@
-package org.test;
+package org.test; 
 
 import org.junit.*;
 import org.junit.rules.ExpectedException;
-
 import static org.junit.Assert.*;
 
 import main.Stop;
