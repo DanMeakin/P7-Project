@@ -65,7 +65,7 @@ public class Stop {
    * @param otherStop the stop against which to compare
    * @return true if both stops are equal, else false
    */
-  public boolean equal(Stop otherStop) {
+  public boolean equals(Stop otherStop) {
     return (getID() == otherStop.getID());
   }
 
@@ -77,7 +77,7 @@ public class Stop {
    */
   private static boolean stopExists(Stop stop) {
     for (Stop s : allStops) {
-      if (s.equal(stop)) {
+      if (s.equals(stop)) {
         return true;
       }
     }
