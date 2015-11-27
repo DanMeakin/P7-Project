@@ -19,3 +19,4 @@ workbench.xmi
 .DS_Store
 tags
 types_java.taghl
+.gradle/
