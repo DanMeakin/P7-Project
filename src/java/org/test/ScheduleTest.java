@@ -31,6 +31,8 @@ public class ScheduleTest {
   @Before
   public void setUp() {
     mockedBus = mock(Bus.class);
+    when(mockedBus.getFleetNumber()).thenReturn(143);
+    when(mockedBus.equals(mockedBus)).thenReturn(true);
     mockedRouteTimetable = mock(RouteTimetable.class);
     busRouteTimetables = Arrays.asList(new RouteTimetable[] {
       mock(RouteTimetable.class),
@@ -74,31 +76,31 @@ public class ScheduleTest {
   }
 
   /**
-   * Test the allocatedBus method.
+   * Test the getAllocatedBus method.
    *
-   * The allocatedBus method takes a RouteTimetable object and returns the
+   * The getAllocatedBus method takes a RouteTimetable object and returns the
    * Bus allocated to operate that RouteTimetable.
    */
   @Test
-  public void testAllocatedBus() {
+  public void testGetAllocatedBus() {
     // Add RouteTimetable with associated Bus first
     schedule.addRouteTimetable(mockedRouteTimetable, mockedBus);
-    assertEquals(schedule.allocatedBus(mockedRouteTimetable), mockedBus);
+    assertEquals(schedule.getAllocatedBus(mockedRouteTimetable), mockedBus);
   }
 
   /**
-   * Test the allocatedRouteTimetables method.
+   * Test the getAllocatedRouteTimetables method.
    *
    * The allocatedRouteTimetables method takes a Bus object and returns all
    * RouteTimetables allocated to that Bus within the Schedule.
    */
   @Test 
-  public void testAllocatedRouteTimetables() {
+  public void testGetAllocatedRouteTimetables() {
     // Add RouteTimetables with associated Bus first
     for (RouteTimetable rt : busRouteTimetables) {
       schedule.addRouteTimetable(rt, mockedBus);
     }
-    List<RouteTimetable> actualRouteTimetables = schedule.allocatedRouteTimetables(mockedBus);
+    List<RouteTimetable> actualRouteTimetables = schedule.getAllocatedRouteTimetables(mockedBus);
     for (int i = 0; i < actualRouteTimetables.size(); i++) {
       assertEquals(actualRouteTimetables.get(i), busRouteTimetables.get(i));
     }
@@ -113,6 +115,9 @@ public class ScheduleTest {
   @Test
   public void testScheduledDates() {
     List<Date> actualDates = schedule.scheduledDates();
+    if (actualDates.size() == 0) {
+      fail("scheduled dates must not be empty");
+    }
     for (Date d : actualDates) {
       Calendar c = Calendar.getInstance();
       c.setTime(d);

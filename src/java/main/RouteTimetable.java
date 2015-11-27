@@ -24,15 +24,18 @@ public class RouteTimetable {
 
     public List<Integer> getStopTimes(){
         List<Integer> actualTiming = new ArrayList<>();
-        for(int i = 0; i < this.route.getStopTiming(this.isRushHour, true).size(); i++){
-            int cumulativeStopTiming = this.route.getStopTiming(this.isRushHour, true).get(i) + this.startTime;
-            actualTiming.add(i, cumulativeStopTiming);
+        for(int timing : route.getStopTiming(this.isRushHour, true)){
+            actualTiming.add(timing + this.startTime);
         }
         return actualTiming;
     }
 
     public List<Stop> getStops(){
         return this.route.getStops();
+    }
+
+    public Bus getAllocatedBus() {
+        return schedule.getAllocatedBus(this);
     }
 
 }

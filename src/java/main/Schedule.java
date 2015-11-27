@@ -56,9 +56,11 @@ public class Schedule {
 	}
 
 	public boolean hasRouteTimetable(RouteTimetable routeTimetable){
-		int i;
-		for (i=0; i < routeTimeTableList.size(); i++) {
-			if(routeTimeTableList.get(i).equals(routeTimetable)) {
+    if (routeTimetable == null) {
+      return false;
+    }
+    for (RouteTimetable r : routeTimeTableList) {
+      if (r != null && routeTimetable.equals(r)) {
 				return true;
 			}
 		}
@@ -66,12 +68,35 @@ public class Schedule {
 	}
 
 	public boolean hasBus(Bus bus){
-		int i;
-		for (i=0; i < busList.size(); i++) {
-			if(busList.get(i).equals(bus)) {
-				return true;
-			}
+    if (bus == null) {
+      return false;
+    }
+		for (Bus b : busList) {
+      if (b != null && bus.equals(b)) {
+        return true;
+      }
 		}
 		return false;
 	}
+
+  public DayOptions getScheduledDays() {
+    return this.scheduledDays;
+  }
+
+  public Date getValidFromDate() {
+    return this.validFromDate;
+  }
+
+  public Date getValidToDate() {
+    return this.validToDate;
+  }
+
+  /**
+   * Get a list of all dates on which this schedule runs.
+   *
+   * @return list of all dates schedule runs on
+   */
+  public List<Date> scheduledDates() {
+    return new ArrayList<Date>();
+  }
 }

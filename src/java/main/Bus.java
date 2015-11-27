@@ -266,7 +266,7 @@ public class Bus {
    */
   private static boolean busExists(Bus bus) {
     for (Bus b : allBuses) {
-      if (b.equals(bus)) {
+      if (b != null && b.equals(bus)) {
         return true;
       }
     }
