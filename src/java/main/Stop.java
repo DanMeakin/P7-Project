@@ -22,8 +22,8 @@ public class Stop {
    * @param stop The stop object to add to the list
    */
 	public static void addStop(Stop stop) throws IllegalArgumentException {
-    if (stopExists(stop.id)) {
-      String msg = "Stop with ID #" + stop.id + " already exists";
+    if (stopExists(stop)) {
+      String msg = "Stop with ID #" + stop.getID() + " already exists";
       throw new IllegalArgumentException(msg);
     }
 		allStops.add(stop);
@@ -59,18 +59,32 @@ public class Stop {
 		return new double[]{latitude, longitude};
 	}
 
-  /** 
-   * Check if Stop with passed ID exists.
+  /**
+   * Check if two Stop instances are to be considered the same.
    *
-   * @param id ID number to check against
-   * @return true if Stop with id already exsits, else false.
+   * @param otherStop the stop against which to compare
+   * @return true if both stops are equal, else false
    */
-  private static boolean stopExists(int id) {
+  public boolean equal(Stop otherStop) {
+    return (getID() == otherStop.getID());
+  }
+
+  /** 
+   * Check if Stop already exists within the system.
+   *
+   * Stops check for equality based on their ID#. As such, two stops with the
+   * same ID# may have different names but will register as equal.
+   *
+   * @param stop Stop object to check against
+   * @return true if Stop already exsits, else false.
+   */
+  private static boolean stopExists(Stop stop) {
     for (Stop s : allStops) {
-      if (s.id == id) {
+      if (s.equal(stop)) {
         return true;
       }
     }
     return false;
   }
+
 }
