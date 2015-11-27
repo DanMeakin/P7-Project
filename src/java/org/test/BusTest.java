@@ -12,7 +12,6 @@ import java.util.GregorianCalendar;
 import main.Bus;
 import main.BusType;
 import main.RouteTimetable;
-import main.Schedule;
 import main.Stop;
 
 /**
