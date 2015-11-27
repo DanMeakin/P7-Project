@@ -1,5 +1,5 @@
 package main;
-//package java.main;
+
 import java.io.*;
 import java.util.*;
 import java.util.GregorianCalendar;
@@ -229,7 +229,7 @@ public class Bus {
    * @param otherBus the bus against which to compare
    * @return true if both buses are equal, else false
    */
-  public boolean equal(Bus otherBus) {
+  public boolean equals(Bus otherBus) {
     return (getFleetNumber() == otherBus.getFleetNumber());
   }
 
@@ -241,7 +241,7 @@ public class Bus {
    */
   private static boolean busExists(Bus bus) {
     for (Bus b : allBuses) {
-      if (b.equal(bus)) {
+      if (b.equals(bus)) {
         return true;
       }
     }
