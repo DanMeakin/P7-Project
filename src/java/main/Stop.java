@@ -72,11 +72,8 @@ public class Stop {
   /** 
    * Check if Stop already exists within the system.
    *
-   * Stops check for equality based on their ID#. As such, two stops with the
-   * same ID# may have different names but will register as equal.
-   *
    * @param stop Stop object to check against
-   * @return true if Stop already exsits, else false.
+   * @return true if Stop already exists, else false.
    */
   private static boolean stopExists(Stop stop) {
     for (Stop s : allStops) {
