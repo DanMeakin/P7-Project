@@ -152,8 +152,43 @@ public class BusTest {
   public void testArrivesAtStop() {
     bus.arrivesAtStop(mockedStop);
     assertTrue(bus.isAtStop());
-    assertEquals(bus.getCurrentStop(), mockedStop);
+    assertEquals(bus.getStop(), mockedStop);
   }
+
+  /**
+   * testGetNumPassengersBoarded method.
+   *
+   * The getNumPassengersBoarded method is a getter method which returns the
+   * number of passengers who boarded the bus at the last Stop.
+   */
+  @Test
+  public void testGetNumPassengersBoarded() {
+    bus.arrivesAtStop(mockedStop);
+    bus.passengersBoard(20);
+    bus.leavesStop();
+    assertEquals(bus.getNumPassengersBoarded(), 20);
+    bus.arrivesAtStop(mockedStop);
+    bus.leavesStop();
+    assertEquals(bus.getNumPassengersBoarded(), 0);
+  }
+
+  /**
+   * testGetNumPassengersExited method.
+   *
+   * The getNumPassengersExited method is a getter method which returns the
+   * number of passengers who exited the bus at the last Stop.
+   */
+  @Test
+  public void testGetNumPassengersExited() {
+    bus.arrivesAtStop(mockedStop);
+    bus.passengersExit(4);
+    bus.leavesStop();
+    assertEquals(bus.getNumPassengersExited(), 4);
+    bus.arrivesAtStop(mockedStop);
+    bus.leavesStop();
+    assertEquals(bus.getNumPassengersExited(), 0);
+  }
+
 
   /**
    * testPassengersBoard method.
@@ -207,7 +242,7 @@ public class BusTest {
   public void testLeavesStop() {
     stoppedBus.leavesStop();
     assertFalse(stoppedBus.isAtStop());
-    assertNull(stoppedBus.getCurrentStop());
+    assertNull(stoppedBus.getStop());
   }
 
   /**
