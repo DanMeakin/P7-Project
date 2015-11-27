@@ -14,8 +14,6 @@ public class Bus {
 	private int numPassengersExited;
 	private RouteTimetable route;
 	private Stop stop;
-	private boolean onRoute;
-	private boolean atStop;
 	private static List<Bus> allBuses = new ArrayList<>();
 
 	public Bus(int fleetnumber, BusType bustype, Date acquisitionDate) {
@@ -69,13 +67,23 @@ public class Bus {
 	}
 	*/
 
+  /**
+   * Method to flag that a bus has arrived at a Stop.
+   *
+   * This method makes changes to state to reflect that the bus has arrvied at
+   * a Stop. It cannot be called when the bus is already at a stop, and throws
+   * an exception in that case.
+   *
+   * @param stop the stop at which the bus has arrived
+   */
 	public void arrivesAtStop(Stop stop) throws UnsupportedOperationException {
     if (isAtStop()) {
       String msg = "bus is already at a stop";
       throw new UnsupportedOperationException(msg);
     }
-		this.stop = stop;
-		this.atStop = true;
+		setStop(stop);
+    setNumPassengersBoarded(0);
+    setNumPassengersExited(0);
 	}
 
 	public void leavesStop() throws UnsupportedOperationException {
@@ -83,8 +91,7 @@ public class Bus {
       String msg = "bus is not at a stop";
       throw new UnsupportedOperationException(msg);
     }
-		this.stop = null;
-		this.atStop = false;
+    setStop(null);
 		//this.saveToFile();
 	}
 	
@@ -94,11 +101,10 @@ public class Bus {
    * This method commences the operation of a Bus for collecting and dropping
    * off passengers.
    *
-   * @param route the routeTimetable the bus is to be operating
+   * @param routeTimetable the routeTimetable the bus is to be operating
    */
-	public void startRoute(RouteTimetable route) {
-		this.route = route;
-		this.onRoute = true;
+	public void startRoute(RouteTimetable routeTimetable) {
+		setRouteTimetable(routeTimetable);
 	}
 	
   /**
@@ -115,8 +121,7 @@ public class Bus {
       String msg = "unable to end route between stops or with passengers on board";
       throw new UnsupportedOperationException(msg);
     }
-		this.route = null;
-		this.onRoute = false;
+		setRouteTimetable(null);
 	}
 
   /**
@@ -129,8 +134,8 @@ public class Bus {
       String msg = "passengers can only board at a stop; bus is currently between stops";
       throw new UnsupportedOperationException(msg);
     }
-    this.numPassengersBoarded = num;
-		this.numPassengers += num;
+    setNumPassengersBoarded(num);
+		setNumPassengers(getNumPassengers() + num);
 	}
 
    /**
@@ -146,8 +151,8 @@ public class Bus {
       String msg = "more passengers exiting than are currently on bus (" + getNumPassengers() + " passengers on bus, " + num + " exiting)";
       throw new IllegalArgumentException(msg);
     }
-    this.numPassengersExited = num;
-		this.numPassengers -= num;
+    setNumPassengersExited(num);
+		setNumPassengers(getNumPassengers() - num);
 	}
 
 	public int getNumPassengersBoarded(){
@@ -161,6 +166,18 @@ public class Bus {
 	public int getNumPassengers(){
 		return this.numPassengers;
 	}
+
+  private void setNumPassengers(int n) {
+    this.numPassengers = n;
+  }
+
+  private void setNumPassengersBoarded(int n) {
+    this.numPassengersBoarded = n;
+  }
+
+  private void setNumPassengersExited(int n) {
+    this.numPassengersExited = n;
+  }
 
 	public int getFleetNumber(){
 		return this.fleetNumber;
@@ -198,16 +215,24 @@ public class Bus {
 		return this.route;
 	}
 
-	public Stop getCurrentStop(){
+  private void setRouteTimetable(RouteTimetable rt) {
+    this.route = rt;
+  }
+
+	public Stop getStop(){
 		return this.stop;
 	}
 
+  private void setStop(Stop s) {
+    this.stop = s;
+  }
+
   public boolean isAtStop() {
-    return this.atStop;
+    return (getStop() != null);
   }
 
   public boolean isOnRoute() {
-    return this.onRoute;
+    return (getRouteTimetable() != null);
   }
 
 	public static int getNumOfBusesPerType(BusType type){
