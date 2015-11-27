@@ -97,6 +97,37 @@ public class Schedule {
    * @return list of all dates schedule runs on
    */
   public List<Date> scheduledDates() {
-    return new ArrayList<Date>();
+    List<Date> dates = new ArrayList<>();
+    Date currentDate = getValidFromDate();
+    while (!currentDate.after(getValidToDate())) {
+      if (scheduledDays == DayOptions.WEEKDAYS && 
+          dayOfWeek(currentDate) >= 2 && 
+          dayOfWeek(currentDate) <= 6) {
+        dates.add(currentDate);
+      } else if (scheduledDays == DayOptions.SATURDAY &&
+          dayOfWeek(currentDate) == 7) {
+        dates.add(currentDate);
+      } else if (scheduledDays == DayOptions.SUNDAY &&
+          dayOfWeek(currentDate) == 1) {
+        dates.add(currentDate);
+      }
+      Calendar cal = Calendar.getInstance();
+      cal.setTime(currentDate);
+      cal.add(Calendar.DATE, 1);
+      currentDate = cal.getTime();
+    }
+    return dates;
   }
+
+  /**
+   * Determine the day of week for a given date.
+   *
+   * @return integer value of day of week: Sunday = 1, Saturday = 7
+   */
+  private int dayOfWeek(Date d) {
+      Calendar c = Calendar.getInstance();
+      c.setTime(d);
+      return c.get(Calendar.DAY_OF_WEEK);
+  }
+
 }

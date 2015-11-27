@@ -122,7 +122,7 @@ public class ScheduleTest {
       Calendar c = Calendar.getInstance();
       c.setTime(d);
       int dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
-      if (dayOfWeek != 6) { // Expect each date to be a Saturday
+      if (dayOfWeek != 7) { // Expect each date to be a Saturday
         fail("scheduled dates contains incorrect date: " + d);
       }
     }
