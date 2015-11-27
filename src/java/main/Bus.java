@@ -22,10 +22,32 @@ public class Bus {
 		this.fleetNumber = fleetnumber;
 		this.busType = bustype;
 		this.acquisitionDate = acquisitionDate;
-		allBuses.add(this);
+		addBus(this);
 	}
 
-	/*
+  /**
+   * Add a Bus to the list of all buses.
+   *
+   * @param bus The bus object to add to the list
+   */
+	public static void addBus(Bus bus) throws IllegalArgumentException {
+    if (busExists(bus)) {
+      String msg = "Bus with fleet number " + bus.getFleetNumber() + " already exists";
+      throw new IllegalArgumentException(msg);
+    }
+		allBuses.add(bus);
+	}
+
+  /**
+   * Remove a Bus from the list of all buses.
+   *
+   * @param bus the bus object to remove
+   */
+  public static void removeBus(Bus bus) {
+    allBuses.remove(bus);
+  }
+
+  /*
 	public void saveToFile() {
 
 		File f = new File("busstate.txt");
@@ -200,4 +222,29 @@ public class Bus {
 		}
 		return numOfBusesPerType.get(type).size();
 	}
+
+  /**
+   * Check if two Bus instances are to be considered the same.
+   *
+   * @param otherBus the bus against which to compare
+   * @return true if both buses are equal, else false
+   */
+  public boolean equal(Bus otherBus) {
+    return (getFleetNumber() == otherBus.getFleetNumber());
+  }
+
+  /** 
+   * Check if Bus already exists within the system.
+   *
+   * @param bus Bus object to check against
+   * @return true if Bus already exists, else false.
+   */
+  private static boolean busExists(Bus bus) {
+    for (Bus b : allBuses) {
+      if (b.equal(bus)) {
+        return true;
+      }
+    }
+    return false;
+  }
 }

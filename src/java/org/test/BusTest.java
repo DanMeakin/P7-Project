@@ -5,9 +5,6 @@ import org.junit.rules.ExpectedException;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -43,8 +40,6 @@ public class BusTest {
   private static String busTypeModel;
 
   private static RouteTimetable mockedRouteTimetable;
-
-  private static Schedule mockedSchedule;
 
   private static Stop mockedStop;
 
@@ -84,6 +79,12 @@ public class BusTest {
     stoppedBus.startRoute(mockedRouteTimetable);
     stoppedBus.arrivesAtStop(mockedStop);
     stoppedBus.passengersBoard(stoppedInitialPassengers);
+  }
+
+  @After
+  public void tearDown() {
+    Bus.removeBus(bus);
+    Bus.removeBus(stoppedBus);
   }
 
   /**
