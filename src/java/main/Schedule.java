@@ -24,6 +24,28 @@ public class Schedule {
 		this.busRouteTimeTableList.add(null);
 	}
 
+	public Bus getAllocatedBus(RouteTimetable routeTimetable){
+		int i;
+		String msg = "Routetimetable" + routeTimetable + "is not added to this schedule";
+		for (i=0; i < routeTimeTableList.size(); i++) {
+			if(routeTimeTableList.get(i).equals(routeTimetable)) {
+				return busRouteTimeTableList.get(i);
+			}
+		}
+		throw new UnsupportedOperationException(msg);
+	}
+
+	public RouteTimetable getAllocatedRouteTimetables(Bus bus) {
+		int i;
+		String msg = "Bus" + bus + "is not added to this schedule";
+		for (i=0; i < busRouteTimeTableList.size(); i++) {
+			if(busRouteTimeTableList.get(i).equals(bus)) {
+				return routeTimeTableList.get(i);
+			}
+		}
+		throw new UnsupportedOperationException(msg);
+	}
+
 	public void addRouteTimetableWithBus(RouteTimetable routeTimetable, Bus bus) {
 		this.routeTimeTableList.add(routeTimetable);
 		this.busRouteTimeTableList.add(bus);
