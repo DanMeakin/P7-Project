@@ -10,4 +10,11 @@ dependencies {
   testCompile 'org.hamcrest:hamcrest-all:1.+','org.mockito:mockito-all:1.+', 'junit:junit:4.12'
 }
 
+jacocoTestReport {
+  reports {
+    xml.enabled false
+    html.enabled true
+  }
+}
+
 test { finalizedBy jacocoTestReport }
