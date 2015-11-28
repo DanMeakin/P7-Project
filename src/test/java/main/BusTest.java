@@ -32,11 +32,17 @@ public class BusTest {
   private static Date stoppedAcquisitionDate;
   private static int stoppedInitialPassengers;
 
+  private static Bus emptyBus;
+  private static int emptyFleetNumber;
+  private static Date emptyAcquisitionDate;
+
   private static BusType mockedBusType;
   private static int busTypeSeatedCapacity;
   private static int busTypeStandingCapacity;
   private static String busTypeMake;
   private static String busTypeModel;
+
+  private static BusType anotherMockedBusType;
 
   private static RouteTimetable mockedRouteTimetable;
 
@@ -52,6 +58,9 @@ public class BusTest {
     stoppedAcquisitionDate = new GregorianCalendar(2013, Calendar.APRIL, 23).getTime();
     stoppedInitialPassengers = 20;
 
+    emptyFleetNumber = 9082;
+    emptyAcquisitionDate = new GregorianCalendar(2010, Calendar.JUNE, 9).getTime();
+
     mockedBusType = mock(BusType.class);
     busTypeSeatedCapacity = 50;
     busTypeStandingCapacity = 30;
@@ -61,6 +70,8 @@ public class BusTest {
     when(mockedBusType.getModel()).thenReturn(busTypeModel);
     when(mockedBusType.getSeatedCapacity()).thenReturn(busTypeSeatedCapacity);
     when(mockedBusType.getStandingCapacity()).thenReturn(busTypeStandingCapacity);
+
+    anotherMockedBusType = mock(BusType.class);
 
     mockedStop = mock(Stop.class);
     mockedRouteTimetable = mock(RouteTimetable.class);
@@ -78,12 +89,15 @@ public class BusTest {
     stoppedBus.startRoute(mockedRouteTimetable);
     stoppedBus.arrivesAtStop(mockedStop);
     stoppedBus.passengersBoard(stoppedInitialPassengers);
+
+    emptyBus = new Bus(emptyFleetNumber, mockedBusType, emptyAcquisitionDate);
   }
 
   @After
   public void tearDown() {
     Bus.removeBus(bus);
     Bus.removeBus(stoppedBus);
+    Bus.removeBus(emptyBus);
   }
 
   @Rule
@@ -363,6 +377,31 @@ public class BusTest {
   }
 
   /**
+   * testIsOnRoute method.
+   *
+   * The isOnRoute method tests whether the bus is currently running on a
+   * route or not.
+   */
+  @Test
+  public void testIsOnRoute() {
+    assertTrue(stoppedBus.isOnRoute());
+    assertFalse(emptyBus.isOnRoute());
+  }
+
+  /**
+   * testFindBus tests the existence of a method to find buses in the system.
+   */
+  @Test
+  public void testFindBus() {
+    // Both bus and stoppedBus should be returned by findBus()
+    assertEquals(Bus.findBus(fleetNumber), bus);
+    assertEquals(Bus.findBus(stoppedFleetNumber), stoppedBus);
+
+    // Invalid fleet number should return null
+    assertEquals(Bus.findBus(399488572), null);
+  }
+
+  /**
    * testGetAcquisitionDate() tests the existence of a getter method.
    */
   @Test
@@ -432,6 +471,16 @@ public class BusTest {
   public void testGetMake() {
     String thisMake = bus.getMake();
     assertEquals(thisMake, busTypeMake);
+  }
+
+  /**
+   * testGetNumOfBusesPerType() obtains a count of buses by type.
+   */
+  @Test
+  public void testGetNumOfBusesPerType() {
+    Bus thirdBus = new Bus(fleetNumber + 9992, anotherMockedBusType, acquisitionDate);
+    assertEquals(Bus.getNumOfBusesPerType(mockedBusType), 3);
+    assertEquals(Bus.getNumOfBusesPerType(anotherMockedBusType), 1);
   }
 
 }

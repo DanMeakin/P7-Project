@@ -46,6 +46,20 @@ public class Bus {
   }
 
   /**
+   * Find a Bus from the list of all buses.
+   *
+   * @param fleetNumber the fleet number of the desired bus
+   */
+  public static Bus findBus(int fleetNumber) {
+    for (Bus b : allBuses) {
+      if (b.getFleetNumber() == fleetNumber) {
+        return b;
+      }
+    }
+    return null;
+  }
+
+  /**
    * Method to flag that a bus has arrived at a Stop.
    *
    * This method makes changes to state to reflect that the bus has arrvied at
@@ -244,7 +258,7 @@ public class Bus {
    */
   private static boolean busExists(Bus bus) {
     for (Bus b : allBuses) {
-      if (b != null && b.equals(bus)) {
+      if (b.equals(bus)) {
         return true;
       }
     }
