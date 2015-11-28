@@ -86,6 +86,9 @@ public class BusTest {
     Bus.removeBus(stoppedBus);
   }
 
+  @Rule
+  public ExpectedException thrown = ExpectedException.none();
+
   /**
    * testCreateBus() tests the creation of a bus instance.
    *
@@ -106,9 +109,6 @@ public class BusTest {
       fail("unable to create bus: " + e);
     }
   }
-
-  @Rule
-  public ExpectedException thrown = ExpectedException.none();
 
   /**
    * testCreateDuplicateBus() tests the creation of a duplicate bus instance.
@@ -155,6 +155,22 @@ public class BusTest {
   }
 
   /**
+   * testArrivesAtStop method when already at stop.
+   *
+   * A bus cannot arrive at a stop when already at one. Attempting to call
+   * this method in such circumstances should result in an exception being
+   * thrown.
+   */
+  @Test
+  public void testArrivesAtStopWhenAtStop() {
+    String msg = "bus is already at a stop";
+    thrown.expect(UnsupportedOperationException.class);
+    thrown.expectMessage(msg);
+    bus.arrivesAtStop(mockedStop);
+    bus.arrivesAtStop(mockedStop);
+  }
+
+  /**
    * testGetNumPassengersBoarded method.
    *
    * The getNumPassengersBoarded method is a getter method which returns the
@@ -188,6 +204,25 @@ public class BusTest {
     assertEquals(bus.getNumPassengersExited(), 0);
   }
 
+  /**
+   * testGetBusType method.
+   *
+   * This tests the getBusType getter method.
+   */
+  @Test
+  public void testGetBusType() {
+    assertEquals(bus.getBusType(), mockedBusType);
+  }
+
+  /**
+   * testGetModel method.
+   *
+   * This tests the getModel getter method.
+   */
+  @Test
+  public void testGetModel() {
+    assertEquals(bus.getModel(), busTypeModel);
+  }
 
   /**
    * testPassengersBoard method.
@@ -200,6 +235,21 @@ public class BusTest {
     stoppedBus.passengersBoard(5);
     assertEquals(stoppedBus.getNumPassengersBoarded(), 5);
     assertEquals(stoppedInitialPassengers + 5, stoppedBus.getNumPassengers());
+  }
+
+  /**
+   * testPassengersBoard method when bus not at stop.
+   *
+   * Passengers may only board when bus is at a stop. Calling the
+   * passengersBoard method when this is not the case should cause an exception
+   * to be thrown.
+   */
+  @Test
+  public void testPassengersBoardWhenNotAtStop() {
+    String msg = "passengers can only board at a stop; bus is currently between stops";
+    thrown.expect(UnsupportedOperationException.class);
+    thrown.expectMessage(msg);
+    bus.passengersBoard(5);
   }
 
   /**
@@ -230,6 +280,18 @@ public class BusTest {
     stoppedBus.passengersExit(100);
   }
 
+  /* testPassengersExit method when bus is not at a stop.
+   *
+   * Calling passengersExit when a bus is not at a stop should result in an
+   * exception being thrown. This test ensures that this is the case.
+   */
+  @Test
+  public void testPassengersExitWhenNotAtStop() {
+    String msg = "passengers can only exit at a stop; bus is currently between stops";
+    thrown.expect(UnsupportedOperationException.class);
+    thrown.expectMessage(msg);
+    bus.passengersExit(1);
+  }
   /**
    * testLeavesStop method.
    *
@@ -244,6 +306,19 @@ public class BusTest {
     assertNull(stoppedBus.getStop());
   }
 
+  /**
+   * testLeavesStop method when not at stop.
+   *
+   * A bus cannot leave a stop when it is not at a stop. If the leavesStop
+   * method is called in such circumstances, an exception should be thrown.
+   */
+  @Test
+  public void testLeaveStopWhenNotAtStop() {
+    String msg = "bus is not at a stop";
+    thrown.expect(UnsupportedOperationException.class);
+    thrown.expectMessage(msg);
+    bus.leavesStop();
+  }
   /**
    * testEndRoute method.
    *

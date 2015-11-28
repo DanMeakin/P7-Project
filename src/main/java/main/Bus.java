@@ -28,7 +28,7 @@ public class Bus {
    *
    * @param bus The bus object to add to the list
    */
-  public static void addBus(Bus bus) throws IllegalArgumentException {
+  private static void addBus(Bus bus) throws IllegalArgumentException {
     if (busExists(bus)) {
       String msg = "Bus with fleet number " + bus.getFleetNumber() + " already exists";
       throw new IllegalArgumentException(msg);
