@@ -1,14 +1,11 @@
 package org.test;
 
 import org.junit.*;
-import org.junit.rules.ExpectedException;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
@@ -31,7 +28,6 @@ public class RouteTimetableTest {
   private static List<Stop> mockedStops;
 
   private static Schedule mockedSchedule;
-  private static Schedule.DayOptions scheduleDay;
   private static Date validFrom;
   private static Date validTo;
 
@@ -50,7 +46,6 @@ public class RouteTimetableTest {
     isRushHour = false;
 
     mockedRoute = mock(Route.class);
-    scheduleDay = Schedule.DayOptions.SATURDAY;
     stopTiming = Arrays.asList(new Integer[] {0, 7, 15, 16, 20, 30});
     rushHourStopTiming = Arrays.asList(new Integer[] {0, 10, 19, 25, 35, 50});
     when(mockedRoute.getCumulativeNonRushHourTiming()).thenReturn(stopTiming);
@@ -70,7 +65,7 @@ public class RouteTimetableTest {
     mockedSchedule = mock(Schedule.class);
     validFrom = new GregorianCalendar(2015, GregorianCalendar.JANUARY, 1).getTime();
     validTo = new GregorianCalendar(2015, GregorianCalendar.DECEMBER, 31).getTime();
-    when(mockedSchedule.getScheduledDays()).thenReturn(Schedule.DayOptions.WEEKDAYS);
+    when(mockedSchedule.getOperatingDay()).thenReturn(Schedule.DayOptions.WEEKDAYS);
     when(mockedSchedule.getValidFromDate()).thenReturn(validFrom);
     when(mockedSchedule.getValidToDate()).thenReturn(validTo);
 

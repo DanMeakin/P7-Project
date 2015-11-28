@@ -8,15 +8,15 @@ public class Schedule {
 	}
 	private Date validFromDate;
 	private Date validToDate;
-	private DayOptions scheduledDays;
+	private DayOptions operatingDay;
 	private List<RouteTimetable> routeTimeTableList = new ArrayList<>();
 	private List<Bus> busList = new ArrayList<>();
 
 
-	public Schedule (Date validFromDate, Date validToDate, DayOptions scheduledDays) {
+	public Schedule (Date validFromDate, Date validToDate, DayOptions operatingDay) {
 		this.validFromDate = validFromDate;
 		this.validToDate = validToDate;
-		this.scheduledDays = scheduledDays;
+		this.operatingDay = operatingDay;
 	}
 
 	public void addRouteTimetable(RouteTimetable routeTimetable) {
@@ -29,30 +29,30 @@ public class Schedule {
 		this.busList.add(bus);
 	}
 
-	public Bus getAllocatedBus(RouteTimetable routeTimetable){
-		int i;
-		String msg = "Routetimetable" + routeTimetable + "is not added to this schedule";
-		for (i=0; i < routeTimeTableList.size(); i++) {
-			if(routeTimeTableList.get(i).equals(routeTimetable)) {
+	public Bus getAllocatedBus(RouteTimetable routeTimetable) throws IllegalArgumentException {
+    String msg = "RouteTimetable \"" + routeTimetable + 
+      "\" is not found within Schedule";
+		for (int i = 0; i < routeTimeTableList.size(); i++) {
+			if (routeTimeTableList.get(i).equals(routeTimetable)) {
 				return busList.get(i);
 			}
 		}
-		throw new UnsupportedOperationException(msg);
+		throw new IllegalArgumentException(msg);
 	}
 
-	public List<RouteTimetable> getAllocatedRouteTimetables(Bus bus) {
+	public List<RouteTimetable> getAllocatedRouteTimetables(Bus bus) throws IllegalArgumentException {
 		List<RouteTimetable> allocatedRouteTimetables = new ArrayList<>();
-		int i;
-		String msg = "Bus" + bus + "is not added to this schedule";
-		for (i = 0; i < busList.size(); i++) {
+    String msg = "Bus \"" + bus + 
+      "\" is not found within Schedule";
+		for (int i = 0; i < busList.size(); i++) {
 			if (busList.get(i).equals(bus)) {
 				allocatedRouteTimetables.add(routeTimeTableList.get(i));
 			}
 		}
-		if (!busList.isEmpty()) {
-			return allocatedRouteTimetables;
+		if (busList.isEmpty()) {
+      throw new IllegalArgumentException(msg);
 		}
-		throw new UnsupportedOperationException(msg);
+    return allocatedRouteTimetables;
 	}
 
 	public boolean hasRouteTimetable(RouteTimetable routeTimetable){
@@ -79,8 +79,8 @@ public class Schedule {
 		return false;
 	}
 
-  public DayOptions getScheduledDays() {
-    return this.scheduledDays;
+  public DayOptions getOperatingDay() {
+    return this.operatingDay;
   }
 
   public Date getValidFromDate() {
@@ -100,14 +100,14 @@ public class Schedule {
     List<Date> dates = new ArrayList<>();
     Date currentDate = getValidFromDate();
     while (!currentDate.after(getValidToDate())) {
-      if (scheduledDays == DayOptions.WEEKDAYS && 
+      if (operatingDay == DayOptions.WEEKDAYS && 
           dayOfWeek(currentDate) >= 2 && 
           dayOfWeek(currentDate) <= 6) {
         dates.add(currentDate);
-      } else if (scheduledDays == DayOptions.SATURDAY &&
+      } else if (operatingDay == DayOptions.SATURDAY &&
           dayOfWeek(currentDate) == 7) {
         dates.add(currentDate);
-      } else if (scheduledDays == DayOptions.SUNDAY &&
+      } else if (operatingDay == DayOptions.SUNDAY &&
           dayOfWeek(currentDate) == 1) {
         dates.add(currentDate);
       }

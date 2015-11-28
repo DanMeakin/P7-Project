@@ -11,14 +11,22 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.function.Predicate;
 
 import main.Bus;
 import main.RouteTimetable;
 import main.Schedule;
+import main.Schedule.DayOptions;
 
 public class ScheduleTest {
 
   private static Schedule schedule;
+  private static Date scheduleStart;
+  private static Date scheduleEnd;
+
+  private static Schedule weekdaySchedule;
+  private static Schedule saturdaySchedule;
+  private static Schedule sundaySchedule;
 
   private static Bus mockedBus;
   private static List<RouteTimetable> busRouteTimetables;
@@ -42,10 +50,29 @@ public class ScheduleTest {
       mock(RouteTimetable.class),
       mock(RouteTimetable.class),
     });
+
+    scheduleStart = new GregorianCalendar(2015, GregorianCalendar.JANUARY, 1).getTime();
+    scheduleEnd = new GregorianCalendar(2015, GregorianCalendar.DECEMBER, 31).getTime();
     schedule = new Schedule(
-        new GregorianCalendar(2015, GregorianCalendar.JANUARY, 1).getTime(),
-        new GregorianCalendar(2015, GregorianCalendar.DECEMBER, 31).getTime(),
-        Schedule.DayOptions.SATURDAY
+        scheduleStart,
+        scheduleEnd,
+        DayOptions.SATURDAY
+        );
+
+    weekdaySchedule = new Schedule(
+        scheduleStart,
+        scheduleEnd,
+        DayOptions.WEEKDAYS
+        );
+    saturdaySchedule = new Schedule(
+        scheduleStart,
+        scheduleEnd,
+        DayOptions.SATURDAY
+        );
+    sundaySchedule = new Schedule(
+        scheduleStart,
+        scheduleEnd,
+        DayOptions.SUNDAY
         );
   }
 
@@ -76,6 +103,42 @@ public class ScheduleTest {
   }
 
   /**
+   * Test hasBus method.
+   *
+   * The hasBus method tests whether a bus is allocated within a Schedule.
+   * It should return true if it is allocated, or false if not. Additionally,
+   * it should return false if a null bus is passed.
+   */
+  @Test
+  public void testHasBus() {
+    // Try with empty schedule
+    assertFalse(schedule.hasBus(mockedBus));
+    // Add bus to schedule and try again
+    schedule.addRouteTimetable(mockedRouteTimetable, mockedBus);
+    assertTrue(schedule.hasBus(mockedBus));
+    // Try with null
+    assertFalse(schedule.hasBus(null));
+  }
+
+  /**
+   * Test hasRouteTimetable method.
+   *
+   * The hasRouteTimetable method tests whether a RouteTimetable is allocated
+   * within a Schedule. It should return true if allocated, else false. Also,
+   * it should return false if a null reference is passed.
+   */
+  @Test
+  public void testHasRouteTimetable() {
+    // Try with empty schedule
+    assertFalse(schedule.hasRouteTimetable(mockedRouteTimetable));
+    // Add routetimetable and try again
+    schedule.addRouteTimetable(mockedRouteTimetable);
+    assertTrue(schedule.hasRouteTimetable(mockedRouteTimetable));
+    // Try with null
+    assertFalse(schedule.hasRouteTimetable(null));
+  }
+
+  /**
    * Test the getAllocatedBus method.
    *
    * The getAllocatedBus method takes a RouteTimetable object and returns the
@@ -86,6 +149,25 @@ public class ScheduleTest {
     // Add RouteTimetable with associated Bus first
     schedule.addRouteTimetable(mockedRouteTimetable, mockedBus);
     assertEquals(schedule.getAllocatedBus(mockedRouteTimetable), mockedBus);
+  }
+
+  @Rule
+  public ExpectedException thrown = ExpectedException.none();
+
+  /**
+   * Test the getAllocatedBus method with invalid RouteTimetable.
+   *
+   * If a RouteTimetable is passed which is not allocated in a schedule, the
+   * method should throw a specific error.
+   *
+   */
+  @Test
+  public void testGetAllocatedBusWithInvalidRouteTimetable() {
+    String msg = "RouteTimetable \"" + mockedRouteTimetable + 
+      "\" is not found within Schedule";
+    thrown.expect(IllegalArgumentException.class);
+    thrown.expectMessage(msg);
+    schedule.getAllocatedBus(mockedRouteTimetable);
   }
 
   /**
@@ -107,24 +189,89 @@ public class ScheduleTest {
   }
 
   /**
+   * Test the getAllocatedRouteTimetables method with invalid Bus.
+   *
+   * If a Bus is passed which is not allocated in a schedule, the
+   * method should throw a specific error.
+   *
+   */
+  @Test
+  public void testGetAllocatedRouteTimetablesWithInvalidBus() {
+    String msg = "Bus \"" + mockedBus + 
+      "\" is not found within Schedule";
+    thrown.expect(IllegalArgumentException.class);
+    thrown.expectMessage(msg);
+    schedule.getAllocatedRouteTimetables(mockedBus);
+  }
+
+  /**
+   * Test the getOperatingDay getter method.
+   */
+  @Test
+  public void testGetOperatingDay() {
+    assertEquals(weekdaySchedule.getOperatingDay(), DayOptions.WEEKDAYS);
+    assertEquals(saturdaySchedule.getOperatingDay(), DayOptions.SATURDAY);
+    assertEquals(sundaySchedule.getOperatingDay(), DayOptions.SUNDAY);
+  }
+
+  /**
    * Test scheduledDates method.
    *
-   * This method assumes that the Schedule for this RouteTimetable is for 
-   * Saturdays only.
+   * This test ensures that each possible option for the days on which a
+   * schedule operates - weekday, Saturday and Sundays - are tests, and that
+   * all dates returned by the scheduledDates method fall on the correct days.
+   *
    */
   @Test
   public void testScheduledDates() {
-    List<Date> actualDates = schedule.scheduledDates();
-    if (actualDates.size() == 0) {
-      fail("scheduled dates must not be empty");
-    }
-    for (Date d : actualDates) {
-      Calendar c = Calendar.getInstance();
-      c.setTime(d);
-      int dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
-      if (dayOfWeek != 7) { // Expect each date to be a Saturday
-        fail("scheduled dates contains incorrect date: " + d);
+    // Create all required schedules
+    List<Schedule> schedules = Arrays.asList(new Schedule[] {
+      weekdaySchedule, 
+      saturdaySchedule, 
+      sundaySchedule
+    });
+
+    // Create all required predicates to test for the correct day of week
+    List<Predicate<Date>> ps = new ArrayList<>();
+    ps.add((Date d) -> dayOfWeek(d) >= 2 && dayOfWeek(d) <= 6);
+    ps.add((Date d) -> dayOfWeek(d) == 7);
+    ps.add((Date d) -> dayOfWeek(d) == 1);
+
+    // Undertake testing on each schedule
+    for (int i = 0; i < schedules.size(); i++ ) {
+      Schedule s = schedules.get(i);
+      Predicate<Date> p = ps.get(i);
+      List<Date> actualDates = s.scheduledDates();
+      if (actualDates.size() == 0) {
+        fail("scheduled dates must not be empty");
+      }
+      for (Date d : actualDates) {
+        if (d.before(scheduleStart) || d.after(scheduleEnd)) {
+          String msg = "schedule dates contains dates outside of the " + 
+            "specified date range for the schedule: " + d;
+          fail(msg);
+        }
+        if (!p.test(d)) { // Expect each date to be a Saturday
+          fail("scheduled dates contains incorrect date: " + d);
+        }
       }
     }
+  } 
+
+  /**
+   * Helper method to determine numerical day of week from a date.
+   *
+   * This method will return the day of week for a given date. The numbers
+   * begin at 1, with Sunday = 1, Monday = 2, ... Saturday = 7.
+   *
+   * @param d date for which to obtain day of week
+   * @return numerical day of week, with Sunday = 1, Monday = 2, ... , 
+   *  Saturday = 7
+   */
+  private static int dayOfWeek(Date d) {
+    Calendar c = Calendar.getInstance();
+    c.setTime(d);
+    int dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
+    return dayOfWeek;
   }
 }
