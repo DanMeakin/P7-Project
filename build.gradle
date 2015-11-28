@@ -10,17 +10,4 @@ dependencies {
   testCompile 'org.hamcrest:hamcrest-all:1.+','org.mockito:mockito-all:1.+', 'junit:junit:4.12'
 }
 
-sourceSets {
-    main {
-        java {
-            srcDir 'src/java/main'
-        }
-    }
-    test {
-        java {
-            srcDir 'src/java/org/test'
-        }
-    }
-}
-
 test { finalizedBy jacocoTestReport }
