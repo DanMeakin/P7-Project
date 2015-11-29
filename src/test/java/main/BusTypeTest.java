@@ -57,6 +57,16 @@ public class BusTypeTest {
   }
 
   /**
+   * Test BusType make getter method.
+   */
+  @Test
+  public void testGetMake() {
+    for (int i = 0; i < busTypes.size(); i++) {
+      assertEquals(busTypes.get(i).getMake(), makes.get(i));
+    }
+  }
+
+  /**
    * Test BusType model getter method.
    */
   @Test

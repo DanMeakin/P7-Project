@@ -32,9 +32,8 @@ public class ScheduleTest {
   private static List<RouteTimetable> busRouteTimetables;
   private static RouteTimetable mockedRouteTimetable;
 
-  @BeforeClass
-  public static void setUpClass() {
-  }
+  private static Bus anotherMockedBus;
+  private static RouteTimetable anotherMockedRouteTimetable;
 
   @Before
   public void setUp() {
@@ -51,6 +50,10 @@ public class ScheduleTest {
       mock(RouteTimetable.class),
     });
 
+    anotherMockedRouteTimetable = mock(RouteTimetable.class);
+    anotherMockedBus = mock(Bus.class);
+    when(anotherMockedBus.equals(anotherMockedBus)).thenReturn(true);
+    
     scheduleStart = new GregorianCalendar(2015, GregorianCalendar.JANUARY, 1).getTime();
     scheduleEnd = new GregorianCalendar(2015, GregorianCalendar.DECEMBER, 31).getTime();
     schedule = new Schedule(
@@ -74,6 +77,39 @@ public class ScheduleTest {
         scheduleEnd,
         DayOptions.SUNDAY
         );
+  }
+
+  /**
+   * Test values of DayOptions enum.
+   *
+   * The DayOptions enum should contain three fixed values: WEEKDAYS, 
+   * SATURDAY & SUNDAY. This test ensures these are the only values.
+   */
+  @Test
+  public void testDayOptionsValues() {
+    DayOptions[] actualOptions = DayOptions.values();
+    DayOptions[] expectedOptions = new DayOptions[] {DayOptions.WEEKDAYS, DayOptions.SATURDAY, DayOptions.SUNDAY};
+    for (int i = 0; i < actualOptions.length; i++) {
+      if (expectedOptions.length < i) {
+        fail("there are more DayOptions than expected: " + actualOptions);
+      }
+      assertEquals(actualOptions[i], expectedOptions[i]);
+    }
+  }
+  
+  /**
+   * Test valueOf() DayOptions enum.
+   *
+   * The valueOf() method should return appropriate identifiers in DayOptions.
+   * This test ensures this is the case.
+   */
+  @Test
+  public void testDayOptionsValueOf() {
+    String[] dayOptionsStrings = new String[] {"WEEKDAYS", "SATURDAY", "SUNDAY"};
+    DayOptions[] dayOptionsConsts = new DayOptions[] {DayOptions.WEEKDAYS, DayOptions.SATURDAY, DayOptions.SUNDAY};
+    for (int i = 0; i < dayOptionsStrings.length; i++) {
+      assertEquals(DayOptions.valueOf(dayOptionsStrings[i]), dayOptionsConsts[i]);
+    }
   }
 
   /**
@@ -103,6 +139,19 @@ public class ScheduleTest {
   }
 
   /**
+   * Test addRouteTimetable method with invalid RouteTimetable.
+   *
+   * The addRouteTimetable method should not accept a null RouteTimetable 
+   * value. This method tests this behaviour.
+   */
+  @Test
+  public void testAddRouteTimetableWithNull() {
+    thrown.expect(IllegalArgumentException.class);
+    thrown.expectMessage("cannot add a null RouteTimetable");
+    schedule.addRouteTimetable(null);
+  }
+
+  /**
    * Test hasBus method.
    *
    * The hasBus method tests whether a bus is allocated within a Schedule.
@@ -113,9 +162,12 @@ public class ScheduleTest {
   public void testHasBus() {
     // Try with empty schedule
     assertFalse(schedule.hasBus(mockedBus));
-    // Add bus to schedule and try again
+    // Add buses to schedule and try again
+    schedule.addRouteTimetable(anotherMockedRouteTimetable, anotherMockedBus);
+    schedule.addRouteTimetable(anotherMockedRouteTimetable);
     schedule.addRouteTimetable(mockedRouteTimetable, mockedBus);
     assertTrue(schedule.hasBus(mockedBus));
+    assertTrue(schedule.hasBus(anotherMockedBus));
     // Try with null
     assertFalse(schedule.hasBus(null));
   }
@@ -131,7 +183,8 @@ public class ScheduleTest {
   public void testHasRouteTimetable() {
     // Try with empty schedule
     assertFalse(schedule.hasRouteTimetable(mockedRouteTimetable));
-    // Add routetimetable and try again
+    // Add routetimetables and try again
+    schedule.addRouteTimetable(anotherMockedRouteTimetable);
     schedule.addRouteTimetable(mockedRouteTimetable);
     assertTrue(schedule.hasRouteTimetable(mockedRouteTimetable));
     // Try with null
@@ -146,7 +199,9 @@ public class ScheduleTest {
    */
   @Test
   public void testGetAllocatedBus() {
-    // Add RouteTimetable with associated Bus first
+    // Add other mocked RouteTimetable and Bus first
+    schedule.addRouteTimetable(anotherMockedRouteTimetable, anotherMockedBus);
+
     schedule.addRouteTimetable(mockedRouteTimetable, mockedBus);
     assertEquals(schedule.getAllocatedBus(mockedRouteTimetable), mockedBus);
   }
@@ -178,7 +233,10 @@ public class ScheduleTest {
    */
   @Test 
   public void testGetAllocatedRouteTimetables() {
-    // Add RouteTimetables with associated Bus first
+    // Add other mocked RouteTimetable and Bus first
+    schedule.addRouteTimetable(anotherMockedRouteTimetable, anotherMockedBus);
+
+    // Add RouteTimetables with associated Bus
     for (RouteTimetable rt : busRouteTimetables) {
       schedule.addRouteTimetable(rt, mockedBus);
     }

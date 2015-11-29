@@ -3,81 +3,84 @@ package main;
 import java.util.*;
 
 public class Schedule {
-	public static enum DayOptions {
-		WEEKDAYS, SATURDAY, SUNDAY
-	}
-	private Date validFromDate;
-	private Date validToDate;
-	private DayOptions operatingDay;
-	private List<RouteTimetable> routeTimeTableList = new ArrayList<>();
-	private List<Bus> busList = new ArrayList<>();
+  public static enum DayOptions {
+    WEEKDAYS, SATURDAY, SUNDAY
+  }
+  private Date validFromDate;
+  private Date validToDate;
+  private DayOptions operatingDay;
+  private List<RouteTimetable> routeTimetableList = new ArrayList<>();
+  private List<Bus> busList = new ArrayList<>();
 
 
-	public Schedule (Date validFromDate, Date validToDate, DayOptions operatingDay) {
-		this.validFromDate = validFromDate;
-		this.validToDate = validToDate;
-		this.operatingDay = operatingDay;
-	}
+  public Schedule (Date validFromDate, Date validToDate, DayOptions operatingDay) {
+    this.validFromDate = validFromDate;
+    this.validToDate = validToDate;
+    this.operatingDay = operatingDay;
+  }
 
-	public void addRouteTimetable(RouteTimetable routeTimetable) {
-		this.routeTimeTableList.add(routeTimetable);
-		this.busList.add(null);
-	}
+  public void addRouteTimetable(RouteTimetable routeTimetable) throws IllegalArgumentException {
+    addRouteTimetable(routeTimetable, null);
+  }
 
-	public void addRouteTimetable(RouteTimetable routeTimetable, Bus bus) {
-		this.routeTimeTableList.add(routeTimetable);
-		this.busList.add(bus);
-	}
+  public void addRouteTimetable(RouteTimetable routeTimetable, Bus bus) {
+    if (routeTimetable == null) {
+      throw new IllegalArgumentException("cannot add a null RouteTimetable");
+    }
+    this.routeTimetableList.add(routeTimetable);
+    this.busList.add(bus);
+  }
 
-	public Bus getAllocatedBus(RouteTimetable routeTimetable) throws IllegalArgumentException {
+  public Bus getAllocatedBus(RouteTimetable routeTimetable) throws IllegalArgumentException {
     String msg = "RouteTimetable \"" + routeTimetable + 
       "\" is not found within Schedule";
-		for (int i = 0; i < routeTimeTableList.size(); i++) {
-			if (routeTimeTableList.get(i).equals(routeTimetable)) {
-				return busList.get(i);
-			}
-		}
-		throw new IllegalArgumentException(msg);
-	}
+    for (int i = 0; i < routeTimetableList.size(); i++) {
+      RouteTimetable thisRT = routeTimetableList.get(i);
+      if (thisRT.equals(routeTimetable)) {
+        return busList.get(i);
+      }
+    }
+    throw new IllegalArgumentException(msg);
+  }
 
-	public List<RouteTimetable> getAllocatedRouteTimetables(Bus bus) throws IllegalArgumentException {
-		List<RouteTimetable> allocatedRouteTimetables = new ArrayList<>();
+  public List<RouteTimetable> getAllocatedRouteTimetables(Bus bus) throws IllegalArgumentException {
+    List<RouteTimetable> allocatedRouteTimetables = new ArrayList<>();
     String msg = "Bus \"" + bus + 
       "\" is not found within Schedule";
-		for (int i = 0; i < busList.size(); i++) {
-			if (busList.get(i).equals(bus)) {
-				allocatedRouteTimetables.add(routeTimeTableList.get(i));
-			}
-		}
-		if (busList.isEmpty()) {
+    for (int i = 0; i < busList.size(); i++) {
+      if (busList.get(i).equals(bus)) {
+        allocatedRouteTimetables.add(routeTimetableList.get(i));
+      }
+    }
+    if (allocatedRouteTimetables.isEmpty()) {
       throw new IllegalArgumentException(msg);
-		}
+    }
     return allocatedRouteTimetables;
-	}
+  }
 
-	public boolean hasRouteTimetable(RouteTimetable routeTimetable){
+  public boolean hasRouteTimetable(RouteTimetable routeTimetable){
     if (routeTimetable == null) {
       return false;
     }
-    for (RouteTimetable r : routeTimeTableList) {
-      if (r != null && routeTimetable.equals(r)) {
-				return true;
-			}
-		}
-		return false;
-	}
+    for (RouteTimetable r : routeTimetableList) {
+      if (routeTimetable.equals(r)) {
+        return true;
+      }
+    }
+    return false;
+  }
 
-	public boolean hasBus(Bus bus){
+  public boolean hasBus(Bus bus){
     if (bus == null) {
       return false;
     }
-		for (Bus b : busList) {
+    for (Bus b : busList) {
       if (b != null && bus.equals(b)) {
         return true;
       }
-		}
-		return false;
-	}
+    }
+    return false;
+  }
 
   public DayOptions getOperatingDay() {
     return this.operatingDay;
