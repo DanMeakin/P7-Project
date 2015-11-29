@@ -5,17 +5,39 @@ import java.util.*;
 import java.util.GregorianCalendar;
 import java.util.Date;
 
+/**
+ * The Bus class defines bus objects that implement
+ * a number of domain specific methods such as addBus,
+ * startRoute, arrivesAtStop, passengersBoarding etc.
+ * @authors Ivo Hendriks, Janus Avbæk Larsen, Helle Hyllested Larsen, Dan Meakin.
+ */
 public class Bus {
+  /** the fleet number of this bus  */
   private final int fleetNumber;
+  /** the type of this bus  */
   private final BusType busType;
+  /** the acquisistion date of this bus  */
   private final Date acquisitionDate;
+  /** the number of passengers on this bus  */
   private int numPassengers;
+  /** the number of passengers boarded this bus at the last stop */
   private int numPassengersBoarded;
+  /** the number of passengers exited this bus at the last stop */
   private int numPassengersExited;
+  /** the route timetable associated with this bus */
   private RouteTimetable route;
+  /** the stop associated with this bus */
   private Stop stop;
+  /** a data structure containing all busses */
   private static List<Bus> allBuses = new ArrayList<>();
 
+  /**
+   * Creates a bus and add this to the allBuses list.
+   *
+   * @param fleetnumber the fleetnumber associated with this bus.
+   * @param bustype the bus type of this bus.
+   * @param acquisitionDate the acquisition date of this bus.
+   */
   public Bus(int fleetnumber, BusType bustype, Date acquisitionDate) {
     this.fleetNumber = fleetnumber;
     this.busType = bustype;
@@ -26,7 +48,7 @@ public class Bus {
   /**
    * Add a Bus to the list of all buses.
    *
-   * @param bus The bus object to add to the list
+   * @param bus the bus object to add to the list
    */
   private static void addBus(Bus bus) throws IllegalArgumentException {
     if (busExists(bus)) {
@@ -37,7 +59,7 @@ public class Bus {
   }
 
   /**
-   * Remove a Bus from the list of all buses.
+   * Remove a bus from the list of all buses.
    *
    * @param bus the bus object to remove
    */
@@ -119,7 +141,7 @@ public class Bus {
   /**
    * passengersBoard tracks passengers boarding a bus at a stop.
    *
-   * @param num the number of passengers boarding
+   * @param num the number of passengers boarding.
    */
   public void passengersBoard(int num) throws UnsupportedOperationException {
     if (!isAtStop()) {
@@ -133,7 +155,7 @@ public class Bus {
    /**
    * passengersExit tracks passengers exiting a bus at a stop.
    *
-   * @param num the number of passengers exiting
+   * @param num the number of passengers exiting.
    */
   public void passengersExit(int num) throws UnsupportedOperationException, IllegalArgumentException {
     if (!isAtStop()) {
@@ -147,86 +169,192 @@ public class Bus {
     setNumPassengers(getNumPassengers() - num);
   }
 
-  public int getNumPassengersBoarded(){
-    return this.numPassengersBoarded;
-  }
-
-  public int getNumPassengersExited(){
-    return this.numPassengersExited;
-  }
-
+  /**
+   * Get the number of passengers on a bus.
+   *
+   * @return numPassengers the number of passengers on the bus.
+   */
   public int getNumPassengers(){
     return this.numPassengers;
   }
 
+  /**
+   * Get the number of passengers boarded the bus.
+   *
+   * @return numPassengersExited the number of passengers boarded the bus.
+   */
+  public int getNumPassengersBoarded(){
+    return this.numPassengersBoarded;
+  }
+
+  /**
+   * Get the number of passengers extited the bus.
+   *
+   * @return numPassengersExited the number of passengers exited the bus.
+   */
+  public int getNumPassengersExited(){
+    return this.numPassengersExited;
+  }
+
+  /**
+   * Set the number of passengers on a bus.
+   *
+   * @param n the number of passsengers on the bus.
+   */
   private void setNumPassengers(int n) {
     this.numPassengers = n;
   }
 
+  /**
+   * Set the number of passengers boarded.
+   *
+   * @param n the number of passsengers boarded.
+   */
   private void setNumPassengersBoarded(int n) {
     this.numPassengersBoarded = n;
   }
 
+  /**
+   * Set the number of passengers exitited.
+   *
+   * @param n the number of passsengers exitited.
+   */
   private void setNumPassengersExited(int n) {
     this.numPassengersExited = n;
   }
 
+  /**
+   * Get the fleet number of a bus.
+   *
+   * @return fleetnumber the fleet number of the bus.
+   */
   public int getFleetNumber(){
     return this.fleetNumber;
   }
 
+  /**
+   * Get the type of a bus.
+   *
+   * @return busType the type of the bus.
+   */
   public BusType getBusType(){
     return this.busType;
   }
 
+  /**
+   * Get the acquisition date of a bus.
+   *
+   * @return acquisitionDate the acquisition bate of the bus.
+   */
   public Date getAcquisitionDate() {
     return this.acquisitionDate;
   }
 
+  /**
+   * Get the seated capacity of a bus.
+   *
+   * @return busType.getSeatedCapacity the seated capacity of the bus.
+   */
   public int getSeatedCapacity(){
     return this.busType.getSeatedCapacity();
   }
 
+  /**
+   * Get the standing capacity of a bus.
+   *
+   * @return busType.getStandingCapacity the standing capacity of the bus.
+   */
   public int getStandingCapacity(){
     return this.busType.getStandingCapacity();
   }
 
+  /**
+   * Get the total capacity of a bus.
+   *
+   * @return getSeatedCapacity + getStandingcapacity the total capacity of the bus.
+   */
   public int getTotalCapacity(){
     return getSeatedCapacity() + getStandingCapacity();
   }
 
+  /**
+   * Get the mke of a bus.
+   *
+   * @return busType.getMake the make of the bus.
+   */
   public String getMake(){
     return this.busType.getMake();
   }
 
+  /**
+   * Get the model of a bus.
+   *
+   * @return busType.getModel the model of the bus.
+   */
   public String getModel(){
     return this.busType.getModel();
   }
 
+  /**
+   * Get the RouteTimeTable a bus is on.
+   *
+   * @return route the RouteTimeTable the bus is on.
+   */
   public RouteTimetable getRouteTimetable(){
     return this.route;
   }
 
+  /**
+   * Set a bus to be on a route timetable.
+   *
+   * @param rt the route rimetable the bus is set to be at.
+   */
   private void setRouteTimetable(RouteTimetable rt) {
     this.route = rt;
   }
 
+  /**
+   * Get the stop a bus is at.
+   *
+   * @return stop the Stop the bus is at.
+   */
   public Stop getStop(){
     return this.stop;
   }
 
+  /**
+   * Set a bus to be at a Stop.
+   *
+   * @param stop the Stop the bus is set to be at.
+   */
   private void setStop(Stop s) {
     this.stop = s;
   }
 
+  /**
+   * Check wether a bus in currently at a Stop.
+   *
+   * @return true if a bus is at a Stop, false if not.
+   */
   public boolean isAtStop() {
     return (getStop() != null);
   }
 
+  /**
+   * Check wether a bus in currently on a Route.
+   *
+   * @return true if a bus is one a Route, false if not.
+   */
   public boolean isOnRoute() {
     return (getRouteTimetable() != null);
   }
 
+  /**
+   * Check how many buses exist of a certain type.
+   *
+   * @param type of Bus to get the number of buses for.
+   * @return the number of buses per type.
+   */
   public static int getNumOfBusesPerType(BusType type){
     HashMap<BusType, List<Bus>> numOfBusesPerType = new HashMap<BusType, List<Bus>>();
     for(Bus o : allBuses){
@@ -243,8 +371,8 @@ public class Bus {
   /**
    * Check if two Bus instances are to be considered the same.
    *
-   * @param otherBus the bus against which to compare
-   * @return true if both buses are equal, else false
+   * @param otherBus the bus against which to compare.
+   * @return true if both buses are equal, else false.
    */
   public boolean equals(Bus otherBus) {
     return (getFleetNumber() == otherBus.getFleetNumber());
