@@ -6,7 +6,9 @@ import java.util.GregorianCalendar;
 import java.util.Date;
 
 /**
- * The Bus class defines bus objects that implement
+ * The Bus class defines bus objects that hold several
+ * characteristics of the bus such as fleetNmumber,
+ * busType, numOfPassengers etc. and implement
  * a number of domain specific methods such as addBus,
  * startRoute, arrivesAtStop, passengersBoarding etc.
  * @authors Ivo Hendriks, Janus Avbæk Larsen, Helle Hyllested Larsen, Dan Meakin.
@@ -32,7 +34,7 @@ public class Bus {
   private static List<Bus> allBuses = new ArrayList<>();
 
   /**
-   * Creates a bus and add this to the allBuses list.
+   * Creates a bus and add it to the allBuses list.
    *
    * @param fleetnumber the fleetnumber associated with this bus.
    * @param bustype the bus type of this bus.

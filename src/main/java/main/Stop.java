@@ -1,13 +1,31 @@
 package main;
 import java.util.*;
 
+/**
+ * The Stop class defines schedule type objects that hold characteristicsv
+ * of stops such as id, name latutude and longitude.
+ * @authors Ivo Hendriks, Janus Avbæk Larsen, Helle Hyllested Larsen, Dan Meakin.
+ */
 public class Stop {
-	private final int id;
-	private final String name;
-	private final double latitude;
-  private final double longitude;
-	private static List<Stop> allStops = new ArrayList<>();
-	
+    /** the stop id  */
+    private final int id;
+    /** the stop name  */
+    private final String name;
+    /** the latitudal coordinate of the stop */
+    private final double latitude;
+    /** the longitudal coordinate of the stop */
+    private final double longitude;
+    /** a data structure containing all objects of type stop*/
+    private static List<Stop> allStops = new ArrayList<>();
+
+  /**
+   * Creates a stop and add it to the stops list.
+   *
+   * @param id the stop id.
+   * @param name the stop name.
+   * @param latitude the latitudal coordinate of the stop.
+   * @param longitude the longitudal coordinate of the stop.
+   */
 	public Stop(int id, String name, double latitude, double longitude) {
 		this.id = id;
 		this.name = name;
