@@ -8,7 +8,7 @@ import java.util.Date;
 /**
  * The Bus class defines bus objects that implement
  * a number of domain specific methods such as addBus,
- * starRoute, arrivesAtStop, passengersBoarding etc.
+ * startRoute, arrivesAtStop, passengersBoarding etc.
  * @authors Ivo Hendriks, Janus Avbæk Larsen, Helle Hyllested Larsen, Dan Meakin.
  */
 public class Bus {
@@ -32,7 +32,11 @@ public class Bus {
   private static List<Bus> allBuses = new ArrayList<>();
 
   /**
-   * Creates a bus.
+   * Creates a bus and add this to the allBuses list.
+   *
+   * @param fleetnumber the fleetnumber associated with this bus.
+   * @param bustype the bus type of this bus.
+   * @param acquisitionDate the acquisition date of this bus.
    */
   public Bus(int fleetnumber, BusType bustype, Date acquisitionDate) {
     this.fleetNumber = fleetnumber;
