@@ -11,7 +11,6 @@ import java.util.Date;
  * starRoute, arrivesAtStop, passengersBoarding etc.
  * @authors Ivo Hendriks, Janus Avbæk Larsen, Helle Hyllested Larsen, Dan Meakin.
  */
-
 public class Bus {
   /** the fleet number of this bus  */
   private final int fleetNumber;
