@@ -8,12 +8,13 @@ import static org.mockito.Mockito.*;
 import java.util.*;
 import java.util.Date;
 import main.DataStore;
+import main.CapacityDataStore;
 import main.Schedule;
 
 
 import main.Stop;
 
-public class DataStoreTest {
+public class CapacityDataStoreTest {
 
     private Date currentTimeDate;
     private int fleetnumber;
