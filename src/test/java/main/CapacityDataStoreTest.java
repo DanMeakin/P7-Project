@@ -49,19 +49,27 @@ public class CapacityDataStoreTest {
 
     }
 
-    /*
+
     private Date expectedDateTime;
     private int expectedFleetnumber;
     private int expectedRouteID;
     private int expectedStopID;
     private int expectedNumOfPassengersExited;
     private int expectedNumOfPassengersBoarded;
-    */
+
 
     @Test
+    public void testWriteBusStateChange(){
+
+        assertEquals(CapacityDataStore.readRecordNumOfPassengersBoarded(), expectedNumOfPassengersBoarded);
+    }
+
+
+
     public void testReadRecordReadFleetnumber() {
     int expectedFleetnumber = mockedBus.getFleetNumber();
-    assertEquals(CapacityDataStore.readRecordFleetnumber(), expectedFleetnumber);
+    CapacityDataStore.readRecordFleetnumber()
+        assertEquals(CapacityDataStore.readRecordFleetnumber(), expectedFleetnumber);
     }
 
     @Test
@@ -81,11 +89,6 @@ public class CapacityDataStoreTest {
 
     @Test
     public void testReadRecordNumOfPassengersBoarded() {
-        assertEquals(CapacityDataStore.readRecordNumOfPassengersBoarded(), expectedNumOfPassengersBoarded);
-    }
-
-    @Test
-    public void testWriteBusStateChange(){
         assertEquals(CapacityDataStore.readRecordNumOfPassengersBoarded(), expectedNumOfPassengersBoarded);
     }
 
