@@ -1,4 +1,4 @@
-package org.test;
+package main;
 
 import org.junit.*;
 import org.junit.rules.ExpectedException;
@@ -30,9 +30,6 @@ public class BusTypeTest {
   private static List<Integer> seatedCapacities;
   private static List<Integer> standingCapacities;
 
-  private static List<Bus> mockedBuses;
-  private static List<Integer> numBusesPerType;
-
   /**
    * Set-up before testing.
    *
@@ -56,17 +53,6 @@ public class BusTypeTest {
             standingCapacities.get(i)
             )
           );
-    }
-
-    // Create a number of mockedBuses, each of which is associated with a 
-    // particular bus type.
-    mockedBuses = new ArrayList<Bus>();
-    for (int i = 0; i < numBusesPerType.size(); i++) {
-      for (int j = 0; j < numBusesPerType.get(i); j++) {
-        Bus b = mock(Bus.class);
-        when(b.getType()).thenReturn(busTypes.get(i));
-        mockedBuses.add(b);
-      }   
     }
   }
 
@@ -119,20 +105,5 @@ public class BusTypeTest {
       int expectedTotalCapacity = standingCapacities.get(i) + seatedCapacities.get(i);
       assertEquals(busTypes.get(i).getTotalCapacity(), expectedTotalCapacity); 
     }
-  }
-
-  /**
-   * The the getBuses method.
-   *
-   * The getBuses method provides functionality to get all buses of a given
-   * type.
-   */
-  @Test
-  public void testGetBuses() {
-    for (int i = 0; i < busTypes.size(); i++) {
-      BusType thisType = busTypes.get(i);
-      int numBuses = thisType.getBuses().size();
-      assertEquals(numBuses, (int) numBusesPerType.get(i));
-    } 
   }
 }

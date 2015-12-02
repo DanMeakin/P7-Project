@@ -1,4 +1,4 @@
-package org.test;
+package main;
 
 import org.junit.*;
 import static org.junit.Assert.*;
@@ -109,13 +109,13 @@ public class RouteTest {
     List<Stop> expectedStops = Arrays.asList(routeStart, routeEnd);
     assertEquals(actualStops.size(), expectedStops.size()); 
     for (int i = 0; i < actualStops.size(); i++) {
-      assertTrue(actualStops.get(i).equals(expectedStops.get(i)));
+      assertEquals(actualStops.get(i), expectedStops.get(i));
     }
 
     actualStops = routeWithStops.getStops();
     expectedStops = Arrays.asList(routeWithStopsStart, stop1, stop2, stop3, routeWithStopsEnd);
     for (int i = 0; i < actualStops.size(); i++) {
-      assertTrue(actualStops.get(i).equals(expectedStops.get(i)));
+      assertEquals(actualStops.get(i), expectedStops.get(i));
     }
   }
 
@@ -132,7 +132,7 @@ public class RouteTest {
     List<Stop> expectedStops = Arrays.asList(routeStart, routeEnd, stop3);
     assertEquals(actualStops.size(), expectedStops.size());
     for (int i = 0; i < actualStops.size(); i++) {
-      assertTrue(actualStops.get(i).equals(expectedStops.get(i)));
+      assertEquals(actualStops.get(i), expectedStops.get(i));
     }
   }
 

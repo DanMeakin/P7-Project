@@ -1,0 +1,20 @@
+apply plugin: 'java'
+apply plugin: 'jacoco'
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+dependencies {
+  testCompile 'org.hamcrest:hamcrest-all:1.+','org.mockito:mockito-all:1.+', 'junit:junit:4.12'
+}
+
+jacocoTestReport {
+  reports {
+    xml.enabled true
+    html.enabled true
+  }
+}
+
+test { finalizedBy jacocoTestReport }

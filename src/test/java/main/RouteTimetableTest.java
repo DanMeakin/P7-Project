@@ -1,14 +1,11 @@
-package org.test;
+package main;
 
 import org.junit.*;
-import org.junit.rules.ExpectedException;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
@@ -30,10 +27,7 @@ public class RouteTimetableTest {
 
   private static List<Stop> mockedStops;
 
-  private enum ScheduleDays { WEEKDAYS, SATURDAYS, SUNDAYS };
-
   private static Schedule mockedSchedule;
-  private static ScheduleDays scheduleDay;
   private static Date validFrom;
   private static Date validTo;
 
@@ -47,16 +41,17 @@ public class RouteTimetableTest {
    * RouteTimetable funtionality.
    */
   @BeforeClass
-  public void setUpClass() {
+  public static void setUpClass() {
     startTime = 10 * 60 + 30; // 10:30am
     isRushHour = false;
 
     mockedRoute = mock(Route.class);
-    scheduleDay = ScheduleDays.SATURDAYS;
     stopTiming = Arrays.asList(new Integer[] {0, 7, 15, 16, 20, 30});
     rushHourStopTiming = Arrays.asList(new Integer[] {0, 10, 19, 25, 35, 50});
     when(mockedRoute.getCumulativeNonRushHourTiming()).thenReturn(stopTiming);
     when(mockedRoute.getCumulativeRushHourTiming()).thenReturn(rushHourStopTiming);
+    when(mockedRoute.getStopTiming(false, true)).thenReturn(stopTiming);
+    when(mockedRoute.getStopTiming(true, true)).thenReturn(rushHourStopTiming);
 
     mockedStops = Arrays.asList(new Stop[] {
       mock(Stop.class), 
@@ -65,16 +60,17 @@ public class RouteTimetableTest {
       mock(Stop.class), 
       mock(Stop.class)
     });
+    when(mockedRoute.getStops()).thenReturn(mockedStops);
 
     mockedSchedule = mock(Schedule.class);
     validFrom = new GregorianCalendar(2015, GregorianCalendar.JANUARY, 1).getTime();
     validTo = new GregorianCalendar(2015, GregorianCalendar.DECEMBER, 31).getTime();
-    when(mockedSchedule.getScheduleDays()).thenReturn(scheduleDays.WEEKDAYS);
+    when(mockedSchedule.getOperatingDay()).thenReturn(Schedule.DayOptions.WEEKDAYS);
     when(mockedSchedule.getValidFromDate()).thenReturn(validFrom);
     when(mockedSchedule.getValidToDate()).thenReturn(validTo);
 
     mockedBus = mock(Bus.class);
-    when(mockedSchedule.allocatedBus(any(RouteTimetable.class))).thenReturn(mockedBus);
+    when(mockedSchedule.getAllocatedBus(any(RouteTimetable.class))).thenReturn(mockedBus);
 
     routeTimetable = new RouteTimetable(mockedRoute, mockedSchedule, startTime, isRushHour);
   }
@@ -107,9 +103,7 @@ public class RouteTimetableTest {
     for (int i = 0; i < stopTiming.size(); i++) {
       int actualStopTiming = routeTimetable.getStopTimes().get(i);
       int expectedStopTiming = stopTiming.get(i) + routeTimetable.getStartTime();
-      int wrongStopTiming = rushHourStopTiming.get(i) + routeTimetable.getStartTime();
       assertEquals(actualStopTiming, expectedStopTiming);
-      assertNotEquals(actualStopTiming, wrongStopTiming);
     }
   }
 
@@ -133,31 +127,7 @@ public class RouteTimetableTest {
    */
   @Test
   public void testAllocatedBus() {
-    assertEquals(routeTimetable.allocatedBus(), mockedBus);
-  }
-
-  /**
-   * Test getScheduleDays() method.
-   */
-  @Test
-  public void testGetScheduleDays() {
-    assertEquals(routeTimetable.getScheduleDays(), scheduleDay);
-  }
-
-  /**
-   * Test getValidFromDate() method.
-   */
-  @Test 
-  public void testGetValidFromDate() {
-    assertEquals(routeTimetable.getValidFromDate(), validFrom);
-  }
-
-  /**
-   * Test getValidToDate() method.
-   */
-  @Test
-  public void testGetValidToDate() {
-    assertEquals(routeTimetable.getValidToDate(), validTo);
+    assertEquals(routeTimetable.getAllocatedBus(), mockedBus);
   }
 
 }

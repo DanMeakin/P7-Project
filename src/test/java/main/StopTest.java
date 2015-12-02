@@ -1,4 +1,4 @@
-package org.test; 
+package main; 
 
 import org.junit.*;
 import org.junit.rules.ExpectedException;
