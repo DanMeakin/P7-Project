@@ -341,8 +341,8 @@ public class Bus {
    *
    * @param stop the Stop the bus is set to be at.
    */
-  private void setStop(Stop s) {
-    this.stop = s;
+  private void setStop(Stop stop) {
+    this.stop = stop;
   }
 
   /**
