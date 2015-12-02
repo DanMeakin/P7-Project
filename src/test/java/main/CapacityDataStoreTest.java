@@ -68,7 +68,7 @@ public class CapacityDataStoreTest {
 
     public void testReadRecordReadFleetnumber() {
     int expectedFleetnumber = mockedBus.getFleetNumber();
-    CapacityDataStore.readRecordFleetnumber()
+    CapacityDataStore.readRecordFleetnumber();
         assertEquals(CapacityDataStore.readRecordFleetnumber(), expectedFleetnumber);
     }
 
@@ -92,10 +92,12 @@ public class CapacityDataStoreTest {
         assertEquals(CapacityDataStore.readRecordNumOfPassengersBoarded(), expectedNumOfPassengersBoarded);
     }
 
+    /*
     @Test
     public void lookUpRecord(){
        assertEquals(CapacityDataStore.readRecordDateTime());
     }
+    */
 
 
     // read records
