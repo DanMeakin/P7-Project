@@ -21,6 +21,7 @@ tags
 types_java.taghl
 .gradle/
 
+
 # IntelliJ Project files
 .idea/
 P7-Project.iml

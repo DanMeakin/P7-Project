@@ -1,9 +1,4 @@
 package main.gui;
-import aurelienribon.tweenengine.Tween;
-import aurelienribon.tweenengine.TweenManager;
-import aurelienribon.tweenengine.equations.Quad;
-import com.sun.scenario.Settings;
-import javafx.animation.Timeline;
 import org.jdesktop.swingx.border.DropShadowBorder;
 
 import javax.swing.*;
@@ -97,6 +92,9 @@ public class StartScreen extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 changeScreen(getStartPage());
+
+                repaint();
+
             }
         });
 
@@ -142,28 +140,78 @@ public class StartScreen extends JFrame {
         pContentContainer.add(pContent);
 
         // Row Panels
+        // Search Container
         JPanel fromContainer = new JPanel();
         fromContainer.setPreferredSize(new Dimension(430,80));
 
-        // From: Label
+        // Search Container - From: Label
         JLabel fromLabel = new JLabel("From:");
+        //fromLabel.setPreferredSize();
         fromLabel.setFont(h2);
         fromLabel.setForeground(Color.decode("#616161"));
         fromContainer.add(fromLabel);
 
+        // Search Container - From Texfield
+        JTextField fromTextField = new JTextField("Type here");
+        fromContainer.add(fromTextField);
+
+        // Destination Container
         JPanel destinationContainer = new JPanel();
         destinationContainer.setPreferredSize(new Dimension(430,80));
 
-        JPanel dateContainer = new JPanel();
-        dateContainer.setPreferredSize(new Dimension(430,160));
+        // Destination Container - From: Label
+        JLabel destinationLabel = new JLabel("Destination:");
+        destinationLabel.setFont(h2);
+        destinationLabel.setForeground(Color.decode("#616161"));
+        destinationContainer.add(destinationLabel);
 
+        // Destination Container - From Texfield
+        JTextField destinationTextField = new JTextField("Type here");
+        destinationContainer.add(destinationTextField);
+
+        // Date Container
+        JPanel dateContainer = new JPanel();
+        dateContainer.setPreferredSize(new Dimension(430,80));
+
+        // Date Container
+        // Date Container - Date Label
+        JLabel dateLabel = new JLabel("Date:");
+        dateContainer.add(dateLabel);
+
+        // Date Container
+        // Date Container - Date Textfield
+        JTextField dateTextField = new JTextField("02/12/15");
+        dateContainer.add(dateTextField);
+
+        // TODO: Make Icon for date picker and make date picker
+        // TODO: Add Checkbox and label for Leaving
+
+        // Time Container
+        JPanel timeContainer = new JPanel();
+        timeContainer.setPreferredSize(new Dimension(430,80));
+
+        // Time Container
+        // Time Container - Time Label
+        JLabel timeLabel = new JLabel("Date:");
+        timeContainer.add(timeLabel);
+
+        // Time Container
+        // Time Container - Time Textfield
+        JTextField timeTextField = new JTextField("12:50");
+        timeContainer.add(timeTextField);
+
+        // TODO: Make Icon for time picker and make time picker
+        // TODO: Add CheckBox and label For Arriving
+
+        // Crowdedness Filter Container
         JPanel crowdedContainer = new JPanel();
         crowdedContainer.setPreferredSize(new Dimension(430,240));
 
+        // Search Container
         JPanel searchContainer = new JPanel();
         searchContainer.setPreferredSize(new Dimension(430, 70));
 
-        // Find Bus Button
+        // Search Container - Find Bus Button
         JButton findBusButton = new JButton("FIND BUS");
         findBusButton.setForeground(Color.decode(PRIMARY_COLOR));
         findBusButton.setBackground(Color.decode("#FAFAFA"));
@@ -182,6 +230,7 @@ public class StartScreen extends JFrame {
         pContent.add(fromContainer);
         pContent.add(destinationContainer);
         pContent.add(dateContainer);
+        pContent.add(timeContainer);
         pContent.add(crowdedContainer);
         pContent.add(searchContainer);
 
@@ -203,7 +252,7 @@ public class StartScreen extends JFrame {
         JPanel page2 = new JPanel();
 
         //TODO: Create components from page 2 and add to JPanel
-        page2.setBackground(Color.black);
+        page2.setBackground(Color.red);
         page2.setPreferredSize(new Dimension(100,100));
 
 
