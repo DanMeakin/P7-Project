@@ -64,7 +64,7 @@ public class StartScreen extends JFrame {
         topMenuButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Teksten nedenunder fjerner alt indhold og tilføjer nyt
+                // Teksten nedenunder fjerner alt indhold og tilfï¿½jer nyt
                 // changeScreen(getPage2());
 
                 openMenu();
@@ -219,7 +219,7 @@ public class StartScreen extends JFrame {
         findBusButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Teksten nedenunder fjerner alt indhold og tilføjer nyt
+                // Teksten nedenunder fjerner alt indhold og tilfï¿½jer nyt
                 changeScreen(getPage2());
             }
         });
