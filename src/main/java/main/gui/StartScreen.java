@@ -5,6 +5,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 
 /**
  * Created by Helle on 02-12-2015.
@@ -53,29 +54,10 @@ public class StartScreen extends JFrame {
         pTop.setBackground(Color.decode(PRIMARY_COLOR));
         pTop.setLayout(new FlowLayout(FlowLayout.LEADING,0,10));
 
-        /*// Topbar - MenuButton GAMMEL
-        ImageIcon topMenuButtonIcon;
-        JButton topMenuButton;
-        topMenuButtonIcon = new ImageIcon(this.getClass().getResource("/main/gui/assets/icons/menu.png"));
-        topMenuButton = new JButton(topMenuButtonIcon);
-        topMenuButton.setPreferredSize(new Dimension(50,50));
-        topMenuButton.setBackground(Color.decode(PRIMARY_COLOR));
-        topMenuButton.setBorder(BorderFactory.createLineBorder(Color.decode(PRIMARY_COLOR), 10));
-        topMenuButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Teksten nedenunder fjerner alt indhold og tilføjer nyt
-                // changeScreen(getPage2());
-
-                openMenu();
-
-            }
-        });*/
-
+        // Topbar - JMenuBar
         JMenuBar topMenuBar = new JMenuBar();
 
-
-        // Topbar - Menu/Button
+        // JMenubar - Menu/Button
         JMenu topMenu = new JMenu("");
         ImageIcon topMenuButtonIcon = new ImageIcon(this.getClass().getResource("/main/gui/assets/icons/menu.png"));
         topMenu.setIcon(topMenuButtonIcon);
@@ -151,7 +133,7 @@ public class StartScreen extends JFrame {
         fromLabel.setForeground(Color.decode("#616161"));
         fromContainer.add(fromLabel);
 
-        // Search Container - From Texfield
+        // Search Container - From Textfield
         JTextField fromTextField = new JTextField("Type here");
         fromContainer.add(fromTextField);
 
@@ -176,6 +158,7 @@ public class StartScreen extends JFrame {
         // Date Container
         // Date Container - Date Label
         JLabel dateLabel = new JLabel("Date:");
+        dateLabel.setFont(h3);
         dateContainer.add(dateLabel);
 
         // Date Container
@@ -193,6 +176,7 @@ public class StartScreen extends JFrame {
         // Time Container
         // Time Container - Time Label
         JLabel timeLabel = new JLabel("Date:");
+        timeLabel.setFont(h3);
         timeContainer.add(timeLabel);
 
         // Time Container
@@ -203,13 +187,26 @@ public class StartScreen extends JFrame {
         // TODO: Make Icon for time picker and make time picker
         // TODO: Add CheckBox and label For Arriving
 
-        // Crowdedness Filter Container
-        JPanel crowdedContainer = new JPanel();
-        crowdedContainer.setPreferredSize(new Dimension(430,240));
+        // Crowdedness Filter Container All Busses
+        JPanel allBussesContainer = new JPanel();
+        allBussesContainer.setPreferredSize(new Dimension(430,75));
+
+        // Crowdedness Filter Container All Busses
+        JCheckBox allBusses = new JCheckBox("Chin");
+        allBusses.setMnemonic(KeyEvent.VK_C);
+        allBusses.setSelected(true);
+
+        // Crowdedness Filter Container Free Standing space
+        JPanel standingSpaceContainer = new JPanel();
+        standingSpaceContainer.setPreferredSize(new Dimension(430,75));
+
+        // Crowdedness Filter Container Free Seating space
+        JPanel seatingSpaceContainer = new JPanel();
+        seatingSpaceContainer.setPreferredSize(new Dimension(430,75));
 
         // Search Container
         JPanel searchContainer = new JPanel();
-        searchContainer.setPreferredSize(new Dimension(430, 70));
+        searchContainer.setPreferredSize(new Dimension(430, 65));
 
         // Search Container - Find Bus Button
         JButton findBusButton = new JButton("FIND BUS");
@@ -226,12 +223,14 @@ public class StartScreen extends JFrame {
         searchContainer.add(findBusButton);
 
 
-        // Sidste add
+        // Last add
         pContent.add(fromContainer);
         pContent.add(destinationContainer);
         pContent.add(dateContainer);
         pContent.add(timeContainer);
-        pContent.add(crowdedContainer);
+        pContent.add(allBussesContainer);
+        pContent.add(standingSpaceContainer);
+        pContent.add(seatingSpaceContainer);
         pContent.add(searchContainer);
 
         for (int i = 0; i < pContent.getComponents().length; i++) {
