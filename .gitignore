@@ -25,3 +25,7 @@ types_java.taghl
 # IntelliJ Project files
 .idea/
 P7-Project.iml
+_mac/
+keymaps/
+inspection/
+/*.xml # All xml files in root
