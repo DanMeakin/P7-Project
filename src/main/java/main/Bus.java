@@ -117,18 +117,6 @@ public class Bus extends Observable {
    * This method commences the operation of a Bus for collecting and dropping
    * off passengers.
    *
-   * @return routetimetable the route timetable the bus is operating on.
-   */
-  public RouteTimetable GetRoutetimetable() {
-    return this.route;
-  }
-
-  /**
-   * Start operating on a route.
-   *
-   * This method commences the operation of a Bus for collecting and dropping
-   * off passengers.
-   *
    * @param routeTimetable the routeTimetable the bus is to be operating
    */
   public void startRoute(RouteTimetable routeTimetable) {
