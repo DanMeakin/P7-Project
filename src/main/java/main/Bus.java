@@ -1,9 +1,8 @@
 package main;
 
-import java.io.*;
 import java.util.*;
-import java.util.GregorianCalendar;
 import java.util.Date;
+import java.util.Observable;
 
 /**
  * The Bus class defines bus objects that hold several
@@ -13,7 +12,7 @@ import java.util.Date;
  * startRoute, arrivesAtStop, passengersBoarding etc.
  * @authors Ivo Hendriks, Janus Avbæk Larsen, Helle Hyllested Larsen, Dan Meakin.
  */
-public class Bus {
+public class Bus extends Observable {
   /** the fleet number of this bus  */
   private final int fleetNumber;
   /** the type of this bus  */
@@ -100,6 +99,7 @@ public class Bus {
     setStop(stop);
     setNumPassengersBoarded(0);
     setNumPassengersExited(0);
+    setChanged(); // Mark as changed for observers
   }
 
   public void leavesStop() throws UnsupportedOperationException {
@@ -108,7 +108,7 @@ public class Bus {
       throw new UnsupportedOperationException(msg);
     }
     setStop(null);
-    //this.saveToFile();
+    notifyObservers(); // Notify observers after leaving stop
   }
   
   /**
@@ -122,7 +122,7 @@ public class Bus {
   public void startRoute(RouteTimetable routeTimetable) {
     setRouteTimetable(routeTimetable);
   }
-  
+
   /**
    * End operating on a route.
    *
@@ -329,8 +329,8 @@ public class Bus {
    *
    * @param stop the Stop the bus is set to be at.
    */
-  private void setStop(Stop s) {
-    this.stop = s;
+  private void setStop(Stop stop) {
+    this.stop = stop;
   }
 
   /**

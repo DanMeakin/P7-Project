@@ -8,6 +8,7 @@ import static org.mockito.Mockito.*;
 import java.util.Date;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.Observer;
 
 import main.Bus;
 import main.BusType;
@@ -47,6 +48,7 @@ public class BusTest {
   private static RouteTimetable mockedRouteTimetable;
 
   private static Stop mockedStop;
+  private static Observer mockedObserver;
 
   @BeforeClass
   public static void setUpClass() {
@@ -75,6 +77,8 @@ public class BusTest {
 
     mockedStop = mock(Stop.class);
     mockedRouteTimetable = mock(RouteTimetable.class);
+
+    mockedObserver = mock(Observer.class);
   }
 
   @Before
@@ -483,4 +487,43 @@ public class BusTest {
     assertEquals(Bus.getNumOfBusesPerType(anotherMockedBusType), 1);
   }
 
+  /**
+   * testAddObserver() tests the Observable addObserver method.
+   *
+   * The purpose of this test is to ensure that the Bus acts as an
+   * Observable object.
+   */
+  @Test
+  public void testAddObserver() {
+    bus.addObserver(mockedObserver);
+    assertEquals(bus.countObservers(), 1);
+  }
+
+  /**
+   * testHasChanged() tests the Observable hasChanged method.
+   *
+   * Bus objects should ensure that they are marked as changed after a state
+   * change. This will happen when a bus arrives at a stop.
+   */
+  @Test
+  public void testHasChanged() {
+    bus.addObserver(mockedObserver);
+    bus.arrivesAtStop(mockedStop);
+    boolean changed = bus.hasChanged();
+    assertTrue("bus marked as hasChanged", changed);
+  }
+
+  /** 
+   * testNotifyObservers() tests the Observable notifyObservers method.
+   *
+   * Bus objects must notify their observers after leaving a stop. This test
+   * ensures this occurs.
+   */
+  @Test
+  public void testNotifyObservers() {
+    bus.addObserver(mockedObserver);
+    bus.arrivesAtStop(mockedStop); // Required to flag hasChanged()
+    bus.leavesStop();
+    verify(mockedObserver, times(1)).update(bus, null);
+  }
 }

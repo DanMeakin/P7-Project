@@ -24,7 +24,7 @@ public class RouteTimetable {
      * @param isrushhour defines wether a route timetable will use rush hour time between stops.
      * @param route the route the route timetable will be based on.
      */
-    public RouteTimetable(Route route, Schedule schedule,int starttime, boolean isrushhour) {
+    public RouteTimetable(Route route, Schedule schedule, int starttime, boolean isrushhour) {
         this.startTime = starttime;
         this.schedule = schedule;
         this.isRushHour = isrushhour;
@@ -47,6 +47,15 @@ public class RouteTimetable {
      */
     public boolean isRushHour(){
         return this.isRushHour;
+    }
+
+    /**
+     * Get route for a route timetable.
+     *
+     * @return route the route for the route timetable
+     */
+    public Route getRoute(){
+        return this.route;
     }
 
     /**
