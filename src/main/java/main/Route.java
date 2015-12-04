@@ -129,12 +129,42 @@ public class Route {
 			Stop thisStop = stops.get(i);
 			if(stop == thisStop){
 				return true;
-				
 			}
-			
 		}
 		return false;
 	}
+
+  /**
+   * Compare stops to determine which of two stops comes first in route.
+   *
+   * Throws IllegalArgumentException if a Stop is passed which is not on this
+   * route.
+   *
+   * @param firstStop the first stop to compare
+   * @param secondStop the second stop to compare
+   * @return -1 if firstStop is before secondStop, 1 if secondStop is before 
+   *  firstStop, or 0 if both stops are the same stop
+   */
+  public int compareStops(Stop firstStop, Stop secondStop) throws IllegalArgumentException {
+    // Throw exception unless both Stops are within Route
+    if (!(includesStop(firstStop) && includesStop(secondStop))) {
+      Stop missingStop = !includesStop(firstStop) ? firstStop : secondStop;
+      String msg = "unable to compareStops: Stop " + missingStop + " is not on Route";
+      throw new IllegalArgumentException(msg);
+    }
+
+    // Compare indices of both Stops
+    int firstStopIndex = stopIndex(firstStop);
+    int secondStopIndex = stopIndex(secondStop);
+
+    if (firstStopIndex > secondStopIndex) {
+      return 1;
+    } else if (firstStopIndex < secondStopIndex) {
+      return -1;
+    } else {
+      return 0;
+    }
+  }
 
 	/**
 	 * Get the non-rush hour, non cumulative timings for a route.
@@ -180,6 +210,23 @@ public class Route {
 		return getStopTiming(true, true);
 	}
 
+  /**
+   * Find the index of a Stop's location within route.
+   *
+   * Starting from 0, this method determines the Stop's location on a route:
+   * 0 is the first stop, 1 is the second stop, etc. Throws an
+   * IllegalArgumentException if stop is not contained within route.
+   *
+   * @param stop the Stop for which to get index
+   * @return index of the desired stop
+   */
+  private int stopIndex(Stop stop) throws IllegalArgumentException {
+    if (!stops.contains(stop)) {
+      throw new IllegalArgumentException("stop not contained within route");
+    } else {
+      return stops.indexOf(stop);
+    }
+  }
 
 }
 
