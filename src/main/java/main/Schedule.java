@@ -15,7 +15,7 @@ public class Schedule {
   }
 
   // list containing all Schedules, current, past and prospective
-  private static List<Schedule> allSchedules;
+  private static List<Schedule> allSchedules = new ArrayList<>();
 
   // the date from which this schedule is valid
   private Date validFromDate;
@@ -49,9 +49,7 @@ public class Schedule {
    */
   public static void addSchedule(Schedule schedule) throws IllegalArgumentException {
     if (scheduleExists(schedule)) {
-      String msg = schedule.getOperatingDay() + " Schedule for the period " +
-        schedule.getValidFromDate() + " to " + schedule.getValidToDate() +
-        " is already defined";
+      String msg = schedule.getOperatingDay() + " Schedule for period is already defined";
       throw new IllegalArgumentException(msg);
     }
     allSchedules.add(schedule);
@@ -67,13 +65,20 @@ public class Schedule {
   }
 
   /**
-   * Find the schedule for a desired date.
+   * Find the schedule for a desired date and operating day.
    *
    * @param date the date for which to obtain a schedule
    * @return schedule applicable to the input date
    */
   public static Schedule findSchedule (Date date) {
-    throw new UnsupportedOperationException("not yet implemented");
+    for (Schedule s : allSchedules) {
+      if (!date.before(s.getValidFromDate()) && 
+          !date.after(s.getValidToDate()) && 
+          operatingDayForDate(date) == s.getOperatingDay()) {
+        return s;
+      }
+    }
+    return null;
   }
 
   /**
@@ -230,10 +235,20 @@ public class Schedule {
    *
    * @return integer value of day of week: Sunday = 1, Saturday = 7
    */
-  private int dayOfWeek(Date d) {
+  private static int dayOfWeek(Date d) {
       Calendar c = Calendar.getInstance();
       c.setTime(d);
       return c.get(Calendar.DAY_OF_WEEK);
+  }
+
+  private static DayOptions operatingDayForDate(Date d) {
+    if (dayOfWeek(d) == 1) {
+      return DayOptions.SUNDAY;
+    } else if (dayOfWeek(d) <= 6) {
+      return DayOptions.WEEKDAYS;
+    } else {
+      return DayOptions.SATURDAY;
+    }
   }
 
   /** 
@@ -249,7 +264,8 @@ public class Schedule {
   private static boolean scheduleExists(Schedule schedule) {
     for (Schedule s : allSchedules) {
       boolean scheduleBeforeS = schedule.getValidToDate().before(s.getValidFromDate());
-      if (scheduleBeforeS || schedule.getValidFromDate().after(s.getValidToDate())) {
+      boolean scheduleAfterS = schedule.getValidFromDate().after(s.getValidToDate());
+      if (schedule.getOperatingDay() == s.getOperatingDay() && !(scheduleBeforeS || scheduleAfterS)) {
         return true;
       }
     }

@@ -67,15 +67,42 @@ public class ScheduleTest {
         scheduleEnd,
         DayOptions.WEEKDAYS
         );
-    saturdaySchedule = new Schedule(
-        scheduleStart,
-        scheduleEnd,
-        DayOptions.SATURDAY
-        );
+    saturdaySchedule = schedule;
     sundaySchedule = new Schedule(
         scheduleStart,
         scheduleEnd,
         DayOptions.SUNDAY
+        );
+  }
+
+  @After
+  public void tearDown() { 
+    // This must be done to allow schedule to be recreated in next tests
+    Schedule.removeSchedule(schedule);
+    Schedule.removeSchedule(weekdaySchedule);
+    Schedule.removeSchedule(saturdaySchedule);
+    Schedule.removeSchedule(sundaySchedule);
+  }
+
+  @Rule
+  public ExpectedException thrown = ExpectedException.none();
+
+  /**
+   * Test the creation of an invalid Schedule.
+   *
+   * The class should reject an attempt to create a Schedule for a period and
+   * operating day for which a Schedule has already been created.
+   *
+   */
+  @Test
+  public void testCreateInvalidSchedule() {
+    thrown.expect(IllegalArgumentException.class);
+    String msg = "WEEKDAYS Schedule for period is already defined";
+    thrown.expectMessage(msg);
+    new Schedule(
+        new GregorianCalendar(2015, GregorianCalendar.JANUARY, 20).getTime(),
+        new GregorianCalendar(2016, GregorianCalendar.JANUARY, 19).getTime(),
+        DayOptions.WEEKDAYS
         );
   }
 
@@ -91,6 +118,15 @@ public class ScheduleTest {
     Date sunday = new GregorianCalendar(2015, GregorianCalendar.MARCH, 1).getTime();
     Date weekday = new GregorianCalendar(2015, GregorianCalendar.JUNE, 10).getTime();
     Date saturday = new GregorianCalendar(2015, GregorianCalendar.NOVEMBER, 28).getTime();
+
+    Schedule pastSchedule = new Schedule(
+        new GregorianCalendar(2014, GregorianCalendar.JANUARY, 1).getTime(),
+        new GregorianCalendar(2014, GregorianCalendar.DECEMBER, 31).getTime(), 
+        DayOptions.WEEKDAYS);
+    Schedule futureSchedule = new Schedule(
+        new GregorianCalendar(2016, GregorianCalendar.JANUARY, 1).getTime(),
+        new GregorianCalendar(2016, GregorianCalendar.DECEMBER, 31).getTime(), 
+        DayOptions.SATURDAY);
 
     assertEquals(Schedule.findSchedule(weekday), weekdaySchedule);
     assertEquals(Schedule.findSchedule(saturday), saturdaySchedule);
@@ -223,9 +259,6 @@ public class ScheduleTest {
     schedule.addRouteTimetable(mockedRouteTimetable, mockedBus);
     assertEquals(schedule.getAllocatedBus(mockedRouteTimetable), mockedBus);
   }
-
-  @Rule
-  public ExpectedException thrown = ExpectedException.none();
 
   /**
    * Test the getAllocatedBus method with invalid RouteTimetable.
