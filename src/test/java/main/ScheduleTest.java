@@ -80,6 +80,24 @@ public class ScheduleTest {
   }
 
   /**
+   * Test the findSchedule static method on Schedule.
+   *
+   * The findSchedule method should find the schedule applicable on a given
+   * date. This test ensures that weekday, Saturday and Sunday calendars are
+   * returned when dates are passed for within the relevant Schedule period.
+   */
+  @Test
+  public void testFindSchedule() {
+    Date sunday = new GregorianCalendar(2015, GregorianCalendar.MARCH, 1).getTime();
+    Date weekday = new GregorianCalendar(2015, GregorianCalendar.JUNE, 10).getTime();
+    Date saturday = new GregorianCalendar(2015, GregorianCalendar.NOVEMBER, 28).getTime();
+
+    assertEquals(Schedule.findSchedule(weekday), weekdaySchedule);
+    assertEquals(Schedule.findSchedule(saturday), saturdaySchedule);
+    assertEquals(Schedule.findSchedule(sunday), sundaySchedule);
+  }
+
+  /**
    * Test values of DayOptions enum.
    *
    * The DayOptions enum should contain three fixed values: WEEKDAYS, 

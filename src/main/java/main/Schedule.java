@@ -9,19 +9,23 @@ import java.util.*;
  * @authors Ivo Hendriks, Janus Avbæk Larsen, Helle Hyllested Larsen, Dan Meakin.
  */
 public class Schedule {
-  /** the options for the days for which this schedule is valid  */
+  // the options for the days for which this schedule is valid
   public static enum DayOptions {
     WEEKDAYS, SATURDAY, SUNDAY
   }
-  /** the date from which this schedule is valid  */
+
+  // list containing all Schedules, current, past and prospective
+  private static List<Schedule> allSchedules;
+
+  // the date from which this schedule is valid
   private Date validFromDate;
-  /** the date to which this schedule is valid  */
+  // the date to which this schedule is valid
   private Date validToDate;
-  /** the days for which this schedule is valid  */
+  // the days for which this schedule is valid
   private DayOptions operatingDay;
-  /** a data structure which holds all routeTimetables associated with this schedule  */
+  // a data structure which holds all routeTimetables associated with this schedule
   private List<RouteTimetable> routeTimetableList = new ArrayList<>();
-  /** a data structure which holds all buses associated with this schedule  */
+  // a data structure which holds all buses associated with this schedule
   private List<Bus> busList = new ArrayList<>();
 
   /**
@@ -35,6 +39,41 @@ public class Schedule {
     this.validFromDate = validFromDate;
     this.validToDate = validToDate;
     this.operatingDay = operatingDay;
+    addSchedule(this);
+  }
+
+  /**
+   * Add schedule to the allSchedules list.
+   *
+   * @param schedule the schedule to add to the list
+   */
+  public static void addSchedule(Schedule schedule) throws IllegalArgumentException {
+    if (scheduleExists(schedule)) {
+      String msg = schedule.getOperatingDay() + " Schedule for the period " +
+        schedule.getValidFromDate() + " to " + schedule.getValidToDate() +
+        " is already defined";
+      throw new IllegalArgumentException(msg);
+    }
+    allSchedules.add(schedule);
+  }
+
+  /**
+   * Remove a schedule from the allSchedules list.
+   *
+   * @param schedule the schedule to remove from the list
+   */
+  public static void removeSchedule(Schedule schedule) {
+    allSchedules.remove(schedule);
+  }
+
+  /**
+   * Find the schedule for a desired date.
+   *
+   * @param date the date for which to obtain a schedule
+   * @return schedule applicable to the input date
+   */
+  public static Schedule findSchedule (Date date) {
+    throw new UnsupportedOperationException("not yet implemented");
   }
 
   /**
@@ -197,4 +236,23 @@ public class Schedule {
       return c.get(Calendar.DAY_OF_WEEK);
   }
 
+  /** 
+   * Check if Schedule already exists within the system.
+   *
+   * A Schedule already exists if the time period, or part of the time period,
+   * covered by the Schedule for the specified day option has already been
+   * covered by a Schedule within the system.
+   *
+   * @param schedule the schedule object to check for existence
+   * @return true if Schedule already exists, else false.
+   */
+  private static boolean scheduleExists(Schedule schedule) {
+    for (Schedule s : allSchedules) {
+      boolean scheduleBeforeS = schedule.getValidToDate().before(s.getValidFromDate());
+      if (scheduleBeforeS || schedule.getValidFromDate().after(s.getValidToDate())) {
+        return true;
+      }
+    }
+    return false;
+  }
 }
