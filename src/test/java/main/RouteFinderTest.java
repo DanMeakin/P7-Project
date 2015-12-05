@@ -91,29 +91,29 @@ public class RouteFinderTest {
     buses = new ArrayList<>();
     routeTimetables = new ArrayList<>();
 
-    Route validPath1 = mock(Route.class);
-    when(validPath1.includesStop(startingStop)).thenReturn(true);
-    when(validPath1.includesStop(changeStop1)).thenReturn(true);
-    when(validPath1.compareStops(startingStop, changeStop1)).thenReturn(-1);
-    routes.add(validPath1);
+    Route validRoute1 = mock(Route.class);
+    when(validRoute1.includesStop(startingStop)).thenReturn(true);
+    when(validRoute1.includesStop(changeStop1)).thenReturn(true);
+    when(validRoute1.compareStops(startingStop, changeStop1)).thenReturn(-1);
+    routes.add(validRoute1);
 
-    Route validPath2 = mock(Route.class);
-    when(validPath2.includesStop(changeStop1)).thenReturn(true);
-    when(validPath2.includesStop(changeStop2)).thenReturn(true);
-    when(validPath2.compareStops(changeStop1, changeStop2)).thenReturn(-1);
-    routes.add(validPath2);
+    Route validRoute2 = mock(Route.class);
+    when(validRoute2.includesStop(changeStop1)).thenReturn(true);
+    when(validRoute2.includesStop(changeStop2)).thenReturn(true);
+    when(validRoute2.compareStops(changeStop1, changeStop2)).thenReturn(-1);
+    routes.add(validRoute2);
 
-    Route validPath3 = mock(Route.class);
-    when(validPath3.includesStop(changeStop1)).thenReturn(true);
-    when(validPath3.includesStop(changeStop2)).thenReturn(true);
-    when(validPath3.compareStops(changeStop1, changeStop2)).thenReturn(-1);
-    routes.add(validPath3);
+    Route validRoute3 = mock(Route.class);
+    when(validRoute3.includesStop(changeStop1)).thenReturn(true);
+    when(validRoute3.includesStop(changeStop2)).thenReturn(true);
+    when(validRoute3.compareStops(changeStop1, changeStop2)).thenReturn(-1);
+    routes.add(validRoute3);
 
-    Route validPath4 = mock(Route.class);
-    when(validPath4.includesStop(changeStop2)).thenReturn(true);
-    when(validPath4.includesStop(endingStop)).thenReturn(true);
-    when(validPath4.compareStops(changeStop2, endingStop)).thenReturn(-1);
-    routes.add(validPath4);
+    Route validRoute4 = mock(Route.class);
+    when(validRoute4.includesStop(changeStop2)).thenReturn(true);
+    when(validRoute4.includesStop(endingStop)).thenReturn(true);
+    when(validRoute4.compareStops(changeStop2, endingStop)).thenReturn(-1);
+    routes.add(validRoute4);
 
     // Add routes containing none of the stops
     for (int i = 0; i < 20; i++) {
@@ -143,9 +143,23 @@ public class RouteFinderTest {
     when(thisRoute.includesStop(changeStop2)).thenReturn(true);
     routes.add(thisRoute);
 
+    List<Route> firstValidPath = new ArrayList<>();
+    firstValidPath.add(validRoute1);
+    firstValidPath.add(validRoute2);
+    firstValidPath.add(validRoute4);
+
+    List<Route> secondValidPath = new ArrayList<>();
+    secondValidPath.add(validRoute1);
+    secondValidPath.add(validRoute3);
+    secondValidPath.add(validRoute4);
+
+    List<List<Route>> validPaths = new ArrayList<>();
+    validPaths.add(firstValidPath);
+    validPaths.add(secondValidPath);
+
     Collections.shuffle(routes);
 
-    routeFinder = new RouteFinder(startingStop, endingStop);
+    routeFinder = new RouteFinder(startingStop, endingStop, routeFindDate);
 
   }
 
