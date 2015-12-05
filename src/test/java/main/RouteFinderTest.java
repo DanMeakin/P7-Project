@@ -6,6 +6,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
+import java.time.*;
 
 import main.RouteFinder;
 import main.Schedule;
@@ -23,7 +24,7 @@ public class RouteFinderTest {
 
   private RouteFinder routeFinder;
 
-  private Date routeFindDate; // Date to use for all route finding
+  private LocalDateTime routeFindDateTime; // DateTime to use for all route finding
 
   private Schedule schedule;
   private Date scheduleDateFrom;
@@ -70,7 +71,7 @@ public class RouteFinderTest {
    */
   @Before
   public void setUp() {
-    routeFindDate = new GregorianCalendar(2015, GregorianCalendar.MARCH, 6).getTime(); // Weekday
+    routeFindDateTime = LocalDateTime.of(2015, 3, 6, 10, 0); // 6th March 2015, at 10am
 
     scheduleDateFrom = new GregorianCalendar(2015, GregorianCalendar.JANUARY, 1).getTime();
     scheduleDateTo = new GregorianCalendar(2015, GregorianCalendar.DECEMBER, 31).getTime();
@@ -159,7 +160,7 @@ public class RouteFinderTest {
 
     Collections.shuffle(routes);
 
-    routeFinder = new RouteFinder(startingStop, endingStop, routeFindDate);
+    routeFinder = new RouteFinder(startingStop, endingStop, routeFindDateTime);
 
   }
 

@@ -25,7 +25,7 @@ public class RouteFinder {
     this.endingStop = endingStop;
     this.date = searchTime.toLocalDate();
     this.time = searchTime.toLocalTime();
-    this.schedule = Schedule.findSchedule(this.date);
+    this.schedule = Schedule.findSchedule(Date.from(this.date.atStartOfDay(ZoneId.systemDefault()).toInstant()));
   }
 
   /**
