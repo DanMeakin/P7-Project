@@ -2,7 +2,6 @@ package main.gui;
 
 import org.jdesktop.swingx.border.DropShadowBorder;
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -18,6 +17,7 @@ public class Page2 extends JFrame{
     private final Font h2 = new Font("Roboto", Font.PLAIN, 18);
     private final Font h3 = new Font("Roboto", Font.PLAIN, 14);
     private JPanel page2;
+    //private ImageIcon topMenuButtonIcon = new ImageIcon(this.getClass().getResource("/main/gui/assets/icons/menu.png"));
 
     public static void main (String[] args){
         new Page2();
@@ -29,6 +29,7 @@ public class Page2 extends JFrame{
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         page2 = getPage2();
         add(page2);
+
 
         pack();
         setVisible(true);
@@ -44,17 +45,21 @@ public class Page2 extends JFrame{
         //Topbar
         JPanel pTop = new JPanel();
         pTop.setPreferredSize(new Dimension(SCREEN_WIDTH, 70));
-        pTop.setBackground(Color.decode("#B2DFDB"));
+        pTop.setBackground(Color.decode(PRIMARY_COLOR));
         pTop.setLayout(new FlowLayout(FlowLayout.LEADING,0,10));
         JMenuBar topMenuBar = new JMenuBar();
+        topMenuBar.setBackground(Color.decode(PRIMARY_COLOR));
 
         //Topbar - Menu/button
-        JMenu topMenu = new JMenu("");
+        JMenu topMenu = new JMenu();
         ImageIcon topMenuButtonIcon = new ImageIcon(this.getClass().getResource("/main/gui/assets/icons/menu.png"));
-        topMenu.setIcon(topMenuButtonIcon);
-        topMenu.setOpaque(true);
         topMenu.setBackground(Color.decode(PRIMARY_COLOR));
-        topMenu. setBorder(BorderFactory.createLineBorder(Color.decode(PRIMARY_COLOR), 6));
+        topMenu.setIcon(topMenuButtonIcon);
+       // topMenu.setContentAreaFilled(true);
+       // topMenu.setBorderPainted(true);
+        topMenu.setOpaque(true);
+
+        topMenu.setBorder(BorderFactory.createLineBorder(Color.decode(PRIMARY_COLOR),6));
 
         JMenuItem newSearch = new JMenuItem("New Search");
         JMenuItem settings = new JMenuItem("Settings");
@@ -111,24 +116,38 @@ public class Page2 extends JFrame{
         pContent.setBorder(shadow);
         pContentContainer.add(pContent);
 
-        // Sidste add
-        /*pContent.add(fromContainer);
-        pContent.add(destinationContainer);
-        pContent.add(dateContainer);
-        pContent.add(timeContainer);
-        pContent.add(crowdedContainer);
-        pContent.add(searchContainer);*/
 
         for (int i = 0; i < pContent.getComponents().length; i++) {
             pContent.getComponent(i).setBackground(Color.decode("#FAFAFA"));
 
         }
 
+        //results
+        JPanel pResult = new JPanel();
+        pResult.setLayout(new FlowLayout(FlowLayout.LEADING));
+        pResult.setBackground(Color.decode(PRIMARY_COLOR));
+        pResult.setPreferredSize((new Dimension(SCREEN_WIDTH -50, 150)));
+
+        DropShadowBorder resultShadow = new DropShadowBorder();
+        shadow.setShadowSize(5);
+        shadow.setShadowColor(Color.BLACK);
+        shadow.setShowLeftShadow(true);
+        shadow.setShowRightShadow(true);
+        shadow.setShowBottomShadow(true);
+        shadow.setShowTopShadow(true);
+        pResult.setBorder(resultShadow);
+        JLabel pResultText = new JLabel("Bus Results");
+        pResultText.setFont(h2);
+        pResultText.setForeground(Color.white);
+        pResult.add(pResultText);
 
         pTop.add(appNameLabel);
         pBackground.add(pTop);
         pBackground.add(pContentContainer);
+        pContent.add(pResult);
 
+
+        setVisible(true);
         return pBackground;
     }
     private void changeScreen (JPanel panelToChangeTo) {
