@@ -146,11 +146,36 @@ public class Schedule {
         allocatedRouteTimetables.add(routeTimetableList.get(i));
       }
     }
-    if (busList.isEmpty()) {
+    if (allocatedRouteTimetables.isEmpty()) {
       throw new IllegalArgumentException(msg);
     }
     return allocatedRouteTimetables;
   }
+
+  /**
+   * Get the route timetables for a given route.
+   *
+   * @param route the route to find allocated route timetables for.
+   *
+   * @return a list of all route timetables for the route
+   *
+   * @exception msg if busList is empty.
+   */
+  public List<RouteTimetable> getAllocatedRouteTimetables(Route route) throws IllegalArgumentException {
+    List<RouteTimetable> allocatedRouteTimetables = new ArrayList<>();
+    for (int i = 0; i < routeTimetableList.size(); i++) {
+      if (routeTimetableList.get(i).getRoute().equals(route)) {
+        allocatedRouteTimetables.add(routeTimetableList.get(i));
+      }
+    }
+    if (allocatedRouteTimetables.isEmpty()) {
+      String msg = "Route \"" + route + 
+                   "\" is not found within Schedule";
+      throw new IllegalArgumentException(msg);
+    }
+    return allocatedRouteTimetables;
+  }
+
 
   /**
    * Check whether a route timetable is associated with a schedule.
