@@ -40,4 +40,17 @@ public class RouteFinder {
   public List<List<Route>> findPaths() {
     return null;
   }
+
+  /**
+   * Determine all bus journeys between startingStop and endingStop.
+   *
+   * This method uses the paths found in the findPaths method to determine
+   * all bus journeys which cover the desired route.
+   *
+   * @return a nested list, each entry containing a list of buses which will
+   *  cover the desired journey between startingStop and endingStop
+   */
+  public List<List<Bus>> findBuses() {
+    return null;
+  }
 }
