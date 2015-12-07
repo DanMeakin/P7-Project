@@ -59,6 +59,20 @@ public class RouteTimetable {
     }
 
     /**
+     * Get the timing for a particular stop on the RouteTimetable.
+     *
+     * @param stop The stop for which to obtain timing
+     * @return time in minutes from midnight at which a bus running this RT is
+     *  due to arrive at the passed stop
+     */
+    public int timeAtStop(Stop stop) throws IllegalArgumentException {
+      if (!getRoute().includesStop(stop)) {
+        throw new IllegalArgumentException("RouteTimetable does not include stop " + stop);
+      }
+      return getStopTimes().get(getStops().indexOf(stop));
+    }
+
+    /**
      * Get the time between stops for a route timetable.
      *
      * @return true if the route timetable uses rush hour timings, else false.
