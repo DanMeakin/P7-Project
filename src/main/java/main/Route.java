@@ -214,18 +214,13 @@ public class Route {
    * Find the index of a Stop's location within route.
    *
    * Starting from 0, this method determines the Stop's location on a route:
-   * 0 is the first stop, 1 is the second stop, etc. Throws an
-   * IllegalArgumentException if stop is not contained within route.
-   *
+   * 0 is the first stop, 1 is the second stop, etc.
+   * 
    * @param stop the Stop for which to get index
    * @return index of the desired stop
    */
-  private int stopIndex(Stop stop) throws IllegalArgumentException {
-    if (!stops.contains(stop)) {
-      throw new IllegalArgumentException("stop not contained within route");
-    } else {
-      return stops.indexOf(stop);
-    }
+  private int stopIndex(Stop stop) {
+    return stops.indexOf(stop);
   }
 
 }

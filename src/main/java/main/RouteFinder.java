@@ -1,5 +1,7 @@
 package main;
 
+import java.time.*;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -14,10 +16,16 @@ public class RouteFinder {
 
   private Stop startingStop;
   private Stop endingStop;
+  private Schedule schedule;
+  private LocalDate date;
+  private LocalTime time;
 
-  public RouteFinder(Stop startingStop, Stop endingStop) {
+  public RouteFinder(Stop startingStop, Stop endingStop, LocalDateTime searchTime) {
     this.startingStop = startingStop;
     this.endingStop = endingStop;
+    this.date = searchTime.toLocalDate();
+    this.time = searchTime.toLocalTime();
+    this.schedule = Schedule.findSchedule(Date.from(this.date.atStartOfDay(ZoneId.systemDefault()).toInstant()));
   }
 
   /**

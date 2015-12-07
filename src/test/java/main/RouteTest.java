@@ -1,6 +1,8 @@
 package main;
 
 import org.junit.*;
+import org.junit.rules.ExpectedException;
+
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -227,4 +229,63 @@ public class RouteTest {
       assertFalse(route.includesStop(thisStop));
     }
   }
+
+  @Rule
+  public ExpectedException thrown = ExpectedException.none();
+
+  /**
+   * Test compareStops method.
+   *
+   * This test ensures that two Stop objects within a Route are compared
+   * properly. The compareStop method should return -1 if the first stop is
+   * before the second; 1 if the second stop is before the first; 0 if both
+   * stops are the same.
+   *
+   * The method throws an IllegalArgumentException unless both stops are within
+   * the route.
+   */
+  @Test
+  public void testCompareStops() {
+    assertEquals(routeWithStops.compareStops(stop1, stop2), -1);
+    assertEquals(routeWithStops.compareStops(stop3, stop2), 1);
+    assertEquals(routeWithStops.compareStops(stop1, stop1), 0);
+  }
+
+  /**
+   * Test compareStops method with illegal first stop.
+   *
+   * This test ensures that two Stop objects within a Route are compared
+   * properly. The compareStop method should return -1 if the first stop is
+   * before the second; 1 if the second stop is before the first; 0 if both
+   * stops are the same.
+   *
+   * The method throws an IllegalArgumentException unless both stops are within
+   * the route.
+   */
+  @Test
+  public void testCompareStopsWithIllegalFirstStop() {
+    thrown.expect(IllegalArgumentException.class);
+    thrown.expectMessage("unable to compareStops: Stop " + routeEnd + " is not on Route");
+    routeWithStops.compareStops(routeEnd, stop2);
+  }
+
+  /**
+   * Test compareStops method with illegal second stop.
+   *
+   * This test ensures that two Stop objects within a Route are compared
+   * properly. The compareStop method should return -1 if the first stop is
+   * before the second; 1 if the second stop is before the first; 0 if both
+   * stops are the same.
+   *
+   * The method throws an IllegalArgumentException unless both stops are within
+   * the route.
+   */
+  @Test
+  public void testCompareStopsWithIllegalSecondStop() {
+    thrown.expect(IllegalArgumentException.class);
+    thrown.expectMessage("unable to compareStops: Stop " + routeStart + " is not on Route");
+    routeWithStops.compareStops(stop1, routeStart);
+  }
 }
+
+
