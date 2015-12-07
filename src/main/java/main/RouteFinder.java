@@ -42,15 +42,15 @@ public class RouteFinder {
   }
 
   /**
-   * Determine all bus journeys between startingStop and endingStop.
+   * Determine all timed paths between startingStop and endingStop.
    *
    * This method uses the paths found in the findPaths method to determine
-   * all bus journeys which cover the desired route.
+   * the timings of all journeys which cover the desired route.
    *
-   * @return a nested list, each entry containing a list of buses which will
-   *  cover the desired journey between startingStop and endingStop
+   * @return a nested list, each entry containing a list of RouteTimetables 
+   *  which will cover the desired journey between startingStop and endingStop
    */
-  public List<List<Bus>> findBuses() {
+  public List<List<RouteTimetable>> findTimedPaths() {
     return null;
   }
 }
