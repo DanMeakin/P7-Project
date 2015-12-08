@@ -54,6 +54,7 @@ public class RouteTimetableTest {
     when(mockedRoute.getStopTiming(true, true)).thenReturn(rushHourStopTiming);
 
     mockedStops = Arrays.asList(new Stop[] {
+      mock(Stop.class),
       mock(Stop.class), 
       mock(Stop.class), 
       mock(Stop.class), 
@@ -61,6 +62,9 @@ public class RouteTimetableTest {
       mock(Stop.class)
     });
     when(mockedRoute.getStops()).thenReturn(mockedStops);
+    for (Stop s : mockedStops) {
+      when(mockedRoute.includesStop(s)).thenReturn(true);
+    }
 
     mockedSchedule = mock(Schedule.class);
     validFrom = new GregorianCalendar(2015, GregorianCalendar.JANUARY, 1).getTime();
@@ -89,6 +93,21 @@ public class RouteTimetableTest {
   @Test
   public void testIsRushHour() {
     assertEquals(routeTimetable.isRushHour(), isRushHour);
+  }
+
+  /**
+   * Test timeAtStop() method.
+   *
+   * The timeAtStop method gets the time at which the bus operating a 
+   * RouteTimetable is due to arrive at a given stop.
+   */
+  @Test
+  public void testTimeAtStop() {
+    for (int i = 0; i < mockedStops.size(); i++) {
+      int expectedStopTiming = startTime + stopTiming.get(i);
+      int actualStopTiming = routeTimetable.timeAtStop(mockedStops.get(i));
+      assertEquals(expectedStopTiming, actualStopTiming);
+    }
   }
 
   /**

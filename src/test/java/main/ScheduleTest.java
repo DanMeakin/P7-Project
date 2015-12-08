@@ -14,6 +14,7 @@ import java.util.GregorianCalendar;
 import java.util.function.Predicate;
 
 import main.Bus;
+import main.Route;
 import main.RouteTimetable;
 import main.Schedule;
 import main.Schedule.DayOptions;
@@ -28,6 +29,9 @@ public class ScheduleTest {
   private static Schedule saturdaySchedule;
   private static Schedule sundaySchedule;
 
+  private static Route mockedRoute1;
+  private static Route mockedRoute2;
+
   private static Bus mockedBus;
   private static List<RouteTimetable> busRouteTimetables;
   private static RouteTimetable mockedRouteTimetable;
@@ -40,17 +44,29 @@ public class ScheduleTest {
     mockedBus = mock(Bus.class);
     when(mockedBus.getFleetNumber()).thenReturn(143);
     when(mockedBus.equals(mockedBus)).thenReturn(true);
+
+    mockedRoute1 = mock(Route.class);
+    mockedRoute2 = mock(Route.class);
+
     mockedRouteTimetable = mock(RouteTimetable.class);
-    busRouteTimetables = Arrays.asList(new RouteTimetable[] {
-      mock(RouteTimetable.class),
-      mock(RouteTimetable.class),
-      mock(RouteTimetable.class),
-      mock(RouteTimetable.class),
-      mock(RouteTimetable.class),
-      mock(RouteTimetable.class),
-    });
+    when(mockedRouteTimetable.getRoute()).thenReturn(mockedRoute1);
+
+    // Create 6 mocked routeTimetables, with the first three on route1 and
+    // the second three on route 2.
+    busRouteTimetables = new ArrayList<RouteTimetable>();
+    for (int i = 0; i < 6; i++) {
+      RouteTimetable rt = mock(RouteTimetable.class);
+      if (i < 3) {
+        when(rt.getRoute()).thenReturn(mockedRoute1);
+      } else {
+        when(rt.getRoute()).thenReturn(mockedRoute2);
+      }
+      busRouteTimetables.add(rt);
+    }
 
     anotherMockedRouteTimetable = mock(RouteTimetable.class);
+    when(anotherMockedRouteTimetable.getRoute()).thenReturn(mockedRoute2);
+
     anotherMockedBus = mock(Bus.class);
     when(anotherMockedBus.equals(anotherMockedBus)).thenReturn(true);
     
@@ -277,13 +293,13 @@ public class ScheduleTest {
   }
 
   /**
-   * Test the getAllocatedRouteTimetables method.
+   * Test the getAllocatedRouteTimetables with bus method.
    *
    * The allocatedRouteTimetables method takes a Bus object and returns all
    * RouteTimetables allocated to that Bus within the Schedule.
    */
   @Test 
-  public void testGetAllocatedRouteTimetables() {
+  public void testGetAllocatedRouteTimetablesWithBus() {
     // Add other mocked RouteTimetable and Bus first
     schedule.addRouteTimetable(anotherMockedRouteTimetable, anotherMockedBus);
 
@@ -311,6 +327,44 @@ public class ScheduleTest {
     thrown.expect(IllegalArgumentException.class);
     thrown.expectMessage(msg);
     schedule.getAllocatedRouteTimetables(mockedBus);
+  }
+
+  /**
+   * Test the getAllocatedRouteTimetables with route method.
+   *
+   * The allocatedRouteTimetables method takes a Route object and returns all
+   * RouteTimetables associated with that Route.
+   */
+  @Test 
+  public void testGetAllocatedRouteTimetablesWithRoute() {
+    // Add RouteTimetables
+    schedule.addRouteTimetable(mockedRouteTimetable);
+    schedule.addRouteTimetable(anotherMockedRouteTimetable);
+    for (RouteTimetable rt : busRouteTimetables) {
+      schedule.addRouteTimetable(rt);
+    }
+
+    List<RouteTimetable> actualRTforRoute1 = schedule.getAllocatedRouteTimetables(mockedRoute1);
+    List<RouteTimetable> actualRTforRoute2 = schedule.getAllocatedRouteTimetables(mockedRoute2);
+    assertEquals(actualRTforRoute1.size(), 4);
+    assertEquals(actualRTforRoute2.size(), 4);
+  }
+
+  /**
+   * Test the getAllocatedRouteTimetables method with invalid Route.
+   *
+   * If a Route is passed which is not allocated in a schedule, the
+   * method should throw a specific error.
+   *
+   */
+  @Test
+  public void testGetAllocatedRouteTimetablesWithInvalidRoute() {
+    Route anotherMockedRoute = mock(Route.class);
+    String msg = "Route \"" + anotherMockedRoute + 
+      "\" is not found within Schedule";
+    thrown.expect(IllegalArgumentException.class);
+    thrown.expectMessage(msg);
+    schedule.getAllocatedRouteTimetables(anotherMockedRoute);
   }
 
   /**
