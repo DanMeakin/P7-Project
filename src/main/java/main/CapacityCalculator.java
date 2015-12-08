@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import main.CapacityDataStore;
 import org.apache.commons.math3.stat.regression.SimpleRegression;
 import main.CapacityDataStore;
+import java.util.Date;
 
 public class CapacityCalculator {
 
@@ -17,15 +18,14 @@ public class CapacityCalculator {
     }
 
     /*
-    * Relies on org.apache.commons.math3.stat.regression.SimpleRegression
+    * Relies on org.apache.commons.math3
     */
-    public double calculateCrowdedness(double crowdednessFactor, double currentCrowdedness, RouteTimetable routeTimetable, Stop currentStop, Stop requestedStop) throws IllegalArgumentException {
+    public double calculateCrowdedness(Date fromDate, Date toDate, double crowdednessFactor, double currentCrowdedness, RouteTimetable routeTimetable, Stop currentStop, Stop requestedStop) throws IllegalArgumentException {
         this.crowdednessFactor = crowdednessFactor;
         this.currentCrowdedness = currentCrowdedness;
 
-
         List<Double> requestedStopHistoricData = new ArrayList<>(CapacityDataStore.readHistoricRequestedStopCrowdedness(routeTimetable, requestedStop));
-        List<Double> currentStopHistoricData = new ArrayList<>(CapacityDataStore.readHistoricCurrentStopCrowdedness(routeTimetable, requestedStop, currentStop));
+        List<Double> currentStopHistoricData = new ArrayList<>(CapacityDataStore.readHistoricCurrentStopCrowdedness(fromDate, toDate, routeTimetable, requestedStop, currentStop));
 
         SimpleRegression simpleRegression = new SimpleRegression();
 
