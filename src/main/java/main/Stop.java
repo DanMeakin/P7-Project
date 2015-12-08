@@ -57,12 +57,20 @@ public class Stop {
   }
 
   /**
+   * List all existing stops.
+   *
+   * @return list of all Stops in system
+   */
+  public static List<Stop> getAllStops() {
+    return allStops;
+  }
+  /**
    * Return the total number of Stops in existence.
    *
    * @return total number of Stops
    */
   public static int numberOfStops() {
-    return allStops.size();
+    return getAllStops().size();
   }
 
 	public int getID(){

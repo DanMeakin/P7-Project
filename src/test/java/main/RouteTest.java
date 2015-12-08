@@ -265,7 +265,7 @@ public class RouteTest {
   @Test
   public void testCompareStopsWithIllegalFirstStop() {
     thrown.expect(IllegalArgumentException.class);
-    thrown.expectMessage("unable to compareStops: Stop " + routeEnd + " is not on Route");
+    thrown.expectMessage("stop " + routeEnd + " is not on Route");
     routeWithStops.compareStops(routeEnd, stop2);
   }
 
@@ -283,8 +283,45 @@ public class RouteTest {
   @Test
   public void testCompareStopsWithIllegalSecondStop() {
     thrown.expect(IllegalArgumentException.class);
-    thrown.expectMessage("unable to compareStops: Stop " + routeStart + " is not on Route");
+    thrown.expectMessage("stop " + routeStart + " is not on Route");
     routeWithStops.compareStops(stop1, routeStart);
+  }
+
+  /**
+   * Test journeyTimeBetweenStops method.
+   */
+  @Test
+  public void testTimeBetweenStops() {
+    assertEquals(routeWithStops.journeyTimeBetweenStops(routeWithStopsStart, stop2, false), 8);
+    assertEquals(routeWithStops.journeyTimeBetweenStops(stop2, routeWithStopsEnd, true), 19);
+  }
+
+  /**
+   * Test journeyTimeBetweenStops method with invalid stop.
+   *
+   * The journeyTimeBetweenStops method should thrown an IllegalArgumentException
+   * if passed a Stop not on route.
+   */
+  @Test
+  public void testTimeBetweenStopsWithInvalidStop() {
+    thrown.expect(IllegalArgumentException.class);
+    thrown.expectMessage("stop " + routeEnd + " is not on Route");
+    routeWithStops.journeyTimeBetweenStops(stop2, routeEnd, true);
+  }
+
+  /**
+   * Test journeyTimeBetweenStops method with invalid ordering of stops.
+   *
+   * The journeyTimeBetweenStops method should thrown an IllegalArgumentException
+   * if passed two Stops which are present in Route but in the wrong order, i.e.
+   * the Route travels from A -> B, but the method is called asking for travel
+   * time from B -> A.
+   */
+  @Test
+  public void testTimeBetweenStopsWithInvalidStopOrdering() {
+    thrown.expect(IllegalArgumentException.class);
+    thrown.expectMessage("this route does not travel from " + stop2 + " to " + routeWithStopsStart);
+    routeWithStops.journeyTimeBetweenStops(stop2, routeWithStopsStart, true);
   }
 }
 
