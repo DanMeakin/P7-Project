@@ -1,4 +1,4 @@
-package main;
+package main.routeplanner;
 
 import org.junit.*;
 import org.junit.rules.ExpectedException;
@@ -8,21 +8,21 @@ import static org.mockito.Mockito.*;
 import java.util.*;
 import java.time.*;
 
-import main.RouteFinder;
 import main.Schedule;
 import main.Route;
+import main.RouteTimetable;
 import main.Bus;
 import main.Stop;
 
 /**
- * RouteFinderTest class contains a series of unit tests for the BusRouteFinder class.
+ * ItineraryFinderTest class contains a series of unit tests for the ItineraryFinder class.
  *
- * The BusRouteFinder class enables a user to find the best (quickest or least crowded)
+ * The ItineraryFinder class enables a user to find the best (quickest or least crowded)
  * way of transport from a to b.
  */
-public class RouteFinderTest {
+public class ItineraryFinderTest {
 
-  private RouteFinder routeFinder;
+  private ItineraryFinder itineraryFinder;
 
   private LocalDateTime routeFindDateTime; // DateTime to use for all route finding
 
@@ -237,7 +237,7 @@ public class RouteFinderTest {
       validRouteTimetables.add(thisRTList);
     }
 
-    routeFinder = new RouteFinder(startingStop, endingStop, routeFindDateTime);
+    itineraryFinder = new ItineraryFinder(startingStop, endingStop, routeFindDateTime);
   }
 
   /**
@@ -250,7 +250,7 @@ public class RouteFinderTest {
    */
   @Test
   public void testFindPaths() {
-    List<List<Route>> actualList = routeFinder.findPaths();
+    List<List<Route>> actualList = itineraryFinder.findPaths();
     List<List<Route>> expectedList = validPaths;
 
     if (actualList.size() != expectedList.size()) {
@@ -280,7 +280,7 @@ public class RouteFinderTest {
    */
   @Test
   public void testFindTimedPaths() {
-    List<List<RouteTimetable>> actualList = routeFinder.findTimedPaths();
+    List<List<RouteTimetable>> actualList = itineraryFinder.findTimedPaths();
     List<List<RouteTimetable>> expectedList = validRouteTimetables;
 
     if (actualList.size() != expectedList.size()) {
