@@ -25,7 +25,7 @@ public class CapacityCalculator {
 
 
         List<Double> requestedStopHistoricData = new ArrayList<>(CapacityDataStore.readHistoricRequestedStopCrowdedness(routeTimetable, requestedStop));
-        List<Double> currentStopHistoricData = new ArrayList<>(CapacityDataStore.readHistoricCurrentStopCrowdedness(routeTimetable, currentStop));
+        List<Double> currentStopHistoricData = new ArrayList<>(CapacityDataStore.readHistoricCurrentStopCrowdedness(routeTimetable, requestedStop, currentStop));
 
         SimpleRegression simpleRegression = new SimpleRegression();
 
@@ -40,9 +40,7 @@ public class CapacityCalculator {
     public double calculateCrowdedness(double crowdednessFactor, RouteTimetable rtt, Stop requestedStop) {
         this.crowdednessFactor = crowdednessFactor;
 
-        CapacityDataStore requestedStopDataReader = new CapacityDataStore();
-
-        List<Double> requestedStopHistoricData = new ArrayList<>(requestedStopDataReader.readHistoricRequestedStopCrowdedness(rtt, requestedStop));
+        List<Double> requestedStopHistoricData = new ArrayList<>(CapacityDataStore.readHistoricRequestedStopCrowdedness(rtt, requestedStop));
 
         double averageCrowdedness = 0;
         if (!requestedStopHistoricData.isEmpty()) {
