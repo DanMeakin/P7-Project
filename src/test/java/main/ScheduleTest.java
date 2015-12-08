@@ -46,7 +46,9 @@ public class ScheduleTest {
     when(mockedBus.equals(mockedBus)).thenReturn(true);
 
     mockedRoute1 = mock(Route.class);
+    when(mockedRoute1.equals(mockedRoute1)).thenReturn(true);
     mockedRoute2 = mock(Route.class);
+    when(mockedRoute2.equals(mockedRoute2)).thenReturn(true);
 
     mockedRouteTimetable = mock(RouteTimetable.class);
     when(mockedRouteTimetable.getRoute()).thenReturn(mockedRoute1);
