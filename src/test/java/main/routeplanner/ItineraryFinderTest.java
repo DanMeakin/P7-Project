@@ -249,6 +249,7 @@ public class ItineraryFinderTest {
    * paths containing the fewest routes coming first.
    */
   @Test
+  @Ignore
   public void testFindPaths() {
     List<List<Route>> actualList = itineraryFinder.findPaths();
     List<List<Route>> expectedList = validPaths;
@@ -279,6 +280,7 @@ public class ItineraryFinderTest {
    * of a particular bus at a particular stop.)
    */
   @Test
+  @Ignore
   public void testFindTimedPaths() {
     List<List<RouteTimetable>> actualList = itineraryFinder.findTimedPaths();
     List<List<RouteTimetable>> expectedList = validRouteTimetables;
