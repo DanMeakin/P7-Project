@@ -1,4 +1,5 @@
 package main.gui;
+import javafx.scene.control.RadioButton;
 import org.jdesktop.swingx.border.DropShadowBorder;
 
 import javax.swing.*;
@@ -17,16 +18,19 @@ public class StartScreen extends JFrame {
     // Constants
     private final int SCREEN_HEIGHT = 768;
     private final int SCREEN_WIDTH = 480;
-    private final String PRIMARY_COLOR = "#009688";
+    public static final String PRIMARY_COLOR = "#009688";
+    private final String TEXT_COLOR = "#616161";
     private final Font h1 = new Font("Roboto", Font.PLAIN, 24);
     private final Font h2 = new Font("Roboto", Font.PLAIN, 18);
     private final Font h3 = new Font("Roboto", Font.PLAIN, 14);
+
 
     // Private members
     private JPanel startPage;
 
     public static void main (String args[]){
         new StartScreen();
+
     }
 
     public StartScreen(){
@@ -74,12 +78,8 @@ public class StartScreen extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 changeScreen(getStartPage());
-
-                repaint();
-
             }
         });
-
 
         exit.addActionListener(new ActionListener() {
             @Override
@@ -87,7 +87,6 @@ public class StartScreen extends JFrame {
                 dispose();
             }
         });
-
 
         topMenu.add(newSearch);
         topMenu.add(settings);
@@ -105,7 +104,6 @@ public class StartScreen extends JFrame {
         JPanel pContentContainer = new JPanel();
         pContentContainer.setLayout(new CardLayout(15,15));
 
-
         // Content
         JPanel pContent = new JPanel();
         pContent.setLayout(new FlowLayout(FlowLayout.LEADING));
@@ -122,94 +120,138 @@ public class StartScreen extends JFrame {
         pContentContainer.add(pContent);
 
         // Row Panels
-        // Search Container
+        // Space panel
+        JPanel spacePanel = new JPanel();
+        spacePanel.setPreferredSize(new Dimension(430,5));
+
+        // From Container
         JPanel fromContainer = new JPanel();
         fromContainer.setPreferredSize(new Dimension(430,80));
 
-        // Search Container - From: Label
+        // From Container - From: Label
         JLabel fromLabel = new JLabel("From:");
-        //fromLabel.setPreferredSize();
+        fromLabel.setPreferredSize(new Dimension(120,80));
         fromLabel.setFont(h2);
-        fromLabel.setForeground(Color.decode("#616161"));
+        fromLabel.setForeground(Color.decode(TEXT_COLOR));
         fromContainer.add(fromLabel);
 
-        // Search Container - From Textfield
-        JTextField fromTextField = new JTextField("Type here");
-        fromContainer.add(fromTextField);
+        // From Container - From autocompletionbox
+        AutoComboBox fromBox = new AutoComboBox();
+        //TODO: Udskiftes med resultatsæt fra rejseplanen.
+        String[] itemArray = {"Boulevarden","Bornholmsgade", "Nytorv"};
+        fromBox.setKeyWord(itemArray);
+        fromBox.setPreferredSize(new Dimension(230,30));
+        fromBox.setBackground(Color.decode("#FAFAFA"));
+        fromContainer.add(fromBox);
 
         // Destination Container
         JPanel destinationContainer = new JPanel();
         destinationContainer.setPreferredSize(new Dimension(430,80));
 
-        // Destination Container - From: Label
+        // Destination Container - Destination: Label
         JLabel destinationLabel = new JLabel("Destination:");
+        destinationLabel.setPreferredSize(new Dimension(120,80));
         destinationLabel.setFont(h2);
-        destinationLabel.setForeground(Color.decode("#616161"));
+        destinationLabel.setForeground(Color.decode(TEXT_COLOR));
         destinationContainer.add(destinationLabel);
 
-        // Destination Container - From Texfield
-        JTextField destinationTextField = new JTextField("Type here");
-        destinationContainer.add(destinationTextField);
+        // Destination Container - Destination autocompletionbox
+        AutoComboBox destinationBox = new AutoComboBox();
+        //TODO: Udskiftes med resultatsæt fra rejseplanen.
+       //String[] itemArray = {"Sejrøgade","Bornholmsgade", "Nytorv"};
+        destinationBox.setKeyWord(itemArray);
+        destinationBox.setPreferredSize(new Dimension(230,30));
+        destinationBox.setBackground(Color.decode("#FAFAFA"));
+        destinationContainer.add(destinationBox);
 
         // Date Container
         JPanel dateContainer = new JPanel();
-        dateContainer.setPreferredSize(new Dimension(430,80));
+        dateContainer.setPreferredSize(new Dimension(430,75));
 
-        // Date Container
         // Date Container - Date Label
         JLabel dateLabel = new JLabel("Date:");
         dateLabel.setFont(h3);
+        dateLabel.setForeground(Color.decode(TEXT_COLOR));
         dateContainer.add(dateLabel);
 
-        // Date Container
         // Date Container - Date Textfield
         JTextField dateTextField = new JTextField("02/12/15");
         dateContainer.add(dateTextField);
 
-        // TODO: Make Icon for date picker and make date picker
+        // TODO: Make Icon for date picker and make date picker(Spinner)
+
+        // JRadioButton for leaving/arriving
+        JRadioButton leavingButton = new JRadioButton("Leaving");
+        JRadioButton arrivingButton = new JRadioButton("Arriving");
+
+        ButtonGroup leavingGroup = new ButtonGroup();
+        leavingGroup.add(leavingButton);
+        leavingGroup.add(arrivingButton);
+
+        dateContainer.add(leavingButton);
+
         // TODO: Add Checkbox and label for Leaving
 
         // Time Container
         JPanel timeContainer = new JPanel();
-        timeContainer.setPreferredSize(new Dimension(430,80));
+        timeContainer.setPreferredSize(new Dimension(430,75));
 
-        // Time Container
         // Time Container - Time Label
-        JLabel timeLabel = new JLabel("Date:");
+        JLabel timeLabel = new JLabel("Time:");
         timeLabel.setFont(h3);
+        timeLabel.setForeground(Color.decode(TEXT_COLOR));
         timeContainer.add(timeLabel);
 
-        // Time Container
-        // Time Container - Time Textfield
-        JTextField timeTextField = new JTextField("12:50");
+       // Time Container - time Textfield
+        JTextField timeTextField = new JTextField("  :  :  ");
         timeContainer.add(timeTextField);
 
-        // TODO: Make Icon for time picker and make time picker
+        // TODO: Make Icon for time picker and make time picker(Spinner)
+
         // TODO: Add CheckBox and label For Arriving
+        timeContainer.add(arrivingButton);
 
-        // Crowdedness Filter Container All Busses
+        // Crowdedness Filter Container
         JPanel allBussesContainer = new JPanel();
-        allBussesContainer.setPreferredSize(new Dimension(430,75));
+        allBussesContainer.setPreferredSize(new Dimension(430,70));
 
-        // Crowdedness Filter Container All Busses
-        JCheckBox allBusses = new JCheckBox("Chin");
-        allBusses.setMnemonic(KeyEvent.VK_C);
-        allBusses.setSelected(true);
+        // Crowdedness Filter Container
+        JRadioButton allBussesButton = new JRadioButton("Show All Busses");
+        JRadioButton mediumBusesButton = new JRadioButton("Show only buses with free standing space");
+        JRadioButton freeBusesButton = new JRadioButton("Show only buses with free standing space and seating");
 
-        // Crowdedness Filter Container Free Standing space
-        JPanel standingSpaceContainer = new JPanel();
-        standingSpaceContainer.setPreferredSize(new Dimension(430,75));
+        ButtonGroup busFilter = new ButtonGroup();
+        busFilter.add(allBussesButton);
+        busFilter.add(mediumBusesButton);
+        busFilter.add(freeBusesButton);
 
-        // Crowdedness Filter Container Free Seating space
-        JPanel seatingSpaceContainer = new JPanel();
-        seatingSpaceContainer.setPreferredSize(new Dimension(430,75));
+        allBussesContainer.add(allBussesButton);
+
+        // Crowdedness Filter Container
+        JPanel mediumContainer = new JPanel();
+        mediumContainer.setPreferredSize(new Dimension(430,70));
+
+        mediumContainer.add(mediumBusesButton);
+
+        // Crowdedness Filter Container
+        JPanel freeContainer = new JPanel();
+        freeContainer.setPreferredSize(new Dimension(430,70));
+
+        freeContainer.add(freeBusesButton);
 
         // Search Container
         JPanel searchContainer = new JPanel();
-        searchContainer.setPreferredSize(new Dimension(430, 65));
+        searchContainer.setPreferredSize(new Dimension(430,65));
+
+        // Search Container Space
+        JPanel searchContainerSpace = new JPanel();
+        searchContainerSpace.setPreferredSize(new Dimension(280,65));
+        searchContainerSpace.setBackground(Color.decode("#FAFAFA"));
+        searchContainer.add(searchContainerSpace);
 
         // Search Container - Find Bus Button
         JButton findBusButton = new JButton("FIND BUS");
+        findBusButton.setFont(h2);
         findBusButton.setForeground(Color.decode(PRIMARY_COLOR));
         findBusButton.setBackground(Color.decode("#FAFAFA"));
         findBusButton.setBorder(BorderFactory.createLineBorder(Color.decode("#FAFAFA")));
@@ -222,22 +264,24 @@ public class StartScreen extends JFrame {
         });
         searchContainer.add(findBusButton);
 
-
         // Last add
+        pContent.add(spacePanel);
         pContent.add(fromContainer);
         pContent.add(destinationContainer);
+        pContent.add(getDivider());
         pContent.add(dateContainer);
         pContent.add(timeContainer);
+        pContent.add(getDivider());
         pContent.add(allBussesContainer);
-        pContent.add(standingSpaceContainer);
-        pContent.add(seatingSpaceContainer);
+        pContent.add(mediumContainer);
+        pContent.add(freeContainer);
+        pContent.add(getDivider());
         pContent.add(searchContainer);
 
         for (int i = 0; i < pContent.getComponents().length; i++) {
             pContent.getComponent(i).setBackground(Color.decode("#FAFAFA"));
 
         }
-
 
         pTop.add(appNameLabel);
         pBackground.add(pTop);
@@ -249,24 +293,44 @@ public class StartScreen extends JFrame {
 
     private JPanel getPage2() {
         JPanel page2 = new JPanel();
+        JButton newSearch = new JButton("New Search");
 
+        //Results page background panel
         //TODO: Create components from page 2 and add to JPanel
-        page2.setBackground(Color.red);
-        page2.setPreferredSize(new Dimension(100,100));
+        page2.setBackground(Color.white);
+        page2.setPreferredSize(new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT));
 
+        //New search button
+        newSearch.setPreferredSize(new Dimension(200,50));
+        newSearch.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                changeScreen(getStartPage());
+            }
+        });
+
+        page2.add(newSearch);
 
         return page2;
     }
+
     private void changeScreen (JPanel panelToChangeTo){
         getContentPane().removeAll();
         getContentPane().add(panelToChangeTo);
-        getContentPane().doLayout();
-        update(getGraphics());
+        revalidate();
+        repaint();
     }
+
     private void openMenu (){
 
     }
 
+    private JSeparator getDivider(){
+        //Content divider
+        JSeparator dividerContent = new JSeparator();
+        dividerContent.setForeground(Color.decode("#BDBDBD"));
+        dividerContent.setPreferredSize(new Dimension(430,1));
+        return dividerContent;
+    }
 }
-
 
