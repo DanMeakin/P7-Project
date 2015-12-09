@@ -30,12 +30,12 @@ public class CapacityDataStoreTest {
     private static Stop mockedStop;
     private static Stop anotherMockedStop;
     private static Stop thirdMockedStop;
-    
+
     long date = System.currentTimeMillis();
     Date arbitraryDate = new Date(date);
     SimpleDateFormat form = new SimpleDateFormat("dd-mm-yyyy hh:mm:ss");
     String str = form.format(arbitraryDate);
-    //DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+    DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 
     private int mockedFleetNumber = 143;
     private String mockedRouteNumber = "225";
@@ -61,12 +61,16 @@ public class CapacityDataStoreTest {
     private int thirdMockedNumOfPassengersBoarded = 9;
     private int thirdMockedNumOfPassengers = thirdMockedNumOfPassengersBoarded - thirdMockedNumOfPassengersExited;
 
+    final Date date = Mockito.mock(Date.class);
+
+    final SimpleDateFormat yearMonth = Mockito.mock(SimpleDateFormat.class);
 
     @Before
     public void setUp() {
         mockedBus = mock(Bus.class);
 
-        mockedDate
+        Mockito.when(date.getTime()).thenReturn(30L);
+        Mockito.when(mon)
 
         when(mockedBus.getFleetNumber()).thenReturn(mockedFleetNumber);
         when(mockedBus.getStop().getID()).thenReturn(mockedStopID);

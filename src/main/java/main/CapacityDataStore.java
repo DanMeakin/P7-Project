@@ -223,13 +223,13 @@ public class CapacityDataStore {
     public static Date convertSimpleYearMonth(String simpleDate) {
         String expectedPattern = "MM/dd/yyyy";
         SimpleDateFormat formatter = new SimpleDateFormat(expectedPattern);
-        Date yearMonth = null;
+        Date yearMonthDay = null;
         try {
-            yearMonth = formatter.parse(simpleDate);
+            yearMonthDay = formatter.parse(simpleDate);
         } catch (ParseException ex) {
             ex.printStackTrace();
         }
-    return yearMonth;
+    return yearMonthDay;
     }
 
     public static Date convertSimpleTime(String simpleDate) {
