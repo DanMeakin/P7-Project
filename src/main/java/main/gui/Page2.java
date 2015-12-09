@@ -19,10 +19,6 @@ public class Page2 extends JPanel{
     private final Font h1 = new Font("Roboto", Font.PLAIN, 24);
     private final Font h2 = new Font("Roboto", Font.PLAIN, 18);
     private final Font h3 = new Font("Roboto", Font.PLAIN, 14);
-<<<<<<< HEAD
-=======
-    //private ImageIcon topMenuButtonIcon = new ImageIcon(this.getClass().getResource("/main/gui/assets/icons/menu.png"));
->>>>>>> 97fe996f8bb9f0a23bc5faedbca8d936d66a1ed0
 
     /*public static void main (String[] args){
         new Page2();
@@ -33,8 +29,6 @@ public class Page2 extends JPanel{
         this.setBackground(Color.decode("#B2DFDB"));
         this.setLayout(new FlowLayout(FlowLayout.LEADING,0,0));
         this.setPreferredSize(new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT));
-<<<<<<< HEAD
-=======
 
         /*//Topbar
         JPanel pTop = new JPanel();
@@ -83,7 +77,6 @@ public class Page2 extends JPanel{
         /*JLabel appNameLabel = new JLabel("Compute My Compute");
         appNameLabel.setFont(h1);
         appNameLabel.setForeground(Color.white);*/
->>>>>>> 97fe996f8bb9f0a23bc5faedbca8d936d66a1ed0
 
         //Search Container
         JPanel pSearchContainer = new JPanel();
@@ -190,19 +183,6 @@ public class Page2 extends JPanel{
 
         setVisible(true);
     }
-<<<<<<< HEAD
-
-=======
-/*    private void changeScreen (JPanel panelToChangeTo) {
-        getContentPane().removeAll();
-        getContentPane().add(panelToChangeTo);
-        getContentPane().doLayout();
-        update(getGraphics());
-    }
-    private void openMenu(){
-
-    }*/
->>>>>>> 97fe996f8bb9f0a23bc5faedbca8d936d66a1ed0
 }
 
 
