@@ -10,7 +10,7 @@ import java.time.Year;
 /**
  * Created by janusalarsen on 04/12/2015.
  */
-public class Page2 extends JFrame{
+public class Page2 extends JPanel{
     private final int SCREEN_HEIGHT = 768;
     private final int SCREEN_WIDTH = 480;
     private final String PRIMARY_COLOR = "#009688";
@@ -19,86 +19,16 @@ public class Page2 extends JFrame{
     private final Font h1 = new Font("Roboto", Font.PLAIN, 24);
     private final Font h2 = new Font("Roboto", Font.PLAIN, 18);
     private final Font h3 = new Font("Roboto", Font.PLAIN, 14);
-    private JPanel page2;
-    //private ImageIcon topMenuButtonIcon = new ImageIcon(this.getClass().getResource("/main/gui/assets/icons/menu.png"));
 
-    public static void main (String[] args){
+    /*public static void main (String[] args){
         new Page2();
-    }
+    }*/
     public Page2(){
-        super("Page2");
-        setSize (new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT));
-        setResizable(true);
-        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        page2 = getPage2();
-        add(page2);
-
-
-        pack();
-        setVisible(true);
-
-    }
-    private JPanel getPage2(){
         //Background
-        JPanel pBackground = new JPanel();
-        pBackground.setBackground(Color.decode("#B2DFDB"));
-        pBackground.setLayout(new FlowLayout(FlowLayout.LEADING,0,0));
-        pBackground.setPreferredSize(new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT));
-
-        //Topbar
-        JPanel pTop = new JPanel();
-        pTop.setPreferredSize(new Dimension(SCREEN_WIDTH, 70));
-        pTop.setBackground(Color.decode(PRIMARY_COLOR));
-        pTop.setLayout(new FlowLayout(FlowLayout.LEADING,0,10));
-        JMenuBar topMenuBar = new JMenuBar();
-        topMenuBar.setBackground(Color.decode(PRIMARY_COLOR));
-
-        //Topbar - Menu/button
-        JMenu topMenu = new JMenu();
-        ImageIcon topMenuButtonIcon = new ImageIcon(this.getClass().getResource("/main/gui/assets/icons/menu.png"));
-        topMenu.setBackground(Color.decode(PRIMARY_COLOR));
-        topMenu.setIcon(topMenuButtonIcon);
-        // topMenu.setContentAreaFilled(true);
-        // topMenu.setBorderPainted(true);
-        topMenu.setOpaque(true);
-
-        topMenu.setBorder(BorderFactory.createLineBorder(Color.decode(PRIMARY_COLOR),6));
-
-        JMenuItem newSearch = new JMenuItem("New Search");
-        JMenuItem settings = new JMenuItem("Settings");
-        JMenuItem about = new JMenuItem("About");
-        JMenuItem exit = new JMenuItem("Exit");
-
-        newSearch.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                changeScreen(getPage2());
-                /*this will need to go to the
-                *startPage() instead of the Page2 */
-
-                repaint();
-
-            }
-        });
-
-        exit.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dispose();
-            }
-        });
-
-        topMenu.add(newSearch);
-        topMenu.add(settings);
-        topMenu.add(about);
-        topMenu.add(exit);
-        topMenuBar.add(topMenu);
-        pTop.add(topMenuBar);
-
-        //Topbar - App Name Label
-        JLabel appNameLabel = new JLabel("Compute My Compute");
-        appNameLabel.setFont(h1);
-        appNameLabel.setForeground(Color.white);
+        super();
+        this.setBackground(Color.decode("#B2DFDB"));
+        this.setLayout(new FlowLayout(FlowLayout.LEADING,0,0));
+        this.setPreferredSize(new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT));
 
         //Search Container
         JPanel pSearchContainer = new JPanel();
@@ -111,13 +41,13 @@ public class Page2 extends JFrame{
         pSearchContent.setPreferredSize(new Dimension(SCREEN_WIDTH -30, SCREEN_HEIGHT -720));
         pSearchContent.setBackground(Color.decode(SECONDARY_COLOR));
         DropShadowBorder searchShadow = new DropShadowBorder();
-        /*searchShadow.setShadowSize(5);
+        searchShadow.setShadowSize(5);
         searchShadow.setShadowColor(Color.BLACK);
         searchShadow.setShowLeftShadow(true);
         searchShadow.setShowRightShadow(true);
         searchShadow.setShowBottomShadow(true);
         searchShadow.setShowTopShadow(false);
-        pSearchContent.setBorder(searchShadow);*/
+        pSearchContent.setBorder(searchShadow);
         pSearchContainer.add(pSearchContent);
 
         for (int i = 0; i < pSearchContainer.getComponents().length; i++) {
@@ -147,15 +77,14 @@ public class Page2 extends JFrame{
         pContent.setLayout(new FlowLayout(FlowLayout.LEADING));
         pContent.setBackground(Color.decode(TERTIARY_COLOR));
         pContent.setPreferredSize(new Dimension(SCREEN_WIDTH - 30, SCREEN_HEIGHT - 100));
-       /* DropShadowBorder shadow = new DropShadowBorder();
+        DropShadowBorder shadow = new DropShadowBorder();
         shadow.setShadowSize(5);
         shadow.setShadowColor(Color.BLACK);
         shadow.setShowLeftShadow(true);
         shadow.setShowRightShadow(true);
         shadow.setShowBottomShadow(true);
         shadow.setShowTopShadow(true);
-        pContent.setBorder(shadow);*/
-
+        pContent.setBorder(shadow);
 
 
         for (int i = 0; i < pContent.getComponents().length; i++) {
@@ -195,27 +124,18 @@ public class Page2 extends JFrame{
         pResult2.add(pResultText2);
 
         pContentContainer.add(pContent);
-        pTop.add(appNameLabel);
-        pBackground.add(pTop);
-        pBackground.add(pSearchContainer);
-        pBackground.add(pContentContainer);
+        //pTop.add(appNameLabel);
+        //this.add(pTop);
+        this.add(pSearchContainer);
+        this.add(pContentContainer);
 
         pContent.add(pResult);
         pContent.add(pResult1);
         pContent.add(pResult2);
 
         setVisible(true);
-        return pBackground;
     }
-    private void changeScreen (JPanel panelToChangeTo) {
-        getContentPane().removeAll();
-        getContentPane().add(panelToChangeTo);
-        getContentPane().doLayout();
-        update(getGraphics());
-    }
-    private void openMenu(){
 
-    }
 }
 
 
