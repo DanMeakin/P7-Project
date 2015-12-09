@@ -7,10 +7,12 @@ import main.Stop;
 
 public class CostEstimator {
 
+  private final Stop endNode;
+
   // Value to be used for stops not connected on one single Route
   public static final int UNCONNECTED = 1_000_000;
 
-  private static HashMap<StopTuple, Integer> costsTable;
+  private static HashMap<StopPair, Integer> costsTable;
 
   // Flag whether costs table has been initalized, and whether it has been
   // fully populated.
@@ -18,27 +20,18 @@ public class CostEstimator {
   private static boolean costsTablePopulated = false;
 
   /**
-   * The StopTuple class defines a 2-tuple of Stops.
+   * The StopPair class defines a 2-tuple of Stops.
    *
    * This is solely used as a key in costsTable.
    */
-  private static class StopTuple {
+  private static class StopPair {
     
     private Stop s1;
     private Stop s2;
 
-    public StopTuple(Stop s1, Stop s2) {
+    public StopPair(Stop s1, Stop s2) {
       this.s1 = s1;
       this.s2 = s2;
-    }
-
-    /**
-     * Create array containing both stops.
-     *
-     * @return array of length 2 containing s1 & s2 respectively
-     */
-    public Stop[] toArray() {
-      return new Stop[] {s1, s2};
     }
 
     /**
@@ -61,24 +54,24 @@ public class CostEstimator {
     }
 
     /**
-     * Determine StopTuple equality.
+     * Determine StopPair equality.
      *
      * @return true if S1 == otherS1 and S2 == otherS2, else false
      */
-    public boolean equals(StopTuple otherStopTuple) {
-      return (getS1() == otherStopTuple.getS1() &&
-              getS2() == otherStopTuple.getS2());
+    public boolean equals(StopPair otherStopPair) {
+      return (getS1() == otherStopPair.getS1() &&
+              getS2() == otherStopPair.getS2());
     }
 
     /**
-     * Override hashCode method to ensure equivalent StopTuples are treated
+     * Override hashCode method to ensure equivalent StopPairs are treated
      * as such as keys in HashMap.
      *
      * This method creates a number based on the ID# of s1 and the ID# of s2.
      * It assumes that the ID# will never exceed 9999, which would be a huge
      * number of stops for a system of this nature.
      *
-     * @return hash value of this StopTuple
+     * @return hash value of this StopPair
      */
     @Override
     public int hashCode() {
@@ -86,10 +79,35 @@ public class CostEstimator {
     }
   }
 
-  public CostEstimator() {
+  /**
+   * Create a new CostEstimator instance.
+   *
+   * The constructor accepts a endNode argument which is used in determining
+   * the value of h´(ni).
+   *
+   * @param endNode the ending node used for determining h'(ni)
+   */
+  public CostEstimator(Stop endNode) {
+    this.endNode = endNode;
     if (!isCostsTableInitialized()) {
       generateCostsTable();  
     }
+  }
+
+  /**
+   * Determine the value of h'(ni).
+   *
+   * The h'(ni) value is used in calculating an optimal itinerary. This method
+   * returns the value of h'(ni) for the passed endNode.
+   *
+   * @return value of h'(ni)
+   */
+  public int hPrime(Stop ni) throws UnsupportedOperationException {
+    if (!isCostsTablePopulated()) {
+      String msg = "costs table is not yet populated; please wait";
+      throw new UnsupportedOperationException(msg);
+    }
+    return getH(ni, endNode);
   }
 
   /**
@@ -108,7 +126,7 @@ public class CostEstimator {
   /**
    * Set the costsTableInitialized flag to true.
    */
-  public static void setCostsTableInitialized() {
+  private static void setCostsTableInitialized() {
     costsTableInitialized = true;
   }
 
@@ -128,7 +146,7 @@ public class CostEstimator {
   /**
    * Set the costsTablePopulated flag to true.
    */
-  public static void setCostsTablePopulated() {
+  private static void setCostsTablePopulated() {
     costsTablePopulated = true;
   }
 
@@ -137,15 +155,15 @@ public class CostEstimator {
    *
    * @return H value for path between s1 & s2
    */
-  public static int getH(Stop s1, Stop s2) {
-    return costsTable.get(new StopTuple(s1, s2));
+  private static int getH(Stop s1, Stop s2) {
+    return costsTable.get(new StopPair(s1, s2));
   }
 
   /**
    * Set the H value for stops s1 & s2.
    */
-  public static void setH(Stop s1, Stop s2, int cost) {
-    costsTable.put(new StopTuple(s1, s2), cost);
+  private static void setH(Stop s1, Stop s2, int cost) {
+    costsTable.put(new StopPair(s1, s2), cost);
   }
 
   /**
@@ -163,15 +181,16 @@ public class CostEstimator {
    * journey is set to the value of UNCONNECTED.
    */
   private static void generateCostsTable() {
+    setCostsTableInitialized();
     // Initialize SUSPT network
     for (Route r : Route.getAllRoutes()) {
       for (Stop s1 : r.getStops()) {
         for (Stop s2 : r.getStops()) {
           try {
             int t = r.journeyTimeBetweenStops(s1, s2, false);
-            costsTable.put(new CostEstimator.StopTuple(s1, s2), t);
+            costsTable.put(new CostEstimator.StopPair(s1, s2), t);
           } catch (IllegalArgumentException e) {
-            costsTable.put(new CostEstimator.StopTuple(s1, s2), UNCONNECTED);
+            costsTable.put(new CostEstimator.StopPair(s1, s2), UNCONNECTED);
           }
         }
       }
@@ -187,5 +206,6 @@ public class CostEstimator {
         }
       }
     }
+    setCostsTablePopulated();
   }
 }
