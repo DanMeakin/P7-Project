@@ -20,11 +20,11 @@ public class CapacityCalculator {
     /*
     * Relies on org.apache.commons.math3
     */
-    public double calculateCrowdedness(Date fromDate, Date toDate, double crowdednessFactor, double currentCrowdedness, RouteTimetable routeTimetable, Stop currentStop, Stop requestedStop) throws IllegalArgumentException {
+    public double calculateCrowdedness(double crowdednessFactor, Date fromDate, Date toDate,  double currentCrowdedness, RouteTimetable routeTimetable, Stop currentStop, Stop requestedStop) throws IllegalArgumentException {
         this.crowdednessFactor = crowdednessFactor;
         this.currentCrowdedness = currentCrowdedness;
 
-        List<Double> requestedStopHistoricData = new ArrayList<>(CapacityDataStore.readHistoricRequestedStopCrowdedness(routeTimetable, requestedStop));
+        List<Double> requestedStopHistoricData = new ArrayList<>(CapacityDataStore.readHistoricRequestedStopCrowdedness(fromDate, toDate, routeTimetable, requestedStop));
         List<Double> currentStopHistoricData = new ArrayList<>(CapacityDataStore.readHistoricCurrentStopCrowdedness(fromDate, toDate, routeTimetable, requestedStop, currentStop));
 
         SimpleRegression simpleRegression = new SimpleRegression();
@@ -37,10 +37,10 @@ public class CapacityCalculator {
         return (simpleRegression.predict(currentCrowdedness))*crowdednessFactor;
     }
 
-    public double calculateCrowdedness(double crowdednessFactor, RouteTimetable rtt, Stop requestedStop) {
+    public double calculateCrowdedness(double crowdednessFactor, Date fromDate, Date toDate, RouteTimetable routeTimetable, Stop requestedStop) {
         this.crowdednessFactor = crowdednessFactor;
 
-        List<Double> requestedStopHistoricData = new ArrayList<>(CapacityDataStore.readHistoricRequestedStopCrowdedness(rtt, requestedStop));
+        List<Double> requestedStopHistoricData = new ArrayList<>(CapacityDataStore.readHistoricRequestedStopCrowdedness(fromDate, toDate, routeTimetable, requestedStop));
 
         double averageCrowdedness = 0;
         if (!requestedStopHistoricData.isEmpty()) {

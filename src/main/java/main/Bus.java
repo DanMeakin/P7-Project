@@ -351,6 +351,11 @@ public class Bus extends Observable {
     return (getRouteTimetable() != null);
   }
 
+  public double getOccupationRate(){
+    double occupiedCapacity = (this.getNumPassengers() / this.getTotalCapacity());
+    return occupiedCapacity;
+  }
+
   /**
    * Check how many buses exist of a certain type.
    *
