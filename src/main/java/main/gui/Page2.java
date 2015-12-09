@@ -10,7 +10,7 @@ import java.time.Year;
 /**
  * Created by janusalarsen on 04/12/2015.
  */
-public class Page2 extends JFrame{
+public class Page2 extends JPanel{
     private final int SCREEN_HEIGHT = 768;
     private final int SCREEN_WIDTH = 480;
     private final String PRIMARY_COLOR = "#009688";
@@ -19,33 +19,19 @@ public class Page2 extends JFrame{
     private final Font h1 = new Font("Roboto", Font.PLAIN, 24);
     private final Font h2 = new Font("Roboto", Font.PLAIN, 18);
     private final Font h3 = new Font("Roboto", Font.PLAIN, 14);
-    private JPanel page2;
     //private ImageIcon topMenuButtonIcon = new ImageIcon(this.getClass().getResource("/main/gui/assets/icons/menu.png"));
 
-    public static void main (String[] args){
+    /*public static void main (String[] args){
         new Page2();
-    }
+    }*/
     public Page2(){
-        super("Page2");
-        setSize (new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT));
-        setResizable(true);
-        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        page2 = getPage2();
-        add(page2);
-
-
-        pack();
-        setVisible(true);
-
-    }
-    private JPanel getPage2(){
         //Background
-        JPanel pBackground = new JPanel();
-        pBackground.setBackground(Color.decode("#B2DFDB"));
-        pBackground.setLayout(new FlowLayout(FlowLayout.LEADING,0,0));
-        pBackground.setPreferredSize(new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT));
+        super();
+        this.setBackground(Color.decode("#B2DFDB"));
+        this.setLayout(new FlowLayout(FlowLayout.LEADING,0,0));
+        this.setPreferredSize(new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT));
 
-        //Topbar
+        /*//Topbar
         JPanel pTop = new JPanel();
         pTop.setPreferredSize(new Dimension(SCREEN_WIDTH, 70));
         pTop.setBackground(Color.decode(PRIMARY_COLOR));
@@ -73,18 +59,11 @@ public class Page2 extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 changeScreen(getPage2());
-                /*this will need to go to the
-                *startPage() instead of the Page2 */
+                *//*this will need to go to the
+                *startPage() instead of the Page2 *//*
 
                 repaint();
 
-            }
-        });
-
-        exit.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dispose();
             }
         });
 
@@ -93,12 +72,12 @@ public class Page2 extends JFrame{
         topMenu.add(about);
         topMenu.add(exit);
         topMenuBar.add(topMenu);
-        pTop.add(topMenuBar);
+        pTop.add(topMenuBar);*/
 
         //Topbar - App Name Label
-        JLabel appNameLabel = new JLabel("Compute My Compute");
+        /*JLabel appNameLabel = new JLabel("Compute My Compute");
         appNameLabel.setFont(h1);
-        appNameLabel.setForeground(Color.white);
+        appNameLabel.setForeground(Color.white);*/
 
         //Search Container
         JPanel pSearchContainer = new JPanel();
@@ -195,19 +174,18 @@ public class Page2 extends JFrame{
         pResult2.add(pResultText2);
 
         pContentContainer.add(pContent);
-        pTop.add(appNameLabel);
-        pBackground.add(pTop);
-        pBackground.add(pSearchContainer);
-        pBackground.add(pContentContainer);
+        //pTop.add(appNameLabel);
+        //this.add(pTop);
+        this.add(pSearchContainer);
+        this.add(pContentContainer);
 
         pContent.add(pResult);
         pContent.add(pResult1);
         pContent.add(pResult2);
 
         setVisible(true);
-        return pBackground;
     }
-    private void changeScreen (JPanel panelToChangeTo) {
+/*    private void changeScreen (JPanel panelToChangeTo) {
         getContentPane().removeAll();
         getContentPane().add(panelToChangeTo);
         getContentPane().doLayout();
@@ -215,7 +193,7 @@ public class Page2 extends JFrame{
     }
     private void openMenu(){
 
-    }
+    }*/
 }
 
 
