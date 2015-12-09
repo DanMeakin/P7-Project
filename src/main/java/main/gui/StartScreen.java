@@ -85,6 +85,7 @@ public class StartScreen extends JFrame {
 
         // Content Container
         JPanel pContentContainer = new JPanel();
+        // pContentContainer.setPreferredSize();
         pContentContainer.setLayout(new CardLayout(15,0)); // sets hGap and vGap to 15 each
 
         // Content
