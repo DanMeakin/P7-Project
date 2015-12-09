@@ -65,6 +65,9 @@ public class CapacityDataStoreTest {
     @Before
     public void setUp() {
         mockedBus = mock(Bus.class);
+
+        mockedDate
+
         when(mockedBus.getFleetNumber()).thenReturn(mockedFleetNumber);
         when(mockedBus.getStop().getID()).thenReturn(mockedStopID);
         when(mockedBus.getNumPassengersExited()).thenReturn(mockedNumOfPassengersExited);

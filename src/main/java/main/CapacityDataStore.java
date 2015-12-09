@@ -2,42 +2,51 @@ package main;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.text.ParseException;
 
 public class CapacityDataStore {
 
-    private static File f = new File("test.txt");
+    private static File dataStore = new File("data/dataStore.csv");
 
     public static enum ColumnHeaderNames {
         WRITE_DATE, WRITE_TIME, BUS_ID, ROUTE_ID, ROUTE_DESCRIPTION, ROUTETIMETABLE_IDENTIFIER, STOP_IDENTIFIER,
         STOP_DESCRIPTION, PASSENGERS_EXITED, PASSENGERS_BOARDED, TOTAL_PASSENGERS, OCCUPATION_RATE
     }
 
-    //creates a new CapacityDataStore
+    private static boolean fileLocked;
+
+    // private constructor
     private CapacityDataStore(){
     }
 
     public static void writeBusStateChange(Bus bus){
-        Date date = new Date();
-        SimpleDateFormat dayMonthYear = new SimpleDateFormat("dd/MM/yyyy");
-        SimpleDateFormat time = new SimpleDateFormat("HH:mm:ss Z");
-        dayMonthYear.format(date);
-        time.format(date);
-
         try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(f, true));
-            BufferedReader reader = new BufferedReader(new FileReader(f));
+            if (!dataStore.exists()) {
+                dataStore.getParentFile().mkdirs();
+                dataStore.createNewFile();
+            }
+        }
+        catch (IOException ex){
+            System.out.println("Failed to create file" + dataStore.getAbsolutePath());
+            ex.printStackTrace();
+        }
+        
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(dataStore, true));
+            BufferedReader reader = new BufferedReader(new FileReader(dataStore));
+            setLock();
+            if
             if (reader.readLine() == null) {
                 for (ColumnHeaderNames columnHeaderName : ColumnHeaderNames.values()) {
                     writer.write(columnHeaderName + ",");
                 }
                 writer.newLine();
             }
-            writer.write(dayMonthYear.format(date) + ",");
-            writer.write(time.format(date) + ",");
+            writer.write(getCurrentDayMonth() + ",");
+            writer.write(getCurrentTime() + ",");
             writer.write((bus.getFleetNumber() + ","));
             writer.write((bus.getRouteTimetable().getRoute().getNumber() + ","));
             writer.write((bus.getRouteTimetable().getRoute().getDescription() + ","));
@@ -51,9 +60,10 @@ public class CapacityDataStore {
             writer.newLine();
             writer.flush();
             writer.close();
+            removeLock();
         }
         catch (IOException ex) {
-            System.out.println("Failed to save bus state update to" + f.getAbsolutePath());
+            System.out.println("Failed to save bus state update to" + dataStore.getAbsolutePath());
             ex.printStackTrace();
         }
     }
@@ -67,49 +77,54 @@ public class CapacityDataStore {
         List<String> historicCurrentStopCrowdednessDate = new ArrayList<>();
         List<String> historicRequestedStopCrowdednessDate = new ArrayList<>();
 
-        Date date = new Date();
         SimpleDateFormat dayMonthYear = new SimpleDateFormat("dd/MM/yyyy");
         SimpleDateFormat time = new SimpleDateFormat("HH:mm:ss Z");
-        dayMonthYear.format(date);
-        time.format(date);
 
         //FileReader fileReader = null;
 
-        String[] listOfStringsCurrentStop = new String[] { dayMonthYear.format(fromDate), dayMonthYear.format(toDate), routeTimeTable.toString(), currentStop.toString()};
-
-        String[] listOfStringsRequestedStop = new String[] { dayMonthYear.format(fromDate), dayMonthYear.format(toDate), routeTimeTable.toString(), requestedStop.toString()};
-
+        String[] listOfStringsCurrentStop = new String[] { routeTimeTable.toString(), currentStop.toString()};
+        String[] listOfStringsRequestedStop = new String[] { routeTimeTable.toString(), requestedStop.toString()};
             try {
-                BufferedReader reader = new BufferedReader(new FileReader(f));
+                if(lockStatus()){
+                    throw new IOException("File" + dataStore.getAbsolutePath() + "is currently in use!");
+                }
+                BufferedReader reader = new BufferedReader(new FileReader(dataStore));
                 String line = null;
                 while((line = reader.readLine()) != null) {
                     boolean conditionsCurrentMet = true;
                     boolean conditionsRequestedMet = true;
                     for (int i = 1; i < listOfStringsCurrentStop.length; i++) {
-                        conditionsCurrentMet = line.contains(listOfStringsCurrentStop[i]) && date.after(fromDate) && date.before(toDate);
-                        conditionsRequestedMet = line.contains(listOfStringsRequestedStop[i]) && date.after(fromDate) && date.before(toDate);
-                        if (!conditionsCurrentMet && !conditionsRequestedMet || !date.after(fromDate) && !date.before(toDate)) {
+                        conditionsCurrentMet = line.contains(listOfStringsCurrentStop[i]);
+                        conditionsRequestedMet = line.contains(listOfStringsRequestedStop[i]);
+                        if (!conditionsCurrentMet || !conditionsRequestedMet) {
                             break;
                         }
                     }
                     if (conditionsCurrentMet) {
                         String[] busData = line.split(",");
+                        if(convertSimpleYearMonth(busData[getColumnHeaderPosition(ColumnHeaderNames.WRITE_DATE)]).after(fromDate)
+                            && convertSimpleYearMonth(busData[getColumnHeaderPosition(ColumnHeaderNames.WRITE_DATE)]).before(toDate)){
                         historicCurrentStopCrowdedness.add(Double.parseDouble(busData[getColumnHeaderPosition(ColumnHeaderNames.OCCUPATION_RATE)]));
                         historicCurrentStopCrowdednessDate.add(busData[getColumnHeaderPosition(ColumnHeaderNames.WRITE_DATE)]);
+                        }
                     }
                     if (conditionsRequestedMet) {
                         String[] busData = line.split(",");
-                        historicRequestedStopCrowdednessDate.add(busData[getColumnHeaderPosition(ColumnHeaderNames.WRITE_DATE)]);
+                        if(convertSimpleYearMonth(busData[getColumnHeaderPosition(ColumnHeaderNames.WRITE_DATE)]).after(fromDate)
+                                && convertSimpleYearMonth(busData[getColumnHeaderPosition(ColumnHeaderNames.WRITE_DATE)]).before(toDate)){
+                            historicRequestedStopCrowdednessDate.add(busData[getColumnHeaderPosition(ColumnHeaderNames.WRITE_DATE)]);
+                        }
                     }
-                }
                 reader.close();
+                }
             }
-            catch (IOException e) {
-                e.printStackTrace();
+            catch (IOException ex) {
+                ex.printStackTrace();
             }
         for(int i = 0; i <  historicCurrentStopCrowdednessDate.size(); i++){
-            if(!historicCurrentStopCrowdednessDate.get(i).equals(historicRequestedStopCrowdednessDate.get(i)));
-            historicCurrentStopCrowdedness.remove(i);
+            if(!historicCurrentStopCrowdednessDate.get(i).equals(historicRequestedStopCrowdednessDate.get(i))) {
+                historicCurrentStopCrowdedness.remove(i);
+            }
         }
     return historicCurrentStopCrowdedness;
     }
@@ -117,44 +132,50 @@ public class CapacityDataStore {
     public static List<Double> readHistoricRequestedStopCrowdedness(Date fromDate, Date toDate, RouteTimetable routeTimeTable, Stop requestedStop) {
         List<Double> historicRequestedStopCrowdedness = new ArrayList<>();
 
-        Date date = new Date();
         SimpleDateFormat dayMonthYear = new SimpleDateFormat("dd/MM/yyyy");
         SimpleDateFormat time = new SimpleDateFormat("HH:mm:ss Z");
-        dayMonthYear.format(date);
-        time.format(date);
 
         //FileReader fileReader = null;
 
         String[] listOfStringsRequestedStop = new String[] { dayMonthYear.format(fromDate), dayMonthYear.format(toDate), routeTimeTable.toString(), requestedStop.toString()};
 
         try {
-            BufferedReader reader = new BufferedReader(new FileReader(f));
+            if(lockStatus()){
+                throw new IOException("File" + dataStore.getAbsolutePath() + "is currently in use!");
+            }
+            BufferedReader reader = new BufferedReader(new FileReader(dataStore));
             String line = null;
             while((line = reader.readLine()) != null) {
                 boolean conditionsRequestedMet = true;
                 for (int i = 1; i < listOfStringsRequestedStop.length; i++) {
-                    conditionsRequestedMet = line.contains(listOfStringsRequestedStop[i]) && date.after(fromDate) && date.before(toDate);
-                    if (!conditionsRequestedMet || !date.after(fromDate) && !date.before(toDate)) {
+                    conditionsRequestedMet = line.contains(listOfStringsRequestedStop[i]);
+                    if (!conditionsRequestedMet) {
                         break;
                     }
                 }
                 if (conditionsRequestedMet) {
                     String[] busData = line.split(",");
+                    if(convertSimpleYearMonth(busData[getColumnHeaderPosition(ColumnHeaderNames.WRITE_DATE)]).after(fromDate)
+                            && convertSimpleYearMonth(busData[getColumnHeaderPosition(ColumnHeaderNames.WRITE_DATE)]).before(toDate)){
+                    }
                     historicRequestedStopCrowdedness.add(Double.parseDouble(busData[getColumnHeaderPosition(ColumnHeaderNames.OCCUPATION_RATE)]));
                 }
             }
             reader.close();
         }
-        catch (IOException e) {
-            e.printStackTrace();
+        catch (IOException ex) {
+            ex.printStackTrace();
         }
-        return historicRequestedStopCrowdedness;
+    return historicRequestedStopCrowdedness;
     }
 
     public static int getColumnHeaderPosition(ColumnHeaderNames columnHeaderName) {
         int indexPos = 0;
         try {
-            LineNumberReader reader = new LineNumberReader(new FileReader(f));
+            if(lockStatus()){
+                throw new IOException("File" + dataStore.getAbsolutePath() + "is currently in use!");
+            }
+            LineNumberReader reader = new LineNumberReader(new FileReader(dataStore));
             String result;
 
             reader.setLineNumber(0);
@@ -167,9 +188,57 @@ public class CapacityDataStore {
                 }
             }
         }
-        catch (IOException e) {
-            e.printStackTrace();
+        catch (IOException ex) {
+            ex.printStackTrace();
         }
         return indexPos;
+    }
+
+    public static String getCurrentDayMonth(){
+        Date date = new Date();
+        SimpleDateFormat dayMonthYear = new SimpleDateFormat("dd/MM/yyyy");
+        return dayMonthYear.format(date);
+    }
+
+    public static String getCurrentTime(){
+        Date date = new Date();
+        SimpleDateFormat time = new SimpleDateFormat("HH:mm:ss Z");
+        return time.format(date);
+    }
+
+    public static void setLock(){
+        fileLocked = true;
+    }
+
+    public static void removeLock(){
+        fileLocked = false;
+    }
+
+    public static boolean lockStatus(){
+        return fileLocked;
+    }
+
+    public static Date convertSimpleYearMonth(String simpleDate) {
+        String expectedPattern = "MM/dd/yyyy";
+        SimpleDateFormat formatter = new SimpleDateFormat(expectedPattern);
+        Date yearMonth = null;
+        try {
+            yearMonth = formatter.parse(simpleDate);
+        } catch (ParseException ex) {
+            ex.printStackTrace();
+        }
+    return yearMonth;
+    }
+
+    public static Date convertSimpleTime(String simpleDate) {
+        String expectedPattern = "HH:mm:ss Z";
+        SimpleDateFormat formatter = new SimpleDateFormat(expectedPattern);
+        Date time = null;
+        try {
+            time = formatter.parse(simpleDate);
+        } catch (ParseException ex) {
+            ex.printStackTrace();
+        }
+        return time;
     }
 }
