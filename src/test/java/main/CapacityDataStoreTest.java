@@ -61,7 +61,7 @@ public class CapacityDataStoreTest {
     private int thirdMockedNumOfPassengersBoarded = 9;
     private int thirdMockedNumOfPassengers = thirdMockedNumOfPassengersBoarded - thirdMockedNumOfPassengersExited;
 
-    final Date date = Mockito.mock(Date.class);
+    final Date dayMonthYear = Mockito.mock(Date.class);
 
     final SimpleDateFormat yearMonth = Mockito.mock(SimpleDateFormat.class);
 
@@ -70,7 +70,7 @@ public class CapacityDataStoreTest {
         mockedBus = mock(Bus.class);
 
         Mockito.when(date.getTime()).thenReturn(30L);
-        Mockito.when(mon)
+        Mockito.when()
 
         when(mockedBus.getFleetNumber()).thenReturn(mockedFleetNumber);
         when(mockedBus.getStop().getID()).thenReturn(mockedStopID);
