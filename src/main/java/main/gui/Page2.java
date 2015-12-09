@@ -30,6 +30,54 @@ public class Page2 extends JPanel{
         this.setLayout(new FlowLayout(FlowLayout.LEADING,0,0));
         this.setPreferredSize(new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT));
 
+        /*//Topbar
+        JPanel pTop = new JPanel();
+        pTop.setPreferredSize(new Dimension(SCREEN_WIDTH, 70));
+        pTop.setBackground(Color.decode(PRIMARY_COLOR));
+        pTop.setLayout(new FlowLayout(FlowLayout.LEADING,0,10));
+        JMenuBar topMenuBar = new JMenuBar();
+        topMenuBar.setBackground(Color.decode(PRIMARY_COLOR));
+
+        //Topbar - Menu/button
+        JMenu topMenu = new JMenu();
+        ImageIcon topMenuButtonIcon = new ImageIcon(this.getClass().getResource("/main/gui/assets/icons/menu.png"));
+        topMenu.setBackground(Color.decode(PRIMARY_COLOR));
+        topMenu.setIcon(topMenuButtonIcon);
+        // topMenu.setContentAreaFilled(true);
+        // topMenu.setBorderPainted(true);
+        topMenu.setOpaque(true);
+
+        topMenu.setBorder(BorderFactory.createLineBorder(Color.decode(PRIMARY_COLOR),6));
+
+        JMenuItem newSearch = new JMenuItem("New Search");
+        JMenuItem settings = new JMenuItem("Settings");
+        JMenuItem about = new JMenuItem("About");
+        JMenuItem exit = new JMenuItem("Exit");
+
+        newSearch.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                changeScreen(getPage2());
+                *//*this will need to go to the
+                *startPage() instead of the Page2 *//*
+
+                repaint();
+
+            }
+        });
+
+        topMenu.add(newSearch);
+        topMenu.add(settings);
+        topMenu.add(about);
+        topMenu.add(exit);
+        topMenuBar.add(topMenu);
+        pTop.add(topMenuBar);*/
+
+        //Topbar - App Name Label
+        /*JLabel appNameLabel = new JLabel("Compute My Compute");
+        appNameLabel.setFont(h1);
+        appNameLabel.setForeground(Color.white);*/
+
         //Search Container
         JPanel pSearchContainer = new JPanel();
         pSearchContainer.setLayout(new CardLayout(15, 0));
@@ -135,7 +183,6 @@ public class Page2 extends JPanel{
 
         setVisible(true);
     }
-
 }
 
 
