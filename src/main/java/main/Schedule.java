@@ -107,6 +107,44 @@ public class Schedule {
   }
 
   /**
+   * Determine the time of the next departure of a given route from a given stop.
+   *
+   * @param time the time from which to get next departure
+   * @param stop the stop from which departure is to take place
+   * @param route the route on which to travel
+   * @return the departure time (as an integer representing minutes since
+   *  midnight) of the next bus on route departing from stop
+   */
+  public int nextDepartureTime(int time, Stop stop, Route route) {
+    return nextDepartureRouteTimetable(time, stop, route).timeAtStop(stop);
+  }
+
+  /**
+   * Find the RouteTimetable on which the next departure of a route from a stop takes place.
+   *
+   * Similar to the nextDepartureTime method, this method finds the 
+   * RouteTimetable representing the next departure of a bus from a given stop
+   * after a particular point in time.
+   *
+   * @param time the time from which to get next departure
+   * @param stop the stop from which departure is to take place
+   * @param route the route on which to travel
+   * @return the RouteTimetable representing the next departure of the next bus
+   *  on the given route from the given stop
+   */
+  public RouteTimetable nextDepartureRouteTimetable(int time, Stop stop, Route route) {
+    int nextDepartureTime = 1_000_000; // Set time to initial high value
+    RouteTimetable nextDepartureRT = null;
+    List<RouteTimetable> rts = getAllocatedRouteTimetables(route);
+    for (RouteTimetable thisRT : rts) {
+      if (thisRT.timeAtStop(stop) >= time && thisRT.timeAtStop(stop) < nextDepartureTime) {
+        nextDepartureRT = thisRT;
+      }
+    }
+    return nextDepartureRT;
+  }
+
+  /**
    * Get the bus associated with a route timetable.
    *
    * @param routeTimetable the route timetable to find the assiated bus for.
