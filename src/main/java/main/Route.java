@@ -73,6 +73,45 @@ public class Route {
     return allRoutes;
   }
 
+  /**
+   * Get list of all routes including a given stop.
+   *
+   * @param s stop for which to test inclusion within routes
+   * @return list of all routes including stop
+   */
+  public static List<Route> findRoutesIncludingStop(Stop s) {
+    List<Route> routesIncludingStop = new ArrayList<>();
+    for (Route r : getAllRoutes()) {
+      if (r.includesStop(s)) {
+        routesIncludingStop.add(r);
+      }
+    }
+    return routesIncludingStop;
+  }
+
+  /**
+   * Get inverted route.
+   *
+   * This method will determine whether there is another route which has the
+   * same number and route description but in the opposite order.
+   *
+   * This assumes that a route description is named <start> - <end>.
+   *
+   * @return inverted route (if it exists), or null if it does not
+   */
+  public Route invertedRoute() {
+    String thisOrigin = getDescription().split(" - ")[0];
+    String thisDestination = getDescription().split(" - ")[1];
+    String reverseRouteName = thisDestination + " - " + thisOrigin;
+    for (Route r : getAllRoutes()) {
+      if (r.getNumber() == getNumber() && 
+          r.getDescription() == reverseRouteName) {
+        return r;
+      }
+    }
+    return null;
+  }
+
 	/**
 	 * Add a stop to a route.
 	 *
