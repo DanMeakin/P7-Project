@@ -221,7 +221,7 @@ public class CapacityDataStore {
     }
 
     public static Date convertSimpleYearMonth(String simpleDate) {
-        String expectedPattern = "MM/dd/yyyy";
+        String expectedPattern = "dd/MM/yyyy";
         SimpleDateFormat formatter = new SimpleDateFormat(expectedPattern);
         Date dayMonthYear = null;
         try {
