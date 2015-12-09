@@ -38,7 +38,6 @@ public class CapacityDataStore {
             BufferedWriter writer = new BufferedWriter(new FileWriter(dataStore, true));
             BufferedReader reader = new BufferedReader(new FileReader(dataStore));
             setLock();
-            if
             if (reader.readLine() == null) {
                 for (ColumnHeaderNames columnHeaderName : ColumnHeaderNames.values()) {
                     writer.write(columnHeaderName + ",");
@@ -119,6 +118,7 @@ public class CapacityDataStore {
                 }
             }
             catch (IOException ex) {
+                System.out.println("Failed to read from file" + dataStore.getAbsolutePath());
                 ex.printStackTrace();
             }
         for(int i = 0; i <  historicCurrentStopCrowdednessDate.size(); i++){
@@ -164,6 +164,7 @@ public class CapacityDataStore {
             reader.close();
         }
         catch (IOException ex) {
+            System.out.println("Failed to read from file" + dataStore.getAbsolutePath());
             ex.printStackTrace();
         }
     return historicRequestedStopCrowdedness;
@@ -189,6 +190,7 @@ public class CapacityDataStore {
             }
         }
         catch (IOException ex) {
+            System.out.println("Failed to read from file" + dataStore.getAbsolutePath());
             ex.printStackTrace();
         }
         return indexPos;
