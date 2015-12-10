@@ -32,7 +32,7 @@ public class CapacityCalculator {
                 simpleRegression.addData(currentStopHistoricData.get(i), requestedStopHistoricData.get(i));
             }
         }
-        return (simpleRegression.predict(currentCrowdedness))*crowdednessFactor;
+        return (Math.round( (simpleRegression.predict(currentCrowdedness))*crowdednessFactor) *100)/100d;
     }
 
     public double calculateCrowdedness(double crowdednessFactor, Date fromDate, Date toDate, RouteTimetable routeTimetable, Stop requestedStop) {
@@ -47,6 +47,6 @@ public class CapacityCalculator {
             }
             return averageCrowdedness / requestedStopHistoricData.size();
         }
-        return averageCrowdedness*crowdednessFactor;
+        return (Math.round( averageCrowdedness*crowdednessFactor) *100)/100d;
     }
 }

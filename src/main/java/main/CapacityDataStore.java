@@ -55,9 +55,9 @@ public class CapacityDataStore {
                 System.out.println("Bus has no RouteTimetable associated with it");
             }
             writer.write((bus.getRouteTimetable().getRoute().getDescription() + ","));
-            writer.write((bus.getRouteTimetable() + ","));
+            writer.write((bus.getRouteTimetable().getRouteTimetableID() + ","));
             try{
-                writer.write((bus.getStop() + ","));
+                writer.write((bus.getStop().getID() + ","));
             }
             catch (NullPointerException ex) {
                 System.out.println("Bus is currently not at a stop");
@@ -99,8 +99,8 @@ public class CapacityDataStore {
                     throw new IOException("File" + dataStore.getAbsolutePath() + "is currently in use!");
                 }
                 BufferedReader reader = new BufferedReader(new FileReader(dataStore));
-                String line = null;
-                while((line = reader.readLine()) != null) {
+                String line = reader.readLine();
+                while(line != null) {
                     boolean conditionsCurrentMet = true;
                     boolean conditionsRequestedMet = true;
                     for (int i = 1; i < listOfStringsCurrentStop.length; i++) {
@@ -153,8 +153,8 @@ public class CapacityDataStore {
                 throw new IOException("File" + dataStore.getAbsolutePath() + "is currently in use!");
             }
             BufferedReader reader = new BufferedReader(new FileReader(dataStore));
-            String line = null;
-            while((line = reader.readLine()) != null) {
+            String line = reader.readLine();
+            while(line != null) {
                 boolean conditionsRequestedMet = true;
                 for (int i = 1; i < listOfStringsRequestedStop.length; i++) {
                     conditionsRequestedMet = line.contains(listOfStringsRequestedStop[i]);
@@ -186,7 +186,6 @@ public class CapacityDataStore {
                 throw new IOException("File" + dataStore.getAbsolutePath() + "is currently in use!");
             }
             LineNumberReader reader = new LineNumberReader(new FileReader(dataStore));
-            String result;
 
             reader.setLineNumber(0);
             String[] headers = reader.readLine().split(",");

@@ -149,4 +149,11 @@ public class RouteTimetableTest {
     assertEquals(routeTimetable.getAllocatedBus(), mockedBus);
   }
 
+  /**
+   * Test get() method.
+   */
+  @Test
+  public void testGetRouteTimetableID(){
+    assertEquals(routeTimetable.getRouteTimetableID(), 0); //should be zero, as only one route timetable is created.
+  }
 }
