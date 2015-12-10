@@ -1,6 +1,8 @@
 package main;
 
 import org.junit.*;
+import org.junit.rules.ExpectedException;
+
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -108,6 +110,25 @@ public class RouteTimetableTest {
       int actualStopTiming = routeTimetable.timeAtStop(mockedStops.get(i));
       assertEquals(expectedStopTiming, actualStopTiming);
     }
+  }
+
+  @Rule
+  public ExpectedException thrown = ExpectedException.none();
+
+  /**
+   * Test timeAtStop() method with invalid stop.
+   *
+   * The timeAtStop method should throw an exception if passed a stop not
+   * contained within the route.
+   */
+  @Test
+  public void testTimeAtStopWithInvalidStop() {
+    thrown.expect(IllegalArgumentException.class);
+    Stop missingStop = mock(Stop.class);
+    String msg = "RouteTimetable does not include stop " + missingStop;
+    thrown.expectMessage(msg);
+
+    routeTimetable.timeAtStop(missingStop);
   }
 
   /**

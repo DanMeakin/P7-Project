@@ -26,16 +26,15 @@ public class RouteTest {
   private static Stop routeWithStopsStart;
   private static Stop routeWithStopsEnd;
 
+  private static Route invertedRoute;
+  private static String invertedRouteDescription;
+
   private static Stop stop1;
   private static Stop stop2;
   private static Stop stop3;
 
   /**
    * Set-up before testing begins.
-   *
-   * This creates a series of stops, numbers and descriptions which are used
-   * to create route objects, and new stops in route objects. This ensures
-   * consistency between tests using the same fixtures.
    */
   @BeforeClass
   public static void setUpClass() {
@@ -52,6 +51,7 @@ public class RouteTest {
 
     routeNumber = "12";
     routeDescription = "City Centre - University";
+    invertedRouteDescription = "University - City Centre";
 
     routeWithStopsNumber = "2A";
     routeWithStopsDescription = "Klarup - Bus Terminal";
@@ -74,6 +74,40 @@ public class RouteTest {
     routeWithStops.addStop(stop2, 5, 6);
     routeWithStops.addStop(stop3, 11, 13);
     routeWithStops.addStop(routeWithStopsEnd, 4, 6);
+
+    invertedRoute = new Route(routeNumber, invertedRouteDescription, routeEnd);
+    invertedRoute.addStop(routeStart, 9, 11);
+  }
+
+  @After
+  public void tearDown() {
+    route.remove();
+    routeWithStops.remove();
+    invertedRoute.remove();
+  }
+
+  /**
+   * Test create duplicate Route.
+   *
+   * The Route class should prevent duplicates from being created. This test
+   * ensures this behaviour occurs.
+   */
+  @Test
+  public void testCreateDuplicateRoute() {
+    thrown.expect(IllegalArgumentException.class);
+    String msg = "Path " + route.getDescription() + " already exists";
+    thrown.expectMessage(msg);
+    new Route(routeNumber, routeDescription, routeStart);
+  }
+  /**
+   * Test getAllRoutes method.
+   */
+  @Test
+  public void testGetAllRoutes() {
+    // Create mocked non-Route path and add to allPaths
+    Path p = mock(Path.class);
+    Path.addPath(p);
+    assertEquals(Route.getAllRoutes(), Arrays.asList(route, routeWithStops, invertedRoute));
   }
 
   /**
@@ -119,6 +153,24 @@ public class RouteTest {
     for (int i = 0; i < actualStops.size(); i++) {
       assertEquals(actualStops.get(i), expectedStops.get(i));
     }
+  }
+
+  /**
+   * Test getOrigin
+   */
+  @Test
+  public void testGetOrigin() {
+    assertEquals(route.getOrigin(), routeStart);
+    assertEquals(routeWithStops.getOrigin(), routeWithStopsStart);
+  }
+
+  /**
+   * Test getDestination
+   */
+  @Test
+  public void testGetDestination() {
+    assertEquals(route.getDestination(), routeEnd);
+    assertEquals(routeWithStops.getDestination(), routeWithStopsEnd);
   }
 
   /** 
@@ -322,6 +374,51 @@ public class RouteTest {
     thrown.expect(IllegalArgumentException.class);
     thrown.expectMessage("this path does not travel from " + stop2 + " to " + routeWithStopsStart);
     routeWithStops.journeyTimeBetweenStops(stop2, routeWithStopsStart, true);
+  }
+
+  /**
+   * Test findInverted method.
+   *
+   * The findInverted method searches for a Route which is the same as the 
+   * receiver of the call, but with an inverted direction.
+   */
+  @Test
+  public void testFindInverted() {
+    assertEquals(route.findInverted(), invertedRoute);
+  }
+
+  /**
+   * Test findInverted method where no inverted route exists.
+   *
+   * The findInverted method should return null where no inverse exists.
+   */
+  @Test
+  public void testFindInvertedWithNoInvertedRoute() {
+    assertNull(routeWithStops.findInverted());
+  }
+
+  /**
+   * Test findRoutesIncludingStop method.
+   */
+  @Test
+  public void testFindRoutesIncludingStop() {
+    assertEquals(
+        Route.findRoutesIncludingStop(routeStart), 
+        Arrays.asList(new Route[] {route, invertedRoute})
+        );
+  }
+
+  /**
+   * Test equals method.
+   */
+  @Test
+  public void testEquals() {
+    // Create non-Route path instance
+    Path p = mock(Path.class);
+    assertTrue(route.equals(route));
+    assertFalse(route.equals(invertedRoute));
+    assertFalse(routeWithStops.equals(route));
+    assertFalse(route.equals(p));
   }
 }
 

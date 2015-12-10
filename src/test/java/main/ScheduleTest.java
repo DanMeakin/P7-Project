@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.function.Predicate;
 
@@ -63,6 +64,8 @@ public class ScheduleTest {
       } else {
         when(rt.getRoute()).thenReturn(mockedRoute2);
       }
+      // Define timeAtStop for nextDepartureRouteTimetable test
+      when(rt.timeAtStop(any(Stop.class))).thenReturn(10 * 60 + i * 5);
       busRouteTimetables.add(rt);
     }
 
@@ -137,18 +140,15 @@ public class ScheduleTest {
     Date weekday = new GregorianCalendar(2015, GregorianCalendar.JUNE, 10).getTime();
     Date saturday = new GregorianCalendar(2015, GregorianCalendar.NOVEMBER, 28).getTime();
 
-    Schedule pastSchedule = new Schedule(
-        new GregorianCalendar(2014, GregorianCalendar.JANUARY, 1).getTime(),
-        new GregorianCalendar(2014, GregorianCalendar.DECEMBER, 31).getTime(), 
-        DayOptions.WEEKDAYS);
-    Schedule futureSchedule = new Schedule(
-        new GregorianCalendar(2016, GregorianCalendar.JANUARY, 1).getTime(),
-        new GregorianCalendar(2016, GregorianCalendar.DECEMBER, 31).getTime(), 
-        DayOptions.SATURDAY);
+    Date futureDate = new GregorianCalendar(2016, GregorianCalendar.OCTOBER, 7).getTime();
+    Date pastDate = new GregorianCalendar(2000, GregorianCalendar.JANUARY, 1).getTime();
 
     assertEquals(Schedule.findSchedule(weekday), weekdaySchedule);
     assertEquals(Schedule.findSchedule(saturday), saturdaySchedule);
     assertEquals(Schedule.findSchedule(sunday), sundaySchedule);
+
+    assertEquals(Schedule.findSchedule(pastDate), null);
+    assertEquals(Schedule.findSchedule(futureDate), null);
   }
 
   /**
@@ -422,6 +422,36 @@ public class ScheduleTest {
       }
     }
   } 
+
+  /**
+   * Test the nextDepartureRouteTimetable method.
+   *
+   * The nextDepartureRouteTimetable method returns a route timetable which
+   * represents the RT of the next service departing a given stop on or after
+   * a given time.
+   */
+  @Test
+  public void testNextDepartureRouteTimetable() {
+    // Add all route timetables to schedule in a semi-random order
+    // The order is picked to test all logical options in method
+    int[] indices = new int[] {0, 2, 4, 5, 3, 1};
+    for (int i = 0; i < 6; i++) {
+      schedule.addRouteTimetable(busRouteTimetables.get(indices[i]));
+    }
+    assertEquals(schedule.nextDepartureRouteTimetable(10 * 60 + 9, mock(Stop.class), mockedRoute1), busRouteTimetables.get(2));
+    assertEquals(schedule.nextDepartureRouteTimetable(10 * 60 + 18, mock(Stop.class), mockedRoute2), busRouteTimetables.get(4));
+  }
+
+  /**
+   * Test the nextDepartureTime method.
+   *
+   * This method relies upon the nextDepartureRouteTimetable method, and this
+   * test reflects this.
+   */
+  @Test
+  public void testNextDepartureTime() { testNextDepartureRouteTimetable(); // Run test to create dependent variables
+    assertEquals(schedule.nextDepartureTime(10 * 60 + 9, mock(Stop.class), mockedRoute1), 10 * 60 + 10);
+  }
 
   /**
    * Helper method to determine numerical day of week from a date.
