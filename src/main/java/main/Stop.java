@@ -4,7 +4,6 @@ import java.util.*;
 /**
  * The Stop class defines schedule type objects that hold characteristics
  * of stops such as id, name latutude and longitude.
- * @authors Ivo Hendriks, Janus Avbæk Larsen, Helle Hyllested Larsen, Dan Meakin.
  */
 public class Stop {
     /** the stop id  */

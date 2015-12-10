@@ -6,7 +6,6 @@ import java.util.*;
  * The Schedule class defines schedule type objects that hold
  * characteristics of the schedule such as validFromDate, validToDate etc.
  * and implements several domain specific methods such as addRoutetimeTable.
- * @authors Ivo Hendriks, Janus Avbæk Larsen, Helle Hyllested Larsen, Dan Meakin.
  */
 public class Schedule {
   // the options for the days for which this schedule is valid

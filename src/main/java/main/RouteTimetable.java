@@ -4,7 +4,6 @@ import java.util.*;
 /**
  * The RouteTimetable class defines route timtetable type objects that
  * couples routes with timings.
- * @authors Ivo Hendriks, Janus Avbæk Larsen, Helle Hyllested Larsen, Dan Meakin.
  */
 public class RouteTimetable {
     /** the route associated with the route timetable  */

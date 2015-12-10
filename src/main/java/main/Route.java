@@ -8,7 +8,6 @@ import java.util.List;
  * characteristics of the route routeNumber, routeDescription
  * and implements several domain specific methods such as
  * addStop, includesStop etc.
- * @authors Ivo Hendriks, Janus Avbæk Larsen, Helle Hyllested Larsen, Dan Meakin.
  */
 public class Route extends Path {
 
