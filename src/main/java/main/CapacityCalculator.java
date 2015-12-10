@@ -4,9 +4,7 @@ import java.util.Arrays;
 import java.util.IllegalFormatException;
 import java.util.List;
 import java.util.ArrayList;
-import main.CapacityDataStore;
 import org.apache.commons.math3.stat.regression.SimpleRegression;
-import main.CapacityDataStore;
 import java.util.Date;
 
 public class CapacityCalculator {
@@ -40,7 +38,7 @@ public class CapacityCalculator {
     public double calculateCrowdedness(double crowdednessFactor, Date fromDate, Date toDate, RouteTimetable routeTimetable, Stop requestedStop) {
         this.crowdednessFactor = crowdednessFactor;
 
-        List<Double> requestedStopHistoricData = new ArrayList<>(CapacityDataStore.readHistoricRequestedStopCrowdedness(fromDate, toDate, routeTimetable, requestedStop));
+        List<Double> requestedStopHistoricData = new ArrayList<Double>(CapacityDataStore.readHistoricRequestedStopCrowdedness(fromDate, toDate, routeTimetable, requestedStop));
 
         double averageCrowdedness = 0;
         if (!requestedStopHistoricData.isEmpty()) {

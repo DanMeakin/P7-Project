@@ -1,5 +1,6 @@
 package main;
 
+
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -47,10 +48,20 @@ public class CapacityDataStore {
             writer.write(getCurrentDayMonth() + ",");
             writer.write(getCurrentTime() + ",");
             writer.write((bus.getFleetNumber() + ","));
-            writer.write((bus.getRouteTimetable().getRoute().getNumber() + ","));
+            try {
+                writer.write((bus.getRouteTimetable().getRoute().getNumber() + ","));
+            }
+            catch (NullPointerException ex) {
+                System.out.println("Bus has no RouteTimetable associated with it");
+            }
             writer.write((bus.getRouteTimetable().getRoute().getDescription() + ","));
             writer.write((bus.getRouteTimetable() + ","));
-            writer.write((bus.getStop() + ","));
+            try{
+                writer.write((bus.getStop() + ","));
+            }
+            catch (NullPointerException ex) {
+                System.out.println("Bus is currently not at a stop");
+            }
             writer.write((bus.getStop().getName() + ","));
             writer.write((bus.getNumPassengersExited() + ","));
             writer.write((bus.getNumPassengersBoarded() + ","));
@@ -114,8 +125,8 @@ public class CapacityDataStore {
                             historicRequestedStopCrowdednessDate.add(busData[getColumnHeaderPosition(ColumnHeaderNames.WRITE_DATE)]);
                         }
                     }
-                reader.close();
                 }
+                reader.close();
             }
             catch (IOException ex) {
                 System.out.println("Failed to read from file" + dataStore.getAbsolutePath());
@@ -130,15 +141,13 @@ public class CapacityDataStore {
     }
 
     public static List<Double> readHistoricRequestedStopCrowdedness(Date fromDate, Date toDate, RouteTimetable routeTimeTable, Stop requestedStop) {
+
         List<Double> historicRequestedStopCrowdedness = new ArrayList<>();
 
         SimpleDateFormat dayMonthYear = new SimpleDateFormat("dd/MM/yyyy");
         SimpleDateFormat time = new SimpleDateFormat("HH:mm:ss Z");
 
-        //FileReader fileReader = null;
-
-        String[] listOfStringsRequestedStop = new String[] { dayMonthYear.format(fromDate), dayMonthYear.format(toDate), routeTimeTable.toString(), requestedStop.toString()};
-
+        String[] listOfStringsRequestedStop = new String[] { routeTimeTable.toString(), requestedStop.toString()};
         try {
             if(lockStatus()){
                 throw new IOException("File" + dataStore.getAbsolutePath() + "is currently in use!");
@@ -157,8 +166,8 @@ public class CapacityDataStore {
                     String[] busData = line.split(",");
                     if(convertSimpleYearMonth(busData[getColumnHeaderPosition(ColumnHeaderNames.WRITE_DATE)]).after(fromDate)
                             && convertSimpleYearMonth(busData[getColumnHeaderPosition(ColumnHeaderNames.WRITE_DATE)]).before(toDate)){
+                        historicRequestedStopCrowdedness.add(Double.parseDouble(busData[getColumnHeaderPosition(ColumnHeaderNames.OCCUPATION_RATE)]));
                     }
-                    historicRequestedStopCrowdedness.add(Double.parseDouble(busData[getColumnHeaderPosition(ColumnHeaderNames.OCCUPATION_RATE)]));
                 }
             }
             reader.close();
@@ -167,7 +176,7 @@ public class CapacityDataStore {
             System.out.println("Failed to read from file" + dataStore.getAbsolutePath());
             ex.printStackTrace();
         }
-    return historicRequestedStopCrowdedness;
+        return historicRequestedStopCrowdedness;
     }
 
     public static int getColumnHeaderPosition(ColumnHeaderNames columnHeaderName) {
@@ -184,7 +193,7 @@ public class CapacityDataStore {
             reader.close();
 
             for (int i = 1; i < headers.length; i++) {
-                if(headers[i].equals(columnHeaderName)) {
+                if(headers[i].equals(columnHeaderName.toString())) {
                     indexPos = i;
                 }
             }
