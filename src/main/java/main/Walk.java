@@ -1,6 +1,7 @@
 package main;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -12,27 +13,42 @@ public class Walk extends Path {
 
   private static final int WALKING_SPEED = 5_000; // 5km/h walking speed
 
+  private final Stop walkStart;
+  private final Stop walkEnd;
+
+  /**
+   * Get WALKING_SPEED value.
+   */
+  public static int getWalkingSpeed() {
+    return WALKING_SPEED;
+  }
+
   public Walk(Stop walkStart, Stop walkEnd) {
-    addStop(walkStart);
-    addStop(walkEnd);
+    this.walkStart = walkStart;
+    this.walkEnd = walkEnd;
+    addPath(this); // Must complete by storing Walk in list of all Paths
   }
 
   /**
-   * Add stop to walk.
+   * Get value of walkStart.
    *
-   * This method overrides the superclass addStop method, to test whether there
-   * are already two stops on the walk. If there are, no more stops can be
-   * added.
-   *
-   * @param stop the stop to add
+   * @return stop representing the starting point of the walk
    */
-  @Override
-  public void addStop(Stop stop) throws IllegalArgumentException {
-    if (getStops().size() >= 2) {
-      String msg = "unable to add more than two stops to walk";
-      throw new IllegalArgumentException(msg);
-    }
-    super.addStop(stop);
+  public Stop getOrigin() {
+    return walkStart;
+  }
+
+  /**
+   * Get value of walkEnd.
+   *
+   * @return stop representing the end point of the walk
+   */
+  public Stop getDestination() {
+    return walkEnd;
+  }
+
+  public List<Stop> getStops() {
+    return Arrays.asList(getOrigin(), getDestination());
   }
 
   /**
@@ -43,7 +59,8 @@ public class Walk extends Path {
   *
   * @return inverted walk (if it exists), or null if it does not
   */
-  public Walk inverted() {
+  @Override
+  public Walk findInverted() {
     for (Walk w : getAllWalks()) {
       if (w.getOrigin() == getDestination() &&
           w.getDestination() == getOrigin()) {
@@ -68,7 +85,7 @@ public class Walk extends Path {
     return allWalks;
   }
   public String getDescription() {
-    return getStops().get(0).getName() + " - " + getStops().get(1).getName();
+    return getOrigin().getName() + " - " + getDestination().getName();
   }
 
   /**

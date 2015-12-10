@@ -10,19 +10,15 @@ import java.util.List;
  */
 public abstract class Path {
 
-  public abstract Path inverted();
+  public abstract Path findInverted();
   public abstract String getDescription();
   public abstract boolean equals(Path otherPath);
   public abstract int journeyTimeBetweenStops(Stop origin, Stop destination, boolean isRushHour);
+  public abstract Stop getOrigin();
+  public abstract Stop getDestination();
+  public abstract List<Stop> getStops();
 
-  public static List<Path> allPaths = new ArrayList<>(); 
-
-	// a data structure wherin all stops associated with this path are stored
-	private List<Stop> stops = new ArrayList<Stop>();
-
-  public Path() {
-    addPath(this);
-  }
+  public static List<Path> allPaths = new ArrayList<>();
 
   /**
    * Add path to list of all paths.
@@ -44,6 +40,13 @@ public abstract class Path {
    */
   public static void removePath(Path p) {
     allPaths.remove(p);
+  }
+
+  /**
+   * Remove path from list of all paths.
+   */
+  public void remove() {
+    allPaths.remove(this);
   }
 
   /**
@@ -70,44 +73,6 @@ public abstract class Path {
     }
     return pathsIncludingStop;
   }
-  
-	/**
-	 * Get the stops associated with a path.
-	 *
-	 * @return stops the list of stops associated with this path.
-	 */
-	public List<Stop> getStops() {
-		return stops;
-	}
-
-  /**
-   * Get origin stop.
-   *
-   * @return first stop on path
-   */
-  public Stop getOrigin() {
-    return getStops().get(0);
-  }
-
-  /**
-   * Get destination stop.
-   *
-   * @return last stop on path
-   */
-  public Stop getDestination() {
-    return getStops().get(getStops().size()-1);
-  }
-
-	/**
-	 * Add a stop to a path.
-	 *
-	 * @param stop the stop to add to the path
-	 * @param time the non-rush hour time between the last and this stop
-	 * @param rushHourTime the rush hour time between the last and this stop
-	 */
-	public void addStop(Stop stop) {
-		stops.add(stop);
-	}
 
   /**
    * Compare stops to determine which of two stops comes first in path.
@@ -117,7 +82,7 @@ public abstract class Path {
    *
    * @param firstStop the first stop to compare
    * @param secondStop the second stop to compare
-   * @return -1 if firstStop is before secondStop, 1 if secondStop is before 
+   * @return -1 if firstStop is before secondStop, 1 if secondStop is before
    *  firstStop, or 0 if both stops are the same stop
    */
   public int compareStops(Stop firstStop, Stop secondStop) throws IllegalArgumentException {
@@ -141,37 +106,37 @@ public abstract class Path {
     }
   }
 
-	/**
-	 * Check whether a stop is included in a path.
-	 *
-	 * @param stop the stop that checked on inclusion.
-	 *
-	 * @return true if the stop is included in a path, else return false.
-	 */
-	public boolean includesStop(Stop stop){
-		for (int i = 0; i < getStops().size(); i++) {
-			Stop thisStop = getStops().get(i);
-			if(stop == thisStop){
-				return true;
-			}
-		}
-		return false;
-	}
+  /**
+   * Check whether a stop is included in a path.
+   *
+   * @param stop the stop that checked on inclusion.
+   *
+   * @return true if the stop is included in a path, else return false.
+   */
+  public boolean includesStop(Stop stop){
+    for (int i = 0; i < getStops().size(); i++) {
+      Stop thisStop = getStops().get(i);
+      if(stop == thisStop){
+        return true;
+      }
+    }
+    return false;
+  }
 
   /**
    * Find the index of a Stop's location within path.
    *
    * Starting from 0, this method determines the Stop's location on a path:
    * 0 is the first stop, 1 is the second stop, etc.
-   * 
+   *
    * @param stop the Stop for which to get index
    * @return index of the desired stop
    */
   public int stopIndex(Stop stop) {
-    return stops.indexOf(stop);
+    return getStops().indexOf(stop);
   }
 
-  /** 
+  /**
    * Check if path already exists within the system.
    *
    * @param p Path object to check against
