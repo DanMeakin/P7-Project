@@ -139,6 +139,7 @@ public class Schedule {
     for (RouteTimetable thisRT : rts) {
       if (thisRT.timeAtStop(stop) >= time && thisRT.timeAtStop(stop) < nextDepartureTime) {
         nextDepartureRT = thisRT;
+        nextDepartureTime = thisRT.timeAtStop(stop);
       }
     }
     return nextDepartureRT;

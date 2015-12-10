@@ -12,31 +12,32 @@ import java.util.List;
  */
 public class Route extends Path {
 
-	// the route number of this route
-	private final String routeNumber;
-	// the description of this route
-	private final String routeDescription;
-	// a data structure wherin the non-rush hour time between stops for this route are stored
-	private List<Integer> timeBetweenStops = new ArrayList<Integer>();
-	// a data structure wherin the rush hour time between stops for this route are stored
-	private List<Integer> rushHourTimeBetweenStops = new ArrayList<Integer>();
+  // the route number of this route
+  private final String routeNumber;
+  // the description of this route
+  private final String routeDescription;
+  // a data structure wherin the non-rush hour time between stops for this route are stored
+  private List<Integer> timeBetweenStops = new ArrayList<Integer>();
+  // a data structure wherin the rush hour time between stops for this route are stored
+  private List<Integer> rushHourTimeBetweenStops = new ArrayList<Integer>();
 
-	/**
-	 * Creates a route, add the first stop to list stops and create entries with value 0
-	 * in lists timeBetweenStops and rushHourTimeBetweenStops.
-	 *
-	 * @param routeNumber the route number associated with this route.
-	 * @param routeDescription the description of this route.
-	 * @param routeStart the stop where this route starts.
-	 */
-	public Route(String routeNumber, String routeDescription, Stop routeStart) {
-    super();
-		addStop(routeStart);
-		timeBetweenStops.add(0);
-		rushHourTimeBetweenStops.add(0);
-		this.routeNumber = routeNumber;
-		this.routeDescription = routeDescription;
-	}
+  // a data structure in which all stops associated with this path are stored
+  private List<Stop> stops = new ArrayList<Stop>();
+
+  /**
+   * Creates a route, add the first stop to list stops and create entries with value 0
+   * in lists timeBetweenStops and rushHourTimeBetweenStops.
+   *
+   * @param routeNumber the route number associated with this route.
+   * @param routeDescription the description of this route.
+   * @param routeStart the stop where this route starts.
+   */
+  public Route(String routeNumber, String routeDescription, Stop routeStart) {
+    addStop(routeStart, 0, 0);
+    this.routeNumber = routeNumber;
+    this.routeDescription = routeDescription;
+    addPath(this); // Must complete by storing Route in list of all Paths
+  }
 
   /**
    * Get list of all existing routes.
@@ -79,13 +80,13 @@ public class Route extends Path {
    *
    * @return inverted route (if it exists), or null if it does not
    */
-  public Route inverted() {
+  public Route findInverted() {
     String thisOrigin = getDescription().split(" - ")[0];
     String thisDestination = getDescription().split(" - ")[1];
     String reverseRouteName = thisDestination + " - " + thisOrigin;
     for (Route r : getAllRoutes()) {
-      if (r.getNumber() == getNumber() && 
-          r.getDescription() == reverseRouteName) {
+      if (r.getNumber().equals(getNumber()) &&
+          r.getDescription().equals(reverseRouteName)) {
         return r;
       }
     }
@@ -93,111 +94,138 @@ public class Route extends Path {
   }
 
   /**
-	 * Add a stop to a route.
-	 *
-	 * @param stop the stop to add to the path
-	 * @param time the non-rush hour time between the last and this stop
-	 * @param rushHourTime the rush hour time between the last and this stop
-	 */
-	public void addStop(Stop stop, int time, int rushHourTime) {
-    super.addStop(stop);
-		timeBetweenStops.add(time);
-		rushHourTimeBetweenStops.add(rushHourTime);
-	}
+   * Add a stop to a route.
+   *
+   * @param stop the stop to add to the path
+   * @param time the non-rush hour time between the last and this stop
+   * @param rushHourTime the rush hour time between the last and this stop
+   */
+  public void addStop(Stop stop, int time, int rushHourTime) {
+    stops.add(stop);
+    timeBetweenStops.add(time);
+    rushHourTimeBetweenStops.add(rushHourTime);
+  }
 
-	/**
-	 * Get the route number for a route.
-	 *
-	 * @return routeNumber the route number for this route.
-	 */
-	public String getNumber() {
-		return routeNumber;
-	}
+  /**
+   * Get origin stop.
+   *
+   * @return the stop at the beginning of the route
+   */
+  public Stop getOrigin() {
+    return getStops().get(0);
+  }
 
-	/**
-	 * Get the discription for a route.
-	 *
-	 * @return routeDescroption the route description for this route.
-	 */
-	public String getDescription() {
-		return routeDescription;
-	}
+  /**
+   * Get destination stop.
+   *
+   * @retunr the stop at the end of the route
+   */
+  public Stop getDestination() {
+    return getStops().get(getStops().size()-1);
+  }
 
-	/**
-	 * Get the time between stops for a route.
-	 *
-	 * @param isRushHour set the stop times to be returned to rush hour.
-	 * @param isCumulative set the stop times to be returned to be cumulative.
-	 *
-	 * @return stopTiming a list of times between stops.
-	 */
-	public List<Integer> getStopTiming(boolean isRushHour, boolean isCumulative) {
-		List<Integer> stopTiming = new ArrayList<>();
-		List<Integer> sourceTiming;
+  /**
+   * Get the stops associated with a path.
+   *
+   * @return stops the list of stops associated with this path.
+   */
+  public List<Stop> getStops() {
+    return stops;
+  }
 
-		if (isRushHour) {
-			sourceTiming = rushHourTimeBetweenStops;
-		} else {
-			sourceTiming = timeBetweenStops;
-		}
+  /**
+   * Get the route number for a route.
+   *
+   * @return routeNumber the route number for this route.
+   */
+  public String getNumber() {
+    return routeNumber;
+  }
 
-		int accumulator = 0;
-		for (int i = 0; i < getStops().size(); i++) {
-			int currentTiming = sourceTiming.get(i);
-			if (isCumulative) {
-				accumulator = accumulator + currentTiming;
-				stopTiming.add(accumulator);
-			} else {
-				stopTiming.add(currentTiming);
-			}
-		}
+  /**
+   * Get the discription for a route.
+   *
+   * @return routeDescroption the route description for this route.
+   */
+  public String getDescription() {
+    return routeDescription;
+  }
 
-		return stopTiming;
-	}
+  /**
+   * Get the time between stops for a route.
+   *
+   * @param isRushHour set the stop times to be returned to rush hour.
+   * @param isCumulative set the stop times to be returned to be cumulative.
+   *
+   * @return stopTiming a list of times between stops.
+   */
+  public List<Integer> getStopTiming(boolean isRushHour, boolean isCumulative) {
+    List<Integer> stopTiming = new ArrayList<>();
+    List<Integer> sourceTiming;
 
-	/**
-	 * Get the non-rush hour, non cumulative timings for a route.
-	 *
-	 * @return getStopTiming(false, false) the non-rush hour, non cumulative
-	 * result of getStopTiming, a list of non-rush hour,
-	 * non cumulative timings for a route.
-	 */
-	public List<Integer> getNonRushHourTiming() {
-		return getStopTiming(false, false);
-	}
+    if (isRushHour) {
+      sourceTiming = rushHourTimeBetweenStops;
+    } else {
+      sourceTiming = timeBetweenStops;
+    }
 
-	/**
-	 * Get the rush hour, non cumulative timings for a route.
-	 *
-	 * @return getStopTiming(false, false) the non-rush hour, non cumulative
-	 * result of getStopTiming, a list of rush hour,
-	 * non cumulative timings for a route.
-	 */
-	public List<Integer> getRushHourTiming() {
-		return getStopTiming(true, false);
-	}
+    int accumulator = 0;
+    for (int i = 0; i < getStops().size(); i++) {
+      int currentTiming = sourceTiming.get(i);
+      if (isCumulative) {
+        accumulator = accumulator + currentTiming;
+        stopTiming.add(accumulator);
+      } else {
+        stopTiming.add(currentTiming);
+      }
+    }
 
-	/**
-	 * Get the non-rush hour, cumulative timings for a route.
-	 *
-	 * @return getStopTiming(false, false) the non-rush hour, cumulative
-	 * result of getStopTiming, a list of non-rush hour,
-	 * cumulative timings for a route.
-	 */
-	public List<Integer> getCumulativeNonRushHourTiming() {
-		return getStopTiming(false, true);
-	}
+    return stopTiming;
+  }
 
-	/**
-	 * Get the rush hour, cumulative timings for a route.
-	 *
-	 * @return getStopTiming(false, false) the rush hour, cumulative
-	 * result of getStopTiming, a list of rush hour,
-	 * cumulative timings for a route.
-	 */
-	public List<Integer> getCumulativeRushHourTiming() {
-		return getStopTiming(true, true);
-	}
+  /**
+   * Get the non-rush hour, non cumulative timings for a route.
+   *
+   * @return getStopTiming(false, false) the non-rush hour, non cumulative
+   * result of getStopTiming, a list of non-rush hour,
+   * non cumulative timings for a route.
+   */
+  public List<Integer> getNonRushHourTiming() {
+    return getStopTiming(false, false);
+  }
+
+  /**
+   * Get the rush hour, non cumulative timings for a route.
+   *
+   * @return getStopTiming(false, false) the non-rush hour, non cumulative
+   * result of getStopTiming, a list of rush hour,
+   * non cumulative timings for a route.
+   */
+  public List<Integer> getRushHourTiming() {
+    return getStopTiming(true, false);
+  }
+
+  /**
+   * Get the non-rush hour, cumulative timings for a route.
+   *
+   * @return getStopTiming(false, false) the non-rush hour, cumulative
+   * result of getStopTiming, a list of non-rush hour,
+   * cumulative timings for a route.
+   */
+  public List<Integer> getCumulativeNonRushHourTiming() {
+    return getStopTiming(false, true);
+  }
+
+  /**
+   * Get the rush hour, cumulative timings for a route.
+   *
+   * @return getStopTiming(false, false) the rush hour, cumulative
+   * result of getStopTiming, a list of rush hour,
+   * cumulative timings for a route.
+   */
+  public List<Integer> getCumulativeRushHourTiming() {
+    return getStopTiming(true, true);
+  }
 
   /**
    * Calculate the journey time between two stops.

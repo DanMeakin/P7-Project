@@ -80,7 +80,7 @@ public class Stop {
    *
    * @return the distance between both stops to the nearest metre
    */
-  public static long distanceBetweenStops(Stop s1, Stop s2) {
+  public static int distanceBetweenStops(Stop s1, Stop s2) {
     int r = 6_371_000;
     double phi1 = s1.getLatitudeInRadians();
     double phi2 = s2.getLatitudeInRadians();
@@ -93,7 +93,7 @@ public class Stop {
           Math.pow(Math.sin((lambda2 - lambda1) / 2), 2)
     ));
 
-    return Math.round(d);
+    return (int) Math.round(d);
   }
 
   /** 
@@ -107,7 +107,7 @@ public class Stop {
    * @param otherStop the stop to calculate the distance to
    * @return the distance to the other stop in metres
    */
-  public long distanceTo(Stop otherStop) {
+  public int distanceTo(Stop otherStop) {
     return distanceBetweenStops(this, otherStop);
   }
 
@@ -153,7 +153,7 @@ public class Stop {
   }
 
   public double getLongitudeInRadians() {
-    return getLatitude() * Math.PI / 180;
+    return getLongitude() * Math.PI / 180;
   }
 
   /**
