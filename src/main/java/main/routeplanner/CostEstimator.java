@@ -5,11 +5,22 @@ import java.util.HashMap;
 import main.Route;
 import main.Stop;
 
+/**
+ * The CostEstimator class is used to generate and query a static costs table
+ * used in determining the cost of travelling between two specified stops.
+ *
+ * The class generates a static costs table when first instantiated. This
+ * consists of a large number of calculations which may take some time. The
+ * methods provided within the class are not useable until after completion
+ * of the generation of the table.
+ */
 public class CostEstimator {
 
   private final Stop endNode;
 
-  // Value to be used for stops not connected on one single Route
+  /**
+   * Value to be used for stops not connected on one single Route
+   */
   public static final int UNCONNECTED = 1_000_000;
 
   private static HashMap<StopPair, Integer> costsTable;
@@ -29,6 +40,12 @@ public class CostEstimator {
     private Stop s1;
     private Stop s2;
 
+    /**
+     * Create a StopPair instance.
+     *
+     * @param s1 first stop in pair
+     * @param s2 second stop in pair
+     */
     public StopPair(Stop s1, Stop s2) {
       this.s1 = s1;
       this.s2 = s2;
@@ -83,7 +100,9 @@ public class CostEstimator {
    * Create a new CostEstimator instance.
    *
    * The constructor accepts a endNode argument which is used in determining
-   * the value of h´(ni).
+   * the value of h'(ni). h'(ni) is used in the ItineraryFinder to estimate
+   * the overall cost value of a trip between a starting point and the given
+   * endNode.
    *
    * @param endNode the ending node used for determining h'(ni)
    */
@@ -168,12 +187,6 @@ public class CostEstimator {
 
   /**
    * Generate costs table for journeys between stops.
-   *
-   * This is an adaptation of algorithm 2 contained within the paper
-   * Yu, Zhang, Jiafu, Tang, Shimeng, Lv, Xinggang, Luo. (2014). Floyd-A∗ 
-   * Algorithm Solving the Least-Time Itinerary Planning Problem in Urban 
-   * Scheduled Public Transport Network. Mathematical Problems in Engineering,
-   * 2014. http://dx.doi.org/10.1155/2014/185383.
    *
    * The calculation iterates through each available Route and determines the
    * time it takes to travel from one stop to the next. Where no single-route
