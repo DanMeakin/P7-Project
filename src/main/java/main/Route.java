@@ -10,17 +10,12 @@ import java.util.List;
  * addStop, includesStop etc.
  * @authors Ivo Hendriks, Janus Avbæk Larsen, Helle Hyllested Larsen, Dan Meakin.
  */
-public class Route {
-
-  // list of all existing Routes
-  private static List<Route> allRoutes;
+public class Route extends Path {
 
 	// the route number of this route
 	private final String routeNumber;
 	// the description of this route
 	private final String routeDescription;
-	// a data structure wherin all stops associated with this route are stored
-	private List<Stop> stops = new ArrayList<Stop>();
 	// a data structure wherin the non-rush hour time between stops for this route are stored
 	private List<Integer> timeBetweenStops = new ArrayList<Integer>();
 	// a data structure wherin the rush hour time between stops for this route are stored
@@ -35,7 +30,8 @@ public class Route {
 	 * @param routeStart the stop where this route starts.
 	 */
 	public Route(String routeNumber, String routeDescription, Stop routeStart) {
-		stops.add(routeStart);
+    super();
+		addStop(routeStart);
 		timeBetweenStops.add(0);
 		rushHourTimeBetweenStops.add(0);
 		this.routeNumber = routeNumber;
@@ -43,33 +39,17 @@ public class Route {
 	}
 
   /**
-   * Add a Route to the list of all routes.
-   *
-   * @param route the route to add to the list
-   */
-  private static void addRoute(Route route) throws IllegalArgumentException {
-    if (routeExists(route)) {
-      String msg = "Route " + route.getNumber() + " " + route.getDescription() + " already exists";
-      throw new IllegalArgumentException(msg);
-    }
-    allRoutes.add(route);
-  }
-
-  /**
-   * Remove a route from the list of all routes.
-   *
-   * @param route the route object to remove
-   */
-  public static void removeRoute(Route route) {
-    allRoutes.remove(route);
-  }
-
-  /**
    * Get list of all existing routes.
    *
    * @return list of all current routes
    */
   public static List<Route> getAllRoutes() {
+    List<Route> allRoutes = new ArrayList<>();
+    for (Path p : getAllPaths()) {
+      if (p instanceof Route) {
+        allRoutes.add((Route) p);
+      }
+    }
     return allRoutes;
   }
 
@@ -99,7 +79,7 @@ public class Route {
    *
    * @return inverted route (if it exists), or null if it does not
    */
-  public Route invertedRoute() {
+  public Route inverted() {
     String thisOrigin = getDescription().split(" - ")[0];
     String thisDestination = getDescription().split(" - ")[1];
     String reverseRouteName = thisDestination + " - " + thisOrigin;
@@ -112,15 +92,15 @@ public class Route {
     return null;
   }
 
-	/**
+  /**
 	 * Add a stop to a route.
 	 *
-	 * @param stop the stop to add to the route
+	 * @param stop the stop to add to the path
 	 * @param time the non-rush hour time between the last and this stop
 	 * @param rushHourTime the rush hour time between the last and this stop
 	 */
 	public void addStop(Stop stop, int time, int rushHourTime) {
-		stops.add(stop);
+    super.addStop(stop);
 		timeBetweenStops.add(time);
 		rushHourTimeBetweenStops.add(rushHourTime);
 	}
@@ -144,22 +124,6 @@ public class Route {
 	}
 
 	/**
-	 * Get the stops associated with a route.
-	 *
-	 * @return stops the list of stops associated with this route.
-	 */
-	public List<Stop> getStops() {
-		return stops;
-	}
-
-	//public HashMap<Stop, Integer> viewStopTimes(){
-	//	return timeBetweenStops;
-	//}
-	//public HashMap<Stop, Integer> viewRushHourStopTimes(){
-	//	return rushHourTimeBetweenStops;
-	//}
-
-	/**
 	 * Get the time between stops for a route.
 	 *
 	 * @param isRushHour set the stop times to be returned to rush hour.
@@ -178,7 +142,7 @@ public class Route {
 		}
 
 		int accumulator = 0;
-		for (int i = 0; i < stops.size(); i++) {
+		for (int i = 0; i < getStops().size(); i++) {
 			int currentTiming = sourceTiming.get(i);
 			if (isCumulative) {
 				accumulator = accumulator + currentTiming;
@@ -235,55 +199,6 @@ public class Route {
 		return getStopTiming(true, true);
 	}
 
-	/**
-	 * Check wether a stop is included in a route.
-	 *
-	 * @param stop the stop that checked on inclusion.
-	 *
-	 * @return true if the stop is included in a route, else return false.
-	 */
-	public boolean includesStop(Stop stop){
-		for (int i = 0; i < stops.size(); i++) {
-			Stop thisStop = stops.get(i);
-			if(stop == thisStop){
-				return true;
-			}
-		}
-		return false;
-	}
-
-  /**
-   * Compare stops to determine which of two stops comes first in route.
-   *
-   * Throws IllegalArgumentException if a Stop is passed which is not on this
-   * route.
-   *
-   * @param firstStop the first stop to compare
-   * @param secondStop the second stop to compare
-   * @return -1 if firstStop is before secondStop, 1 if secondStop is before 
-   *  firstStop, or 0 if both stops are the same stop
-   */
-  public int compareStops(Stop firstStop, Stop secondStop) throws IllegalArgumentException {
-    // Throw exception unless both Stops are within Route
-    if (!(includesStop(firstStop) && includesStop(secondStop))) {
-      Stop missingStop = !includesStop(firstStop) ? firstStop : secondStop;
-      String msg = "stop " + missingStop + " is not on Route";
-      throw new IllegalArgumentException(msg);
-    }
-
-    // Compare indices of both Stops
-    int firstStopIndex = stopIndex(firstStop);
-    int secondStopIndex = stopIndex(secondStop);
-
-    if (firstStopIndex > secondStopIndex) {
-      return 1;
-    } else if (firstStopIndex < secondStopIndex) {
-      return -1;
-    } else {
-      return 0;
-    }
-  }
-
   /**
    * Calculate the journey time between two stops.
    *
@@ -294,25 +209,12 @@ public class Route {
    */
   public int journeyTimeBetweenStops(Stop origin, Stop destination, boolean isRushHour) throws IllegalArgumentException {
     if (compareStops(origin, destination) > 0) {
-      String msg = "this route does not travel from " + origin + " to " + destination;
+      String msg = "this path does not travel from " + origin + " to " + destination;
       throw new IllegalArgumentException(msg);
     }
     int originIndex = stopIndex(origin);
     int destinationIndex = stopIndex(destination);
     return getStopTiming(isRushHour, true).get(destinationIndex) - getStopTiming(isRushHour, true).get(originIndex);
-  }
-
-  /**
-   * Find the index of a Stop's location within route.
-   *
-   * Starting from 0, this method determines the Stop's location on a route:
-   * 0 is the first stop, 1 is the second stop, etc.
-   * 
-   * @param stop the Stop for which to get index
-   * @return index of the desired stop
-   */
-  private int stopIndex(Stop stop) {
-    return stops.indexOf(stop);
   }
 
   /**
@@ -326,19 +228,21 @@ public class Route {
             getDescription() == otherRoute.getDescription());
   }
 
-  /** 
-   * Check if Route already exists within the system.
+  /**
+   * Check if two Path instances are to be considered the same.
    *
-   * @param route Route object to check against
-   * @return true if Route already exists, else false.
+   * @param otherPath the path against which to compare.
+   * @return true if other path is a route instance and satisfies equals(Route)
+   *  method are equal, else false. See {@link Route#equals(Route)}.
    */
-  private static boolean routeExists(Route route) {
-    for (Route r : allRoutes) {
-      if (r.equals(route)) {
-        return true;
-      }
+  @Override
+  public boolean equals(Path otherPath) {
+    if (otherPath instanceof Route) {
+      return equals((Route) otherPath);
+    } else {
+      return false;
     }
-    return false;
   }
+
 }
 
