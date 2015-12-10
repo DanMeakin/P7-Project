@@ -265,7 +265,7 @@ public class RouteTest {
   @Test
   public void testCompareStopsWithIllegalFirstStop() {
     thrown.expect(IllegalArgumentException.class);
-    thrown.expectMessage("stop " + routeEnd + " is not on Route");
+    thrown.expectMessage("stop " + routeEnd + " is not on path");
     routeWithStops.compareStops(routeEnd, stop2);
   }
 
@@ -283,7 +283,7 @@ public class RouteTest {
   @Test
   public void testCompareStopsWithIllegalSecondStop() {
     thrown.expect(IllegalArgumentException.class);
-    thrown.expectMessage("stop " + routeStart + " is not on Route");
+    thrown.expectMessage("stop " + routeStart + " is not on path");
     routeWithStops.compareStops(stop1, routeStart);
   }
 
@@ -305,7 +305,7 @@ public class RouteTest {
   @Test
   public void testTimeBetweenStopsWithInvalidStop() {
     thrown.expect(IllegalArgumentException.class);
-    thrown.expectMessage("stop " + routeEnd + " is not on Route");
+    thrown.expectMessage("stop " + routeEnd + " is not on path");
     routeWithStops.journeyTimeBetweenStops(stop2, routeEnd, true);
   }
 
@@ -320,7 +320,7 @@ public class RouteTest {
   @Test
   public void testTimeBetweenStopsWithInvalidStopOrdering() {
     thrown.expect(IllegalArgumentException.class);
-    thrown.expectMessage("this route does not travel from " + stop2 + " to " + routeWithStopsStart);
+    thrown.expectMessage("this path does not travel from " + stop2 + " to " + routeWithStopsStart);
     routeWithStops.journeyTimeBetweenStops(stop2, routeWithStopsStart, true);
   }
 }
