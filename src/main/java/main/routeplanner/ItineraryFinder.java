@@ -530,7 +530,7 @@ public class ItineraryFinder {
           if (walkedLastLeg()) {
             continue;
           }
-          if (pathAlreadyTraversed(p) || pathAlreadyTraversed(p.inverted())) {
+          if (pathAlreadyTraversed(p) || pathAlreadyTraversed(p.findInverted())) {
             continue;
           }
           if (excludedTArc(tArc)) {
