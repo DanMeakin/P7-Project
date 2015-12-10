@@ -103,18 +103,25 @@ public class Page2 extends JPanel{
         }
 
         //Search Container - From Textfield
-        JLabel fromLabel = new JLabel ("From");
+        JLabel fromLabel = new JLabel ("From:");
         pSearchContent.add(fromLabel);
         fromLabel.setFont(h2);
+        JTextField fromText = new JTextField("TEXT");
+        fromText.setFont(h2);
+        pSearchContent.add(fromText);
 
         //Search Container - Icon
-        JLabel Icon = new JLabel ("*IMAGE ICON*");
-        pSearchContent.add(Icon);
+        JPanel arrowIcon = new JPanel();
+        pSearchContent.add(new JLabel(new ImageIcon(getClass().getResource("/main/gui/assets/icons/arrow.png"))));
+        //mediumIconContainer.setPreferredSize(new Dimension(100,50));
 
         //Search Container - To Textfield
-        JLabel toLabel = new JLabel ("To");
+        JLabel toLabel = new JLabel ("To:");
         pSearchContent.add(toLabel);
         toLabel.setFont(h2);
+        JTextField toText = new JTextField("TEXT");
+        toText.setFont(h2);
+        pSearchContent.add(toText);
 
         // Content Container
         JPanel pContentContainer = new JPanel();
@@ -122,7 +129,7 @@ public class Page2 extends JPanel{
 
         // Content
         JPanel pContent = new JPanel();
-        pContent.setLayout(new FlowLayout(FlowLayout.LEADING));
+        pContent.setLayout(new FlowLayout(FlowLayout.CENTER));
         pContent.setBackground(Color.decode(TERTIARY_COLOR));
         pContent.setPreferredSize(new Dimension(SCREEN_WIDTH - 30, SCREEN_HEIGHT - 100));
         DropShadowBorder shadow = new DropShadowBorder();
@@ -142,30 +149,46 @@ public class Page2 extends JPanel{
 
         //results
         JPanel pResult = new JPanel();
-        pResult.setLayout(new BoxLayout(pResult, BoxLayout.Y_AXIS));
         pResult.setBackground(Color.decode(SECONDARY_COLOR));
-        pResult.setPreferredSize((new Dimension(SCREEN_WIDTH -40, 150)));
-        JLabel pResultText = new JLabel("Bus Result");
-        pResultText.setFont(h2);
-        pResultText.setForeground(Color.BLACK);
+        pResult.setPreferredSize(new Dimension(SCREEN_WIDTH -50, 150));
 
-        pResultText.setHorizontalTextPosition(JLabel.RIGHT);
-        pResultText.setVerticalTextPosition(JLabel.BOTTOM);
-        pResult.add(pResultText);
+
+        JPanel busIcon = new JPanel();
+        busIcon.setLayout(new GridLayout(0, 1));
+        busIcon.setPreferredSize(new Dimension (120, 100));
+        busIcon.add(new JLabel(new ImageIcon(getClass().getResource("/main/gui/assets/icons/crowdednessCrowded-100x100.png"))));
+        pResult.add(busIcon);
+        busIcon.setBackground(Color.decode(SECONDARY_COLOR));
+
+
+        JPanel pResultTextContainer = new JPanel();
+        pResultTextContainer.setLayout(new GridLayout(2, 2));
+        JLabel pResultNumber = new JLabel("2C               Monday, 30.11.2015");
+        pResultNumber.setFont(h2);
+        pResultNumber.setForeground(Color.BLACK);
+        pResultTextContainer.add(pResultNumber);
+        pResult.add(pResultTextContainer);
+        JLabel pResultInfo = new JLabel("Depature 15:10, BornHolmsgade (Aalborg), 39 min.");
+        pResultInfo.setFont(h3);
+        pResultInfo.setForeground(Color.BLACK);
+        pResultTextContainer.add(pResultInfo);
+        pResultTextContainer.setBackground(Color.decode(SECONDARY_COLOR));
+        pResultTextContainer.setPreferredSize(new Dimension(300, 150));
+
 
         JPanel pResult1 = new JPanel();
-        pResult1.setLayout(new BoxLayout(pResult1, BoxLayout.Y_AXIS));
+        pResult1.setLayout(new GridLayout(1, 3));
         pResult1.setBackground(Color.decode(SECONDARY_COLOR));
-        pResult1.setPreferredSize((new Dimension(SCREEN_WIDTH -40, 150)));
+        pResult1.setPreferredSize((new Dimension(SCREEN_WIDTH -50, 150)));
         JLabel pResultText1 = new JLabel("Second bus Result");
         pResultText1.setFont(h2);
         pResultText1.setForeground(Color.BLACK);
         pResult1.add(pResultText1);
 
         JPanel pResult2 = new JPanel();
-        pResult2.setLayout(new BoxLayout(pResult2, BoxLayout.Y_AXIS));
+        pResult2.setLayout(new GridLayout(1, 3));
         pResult2.setBackground(Color.decode(SECONDARY_COLOR));
-        pResult2.setPreferredSize((new Dimension(SCREEN_WIDTH -40, 150)));
+        pResult2.setPreferredSize((new Dimension(SCREEN_WIDTH -50, 150)));
         JLabel pResultText2 = new JLabel("Third bus Result");
         pResultText2.setFont(h2);
         pResultText2.setForeground(Color.BLACK);
