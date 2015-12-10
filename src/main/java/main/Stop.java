@@ -77,6 +77,8 @@ public class Stop {
    * Latitudes and longitudes are expressed in degrees, and must first be
    * converted to radians for use in this method.
    *
+   * @param s1 the first stop from which to calculate distance
+   * @param s2 the second stop to which to calculate distance
    * @return the distance between both stops to the nearest metre
    */
   public static int distanceBetweenStops(Stop s1, Stop s2) {

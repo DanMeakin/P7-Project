@@ -87,7 +87,13 @@ public class WalkTest {
    */
   @Test
   public void testGetAllWalks() {
-    List<Walk> expected = Arrays.asList(walk, invertedWalk, walkWithSameOrigin, walkWithSameDestination);
+    List<Walk> expected = Arrays.asList(
+        walk,
+        invertedWalk, 
+        walkWithSameOrigin, 
+        walkWithSameDestination,
+        anotherWalk)
+      ;
     List<Walk> actual = Walk.getAllWalks();
     assertEquals(expected, actual);
   }
