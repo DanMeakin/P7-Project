@@ -1,9 +1,11 @@
 package main.routeplanner;
 
+import main.Path;
 import main.Route;
 import main.RouteTimetable;
 import main.Schedule;
 import main.Stop;
+import main.Walk;
 
 import java.time.*;
 import java.util.ArrayList;
@@ -32,7 +34,7 @@ public class ItineraryFinder {
   // Fields for the calculation of least time itinerary
   private List<Stop> openNodes;
   private List<Stop> closedNodes;
-  private List<Route> usedRoutes; // List stores routes already traversed
+  private List<Path> usedPaths; // List stores paths already traversed
   private HashMap<Stop, Integer> gs;
   private HashMap<Stop, TArc> pres;
 
@@ -48,10 +50,17 @@ public class ItineraryFinder {
     
     private Stop startNode;
     private Stop endNode;
-    private Route service;
+    private Path service;
     private int time;
 
-    public TArc(Stop ni, Stop nj, Route si, int time) {
+    /**
+     * TArc constructor.
+     *
+     * The constructor requires starting and ending stops/nodes, a service,
+     * and the initial time. The ItineraryFinder supports walking between
+     * stops; if a t-arc represents a walk, a null Route should be passed.
+     */
+    public TArc(Stop ni, Stop nj, Path si, int time) {
       setStartNode(ni);
       setEndNode(ni);
       setService(si);
@@ -71,11 +80,18 @@ public class ItineraryFinder {
      * @return journey leg representation of t-arc
      */
     public JourneyLeg toJourneyLeg() {
-      return new JourneyLeg(
-          schedule.nextDepartureRouteTimetable(getTime(), getStartNode(), getService()),
-          getStartNode(),
-          getEndingStop()
-          );
+      if (getService() instanceof Walk) {
+        return new JourneyLeg(
+            (Walk) getService(),
+            getTime()
+            );
+      } else {
+        return new JourneyLeg(
+            schedule.nextDepartureRouteTimetable(getTime(), getStartNode(), (Route) getService()),
+            getStartNode(),
+            getEndingStop()
+            );
+      }
     }
 
     /**
@@ -92,8 +108,12 @@ public class ItineraryFinder {
      * @return value of pi for this t-arc
      */
     public int pi() {
-      int arrivalTime = schedule.nextDepartureTime(getTime(), getEndNode(), getService());
-      return arrivalTime - getTime();
+      if (getService() instanceof Walk) {
+        return ((Walk) getService()).walkingTime();
+      } else {
+        int arrivalTime = schedule.nextDepartureTime(getTime(), getEndNode(), (Route) getService());
+        return arrivalTime - getTime();
+      }
     }
 
     public Stop getStartNode() {
@@ -112,11 +132,11 @@ public class ItineraryFinder {
       endNode = n;
     }
 
-    public Route getService() {
+    public Path getService() {
       return service;
     }
 
-    private void setService(Route s) {
+    private void setService(Path s) {
       service = s;
     }
 
@@ -361,27 +381,36 @@ public class ItineraryFinder {
   }
 
   /**
-   * Determine whether route has already been traversed.
+   * Determine whether path has already been traversed.
    *
    * For the purposes of the itinerary finder, certain calculations are made
-   * based on whether a route has already been taken. In particular, the 
-   * algorithm assumes that a traveller will not be taking the same route or
+   * based on whether a path has already been taken. In particular, the 
+   * algorithm assumes that a traveller will not be taking the same path or
    * its inverse more than once.
    *
-   * @param r route to test whether already traversed
+   * @param p path to test whether already traversed
    * @return true if r has already been traversed, else false
    */
-  public boolean routeAlreadyTraversed(Route r) {
-    return (r != null && usedRoutes.contains(r)); 
+  public boolean pathAlreadyTraversed(Path p) {
+    return (p != null && usedPaths.contains(p)); 
   }
 
   /**
-   * Add route to list of already traversed routes.
+   * Add path to list of already traversed paths.
    *
-   * @param r route to add to list of already traversed routes.
+   * @param p path to add to list of already traversed paths.
    */
-  private void setAlreadyTraversed(Route r) {
-    usedRoutes.add(r);
+  private void setAlreadyTraversed(Path p) {
+    usedPaths.add(p);
+  }
+
+  /**
+   * Determine if the immediately previous leg was walked.
+   *
+   * @return true if immediately previous leg was walked, else false
+   */
+  public boolean walkedLastLeg() {
+    return usedPaths.get(usedPaths.size()-1) instanceof Walk;
   }
 
   /**
@@ -438,7 +467,7 @@ public class ItineraryFinder {
   private void initializeFinder() {
     openNodes = new ArrayList<>();
     closedNodes = new ArrayList<>();
-    usedRoutes = new ArrayList<>();
+    usedPaths = new ArrayList<>();
     gs = new HashMap<>();
     pres = new HashMap<>();
     excludedTArcs = new ArrayList<>();
@@ -478,13 +507,13 @@ public class ItineraryFinder {
       }
 
       // Get all paths from node ni to all other connected nodes
-      for (Route r : Route.findRoutesIncludingStop(ni)) {
+      for (Path p : Path.findPathsIncludingStop(ni)) {
         // Get all ni+ nodes - called ni2 here
-        for (Stop ni2 : r.getStops()) {
-          // Check that stop s does not come before ni - if so, this does not
+        for (Stop ni2 : p.getStops()) {
+          // Check that stop ni2 comes after stop ni - if not, this does not
           // represent a t-arc - there is no connection between s and ni on this
           // route.
-          if (r.compareStops(ni, ni2) > 0) {
+          if (p.compareStops(ni, ni2) >= 0) {
             continue;
           }
 
@@ -494,11 +523,14 @@ public class ItineraryFinder {
           // the same route twice), or if this t-arc is excluded from
           // consideration - this will be the case when trying to determine 
           // additional itinerary options.
-          TArc tArc = new TArc(ni, ni2, r, currentTi);
+          TArc tArc = new TArc(ni, ni2, p, currentTi);
           if (isClosed(ni2)) {
             continue;
           }
-          if (routeAlreadyTraversed(r) || routeAlreadyTraversed(r.invertedRoute())) {
+          if (walkedLastLeg()) {
+            continue;
+          }
+          if (pathAlreadyTraversed(p) || pathAlreadyTraversed(p.inverted())) {
             continue;
           }
           if (excludedTArc(tArc)) {

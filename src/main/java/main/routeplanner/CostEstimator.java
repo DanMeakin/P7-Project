@@ -2,6 +2,7 @@ package main.routeplanner;
 
 import java.util.HashMap;
 
+import main.Path;
 import main.Route;
 import main.Stop;
 
@@ -22,6 +23,7 @@ public class CostEstimator {
    * Value to be used for stops not connected on one single Route
    */
   public static final int UNCONNECTED = 1_000_000;
+
 
   private static HashMap<StopPair, Integer> costsTable;
 
@@ -69,6 +71,7 @@ public class CostEstimator {
     public Stop getS2() {
       return s2;
     }
+
 
     /**
      * Determine StopPair equality.
@@ -196,13 +199,14 @@ public class CostEstimator {
   private static void generateCostsTable() {
     setCostsTableInitialized();
     // Initialize SUSPT network
-    for (Route r : Route.getAllRoutes()) {
-      for (Stop s1 : r.getStops()) {
-        for (Stop s2 : r.getStops()) {
+    for (Path p : Path.getAllPaths()) {
+      for (Stop s1 : p.getStops()) {
+        for (Stop s2 : p.getStops()) {
           try {
-            int t = r.journeyTimeBetweenStops(s1, s2, false);
+            int t = p.journeyTimeBetweenStops(s1, s2, false);
             costsTable.put(new CostEstimator.StopPair(s1, s2), t);
           } catch (IllegalArgumentException e) {
+            // IllegalArgumentException thrown if no route between stops. If
             costsTable.put(new CostEstimator.StopPair(s1, s2), UNCONNECTED);
           }
         }
