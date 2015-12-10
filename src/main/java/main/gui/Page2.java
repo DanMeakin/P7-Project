@@ -1,10 +1,15 @@
 package main.gui;
 
+import com.sun.javafx.scene.control.skin.ScrollBarSkin;
 import org.jdesktop.swingx.border.DropShadowBorder;
 import javax.swing.*;
+import javax.swing.plaf.ScrollBarUI;
+import javax.swing.plaf.basic.BasicScrollBarUI;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
 import java.time.Year;
 
 /**
@@ -20,74 +25,27 @@ public class Page2 extends JPanel{
     private final Font h2 = new Font("Roboto", Font.PLAIN, 18);
     private final Font h3 = new Font("Roboto", Font.PLAIN, 14);
 
-    /*public static void main (String[] args){
-        new Page2();
-    }*/
     public Page2(){
         //Background
         super();
-        this.setBackground(Color.decode("#B2DFDB"));
+        //this.setBackground(Color.decode(SECONDARY_COLOR));
         this.setLayout(new FlowLayout(FlowLayout.LEADING,0,0));
         this.setPreferredSize(new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT));
 
-        /*//Topbar
-        JPanel pTop = new JPanel();
-        pTop.setPreferredSize(new Dimension(SCREEN_WIDTH, 70));
-        pTop.setBackground(Color.decode(PRIMARY_COLOR));
-        pTop.setLayout(new FlowLayout(FlowLayout.LEADING,0,10));
-        JMenuBar topMenuBar = new JMenuBar();
-        topMenuBar.setBackground(Color.decode(PRIMARY_COLOR));
-
-        //Topbar - Menu/button
-        JMenu topMenu = new JMenu();
-        ImageIcon topMenuButtonIcon = new ImageIcon(this.getClass().getResource("/main/gui/assets/icons/menu.png"));
-        topMenu.setBackground(Color.decode(PRIMARY_COLOR));
-        topMenu.setIcon(topMenuButtonIcon);
-        // topMenu.setContentAreaFilled(true);
-        // topMenu.setBorderPainted(true);
-        topMenu.setOpaque(true);
-
-        topMenu.setBorder(BorderFactory.createLineBorder(Color.decode(PRIMARY_COLOR),6));
-
-        JMenuItem newSearch = new JMenuItem("New Search");
-        JMenuItem settings = new JMenuItem("Settings");
-        JMenuItem about = new JMenuItem("About");
-        JMenuItem exit = new JMenuItem("Exit");
-
-        newSearch.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                changeScreen(getPage2());
-                *//*this will need to go to the
-                *startPage() instead of the Page2 *//*
-
-                repaint();
-
-            }
-        });
-
-        topMenu.add(newSearch);
-        topMenu.add(settings);
-        topMenu.add(about);
-        topMenu.add(exit);
-        topMenuBar.add(topMenu);
-        pTop.add(topMenuBar);*/
-
-        //Topbar - App Name Label
-        /*JLabel appNameLabel = new JLabel("Compute My Compute");
-        appNameLabel.setFont(h1);
-        appNameLabel.setForeground(Color.white);*/
-
         //Search Container
         JPanel pSearchContainer = new JPanel();
-        pSearchContainer.setLayout(new CardLayout(15, 0));
+        pSearchContainer.setPreferredSize(new Dimension(SCREEN_WIDTH, 50));
+        //pSearchContainer.setBackground(Color.decode(SECONDARY_COLOR));
+        //pSearchContainer.setLayout(new CardLayout());
+
 
         //Search Content
         JPanel pSearchContent = new JPanel();
         pSearchContent.setLayout(new GridLayout(1, 3));
 
         pSearchContent.setPreferredSize(new Dimension(SCREEN_WIDTH -30, SCREEN_HEIGHT -720));
-        pSearchContent.setBackground(Color.decode(SECONDARY_COLOR));
+        //pSearchContent.setBackground(Color.decode(SECONDARY_COLOR));
+
         DropShadowBorder searchShadow = new DropShadowBorder();
         searchShadow.setShadowSize(5);
         searchShadow.setShadowColor(Color.BLACK);
@@ -96,6 +54,8 @@ public class Page2 extends JPanel{
         searchShadow.setShowBottomShadow(true);
         searchShadow.setShowTopShadow(false);
         pSearchContent.setBorder(searchShadow);
+
+
         pSearchContainer.add(pSearchContent);
 
         for (int i = 0; i < pSearchContainer.getComponents().length; i++) {
@@ -116,15 +76,29 @@ public class Page2 extends JPanel{
         pSearchContent.add(toLabel);
         toLabel.setFont(h2);
 
-        // Content Container
+        /*// Content Container
         JPanel pContentContainer = new JPanel();
-        pContentContainer.setLayout(new CardLayout(15, 7));
+        pContentContainer.setLayout(new FlowLayout());
+        pContentContainer.setBackground(Color.BLUE);
+        pContentContainer.setPreferredSize(new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT - 100));
+*/
+        JScrollPane scrollPane = new JScrollPane();
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.getVerticalScrollBar().setUI(newScrollBarUI());
+        scrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(5,getHeight()));
+        scrollPane.getVerticalScrollBar().setUnitIncrement(24);
+
+        scrollPane.setLayout(new ScrollPaneLayout());
+        scrollPane.setPreferredSize(new Dimension(SCREEN_WIDTH - 2, SCREEN_HEIGHT - 130));
 
         // Content
         JPanel pContent = new JPanel();
-        pContent.setLayout(new FlowLayout(FlowLayout.LEADING));
-        pContent.setBackground(Color.decode(TERTIARY_COLOR));
-        pContent.setPreferredSize(new Dimension(SCREEN_WIDTH - 30, SCREEN_HEIGHT - 100));
+        //pContent.setBackground(Color.decode("#783478"));
+        // Ønskes fleksibel layout for resultater find Layoutmanager og set layout til automatisk at tilpasse indhold(GridBagLayout)
+        pContent.setPreferredSize(new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT + 1700));
+        scrollPane.setBorder(BorderFactory.createLineBorder(Color.decode(SECONDARY_COLOR), 0));
+
         DropShadowBorder shadow = new DropShadowBorder();
         shadow.setShadowSize(5);
         shadow.setShadowColor(Color.BLACK);
@@ -132,7 +106,9 @@ public class Page2 extends JPanel{
         shadow.setShowRightShadow(true);
         shadow.setShowBottomShadow(true);
         shadow.setShowTopShadow(true);
-        pContent.setBorder(shadow);
+        //pContent.setBorder(shadow);
+        //scrollPane.setBorder(shadow);
+
 
 
         for (int i = 0; i < pContent.getComponents().length; i++) {
@@ -140,48 +116,140 @@ public class Page2 extends JPanel{
 
         }
 
+        // All Results Container
+        //JPanel allResultsContainer =
+
         //results
         JPanel pResult = new JPanel();
         pResult.setLayout(new BoxLayout(pResult, BoxLayout.Y_AXIS));
         pResult.setBackground(Color.decode(SECONDARY_COLOR));
         pResult.setPreferredSize((new Dimension(SCREEN_WIDTH -40, 150)));
-        JLabel pResultText = new JLabel("Bus Result");
-        pResultText.setFont(h2);
-        pResultText.setForeground(Color.BLACK);
 
-        pResultText.setHorizontalTextPosition(JLabel.RIGHT);
-        pResultText.setVerticalTextPosition(JLabel.BOTTOM);
-        pResult.add(pResultText);
+        JPanel busIcon = new JPanel();
+        busIcon.setLayout(new GridLayout(0, 1));
+        busIcon.setPreferredSize(new Dimension (120, 100));
+        busIcon.add(new JLabel(new ImageIcon(getClass().getResource("/main/gui/assets/icons/crowdednessCrowded-100x100.png"))));
+        pResult.add(busIcon);
+        busIcon.setBackground(Color.decode(SECONDARY_COLOR));
+
+        JPanel pResultTextContainer = new JPanel();
+        pResultTextContainer.setLayout(new GridLayout(2, 2));
+
+        JLabel pResultNumber = new JLabel("2C               Monday, 30.11.2015");
+        pResultNumber.setFont(h2);
+        pResultNumber.setForeground(Color.BLACK);
+        pResultTextContainer.add(pResultNumber);
+
+        pResult.add(pResultTextContainer);
+
+        JLabel pResultInfo = new JLabel("Depature 15:10, BornHolmsgade (Aalborg), 39 min.");
+
+        pResultInfo.setFont(h3);
+
+        pResultInfo.setForeground(Color.BLACK);
+
+        pResultTextContainer.add(pResultInfo);
+
+        pResultTextContainer.setBackground(Color.decode(SECONDARY_COLOR));
+
+        pResultTextContainer.setPreferredSize(new Dimension(300, 150));
+
+
 
         JPanel pResult1 = new JPanel();
-        pResult1.setLayout(new BoxLayout(pResult1, BoxLayout.Y_AXIS));
+
+        pResult1.setLayout(new GridLayout(1, 3));
+
         pResult1.setBackground(Color.decode(SECONDARY_COLOR));
-        pResult1.setPreferredSize((new Dimension(SCREEN_WIDTH -40, 150)));
+
+        pResult1.setPreferredSize((new Dimension(SCREEN_WIDTH -50, 150)));
+
         JLabel pResultText1 = new JLabel("Second bus Result");
+
         pResultText1.setFont(h2);
+
         pResultText1.setForeground(Color.BLACK);
+
         pResult1.add(pResultText1);
 
+
         JPanel pResult2 = new JPanel();
-        pResult2.setLayout(new BoxLayout(pResult2, BoxLayout.Y_AXIS));
+
+        pResult2.setLayout(new GridLayout(1, 3));
+
         pResult2.setBackground(Color.decode(SECONDARY_COLOR));
-        pResult2.setPreferredSize((new Dimension(SCREEN_WIDTH -40, 150)));
+
+        pResult2.setPreferredSize((new Dimension(SCREEN_WIDTH -50, 150)));
+
         JLabel pResultText2 = new JLabel("Third bus Result");
+
         pResultText2.setFont(h2);
+
         pResultText2.setForeground(Color.BLACK);
+
         pResult2.add(pResultText2);
 
-        pContentContainer.add(pContent);
-        //pTop.add(appNameLabel);
-        //this.add(pTop);
+
+
+        scrollPane.setViewportView(pContent);
         this.add(pSearchContainer);
-        this.add(pContentContainer);
+        this.add(scrollPane);
 
         pContent.add(pResult);
         pContent.add(pResult1);
         pContent.add(pResult2);
 
         setVisible(true);
+    }
+
+    /**
+     * @return The ScrollBarUI to use
+     */
+    private static ScrollBarUI newScrollBarUI() {
+
+        return new BasicScrollBarUI() {
+
+
+            public void paintThumb(Graphics g, JComponent c, Rectangle thumbBounds) {
+                super.paintThumb(g, c, thumbBounds);
+                int tw = thumbBounds.width;
+                int th = thumbBounds.height;
+
+                g.translate(thumbBounds.x, thumbBounds.y);
+
+                Graphics2D g2 = (Graphics2D) g;
+                Paint gp = null;
+                if (this.scrollbar.getOrientation() == JScrollBar.VERTICAL) {
+                    gp = Color.decode("#009688");
+                }
+                g2.setPaint(gp);
+                g2.fillRoundRect(0, 0, tw - 1, th - 1, 5, 5);
+
+                g2.drawRoundRect(0, 0, tw - 1, th - 1, 5, 5);
+            }
+
+            @Override
+            protected JButton createDecreaseButton(int orientation) {
+                return createZeroButton();
+            }
+
+            @Override
+            protected JButton createIncreaseButton(int orientation) {
+                return createZeroButton();
+            }
+
+            private JButton createZeroButton() {
+                JButton jbutton = new JButton();
+
+                jbutton.setPreferredSize(new Dimension(0, 0));
+                jbutton.setMinimumSize(new Dimension(0, 0));
+                jbutton.setMaximumSize(new Dimension(0, 0));
+                return jbutton;
+            }
+
+
+        };
+
     }
 }
 

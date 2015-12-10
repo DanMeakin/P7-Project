@@ -7,10 +7,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.*;
 
 
 /**
- * Created by Helle on 02-12-2015.
+ * * @authors Ivo Hendriks, Janus Avbæk Larsen, Helle Hyllested Larsen, Dan Meakin 02-12-2015.
  */
 
 
@@ -30,6 +31,7 @@ public class StartScreen extends JFrame {
     private JPanel startPage;
     private JPanel pPageContainer;
     private TopBar pTop;
+    private  ButtonGroup busFilter;
 
     public static void main (String args[]){
         new StartScreen();
@@ -79,20 +81,20 @@ public class StartScreen extends JFrame {
     private JPanel getStartPage() {
         // Background
         JPanel pBackground = new JPanel ();
-        pBackground.setBackground(Color.decode("#FAFAFA"));
+        //pBackground.setBackground(Color.decode("#FAFAFA"));
         pBackground.setLayout(new FlowLayout(FlowLayout.LEADING,0,0));
         pBackground.setPreferredSize(new Dimension(SCREEN_WIDTH,SCREEN_HEIGHT));
 
         // Content Container
         JPanel pContentContainer = new JPanel();
-        // pContentContainer.setPreferredSize();
+        //pContentContainer.setPreferredSize();
         pContentContainer.setLayout(new CardLayout(15,0)); // sets hGap and vGap to 15 each
 
         // Content
         JPanel pContent = new JPanel();
         pContent.setLayout(new FlowLayout(FlowLayout.LEADING));
         pContent.setBackground(Color.decode("#FAFAFA"));
-        pContent.setPreferredSize(new Dimension(SCREEN_WIDTH - 30, SCREEN_HEIGHT - 100));
+        pContent.setPreferredSize(new Dimension(SCREEN_WIDTH - 30, SCREEN_HEIGHT - 150));
         DropShadowBorder shadow = new DropShadowBorder();
         shadow.setShadowSize(5);
         shadow.setShadowColor(Color.BLACK);
@@ -115,10 +117,10 @@ public class StartScreen extends JFrame {
         fromContainer.add(fromLabel);
 
         // From Container - From autocompletionbox
-        //TODO: Make it possible to press enter so the dropdrown disapreares. Find a way to not show suggestions unless he user has begun typing and limit the amount of suggestions shown.
+        // TODO: Make it possible to press enter so the dropdrown disapreares. Find a way to not show suggestions unless he user has begun typing and limit the amount of suggestions shown.
         // TODO: Set Default button!
         AutoComboBox fromBox = new AutoComboBox();
-        //TODO: Udskiftes med resultatsæt fra rejseplanen.
+        // TODO: Udskiftes med resultatsæt fra rejseplanen.
         String[] itemArray = {"Boulevarden","Bornholmsgade", "Nytorv"};
         fromBox.setKeyWord(itemArray);
         fromBox.setPreferredSize(new Dimension(230,30));
@@ -151,13 +153,9 @@ public class StartScreen extends JFrame {
         JPanel destinationSpacer = new JPanel();
         destinationSpacer.setPreferredSize(new Dimension(430,5));
 
-        // Space Container divider and date container
-        JPanel dateSpacer = new JPanel();
-        dateSpacer.setPreferredSize(new Dimension(430,15));
-
         // Date Container
         JPanel dateContainer = new JPanel();
-        dateContainer.setPreferredSize(new Dimension(430,60));
+        dateContainer.setPreferredSize(new Dimension(430,50));
 
         // Date Container - Date Label
         JLabel dateLabel = new JLabel("Date:");
@@ -168,7 +166,25 @@ public class StartScreen extends JFrame {
         // Date picker
         JXDatePicker datePicker = new JXDatePicker();
 
+        // edit the Button
+        JButton dateBtn = (JButton)datePicker.getComponent(1);
+        Image editImage = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/main/gui/assets/icons/calendarSmall.png"));
+
+        dateBtn.setIcon(new ImageIcon(editImage));
+        dateBtn.setFocusPainted(false);
+        dateBtn.setMargin(new Insets(0, 0, 0, 0));
+        dateBtn.setContentAreaFilled(false);
+        dateBtn.setBorderPainted(false);
+        dateBtn.setOpaque(false);
+
         dateContainer.add(datePicker);
+
+        // Space Container date and Leaving
+        JPanel datePickerSpacer = new JPanel();
+        datePickerSpacer.setPreferredSize(new Dimension(95,60));
+        datePickerSpacer.setBackground(Color.decode("#FAFAFA"));
+
+        dateContainer.add(datePickerSpacer);
 
         // JRadioButton for leaving/arriving
         // TODO: Add actionlistener to all RadioButtonGruops
@@ -194,21 +210,33 @@ public class StartScreen extends JFrame {
         timeContainer.setPreferredSize(new Dimension(430,60));
 
         // Time Container - Time Label
-        JLabel timeLabel = new JLabel("Time:");
+        JLabel timeLabel = new JLabel(  "Time:");
         timeLabel.setFont(h3);
         timeLabel.setForeground(Color.decode(TEXT_COLOR));
         timeContainer.add(timeLabel);
 
         // Time Container - time Textfield
-        JTextField timeTextField = new JTextField("  :  ");
+        JTextField timeTextField = new JTextField("   :   ");
         timeContainer.add(timeTextField);
+
+        // Space Container time and Arriving
+        JPanel timePickerSpacer = new JPanel();
+        timePickerSpacer.setPreferredSize(new Dimension(205,60));
+        timePickerSpacer.setBackground(Color.decode("#FAFAFA"));
+
+        timeContainer.add(timePickerSpacer);
 
         // Adds radiobutton with arriving
         timeContainer.add(arrivingButton);
 
+        // Space between filter and search container
+        JPanel filterSpacer = new JPanel();
+        filterSpacer.setPreferredSize(new Dimension(340,10));
+        filterSpacer.setBackground(Color.decode("#FAFAFA"));
+
         // Crowdedness Filter Container
         JPanel allBussesContainer = new JPanel();
-        allBussesContainer.setPreferredSize(new Dimension(430,70));
+        allBussesContainer.setPreferredSize(new Dimension(430,60));
 
         // Crowdedness Filter
         JRadioButton allBusesButton = new JRadioButton("Show All Buses", true);
@@ -226,32 +254,73 @@ public class StartScreen extends JFrame {
         freeBusesButton.setFont(h3);
         freeBusesButton.setForeground(Color.decode(TEXT_COLOR));
 
-        ButtonGroup busFilter = new ButtonGroup();
+        busFilter = new ButtonGroup();
         busFilter.add(allBusesButton);
         busFilter.add(mediumBusesButton);
         busFilter.add(freeBusesButton);
 
         allBussesContainer.add(allBusesButton);
 
+        // Spacer after all Busses
+        JPanel allBusesSpacer = new JPanel();;
+        allBusesSpacer.setPreferredSize(new Dimension(235,50));
+        allBusesSpacer.setBackground(Color.decode("#FAFAFA"));
+
+        allBussesContainer.add(allBusesSpacer);
+
         // medium Container
         JPanel mediumContainer = new JPanel();
-        mediumContainer.setPreferredSize(new Dimension(430,70));
+        mediumContainer.setPreferredSize(new Dimension(430,60));
         mediumContainer.add(mediumBusesButton);
+
+        // Space before medium bus Icon
+        JPanel mediumBusIconSpacer = new JPanel();
+        mediumBusIconSpacer.setPreferredSize(new Dimension(45,50));
+        mediumBusIconSpacer.setBackground(Color.decode("#FAFAFA"));
+
+        mediumContainer.add(mediumBusIconSpacer);
 
         // medium Icon container
         JPanel mediumIconContainer = new JPanel();
         mediumContainer.add(new JLabel(new ImageIcon(getClass().getResource("/main/gui/assets/icons/crowdednessMedium.png"))));
         mediumIconContainer.setPreferredSize(new Dimension(100,50));
 
+        // Spacer after medium buses
+        JPanel mediumBusesSpacer = new JPanel();
+        mediumBusesSpacer.setPreferredSize(new Dimension(35,50));
+        mediumBusesSpacer.setBackground(Color.decode("#FAFAFA"));
+
+        mediumContainer.add(mediumBusesSpacer);
+
         // Free Container
         JPanel freeContainer = new JPanel();
-        freeContainer.setPreferredSize(new Dimension(430,70));
+        freeContainer.setPreferredSize(new Dimension(430,60));
         freeContainer.add(freeBusesButton);
+
+        // Space before free bus Icon
+        JPanel busIconSpacer = new JPanel();
+        busIconSpacer.setPreferredSize(new Dimension(45,50));
+        busIconSpacer.setBackground(Color.decode("#FAFAFA"));
+
+        freeContainer.add(busIconSpacer);
 
         // free Icon container
         JPanel freeIconContainer = new JPanel();
         freeContainer.add(new JLabel(new ImageIcon(getClass().getResource("/main/gui/assets/icons/crowdednessUncrowded.png"))));
-        freeIconContainer.setPreferredSize(new Dimension(100,50));
+        freeIconContainer.setPreferredSize(new Dimension(200,50));
+
+        // Spacer after free buses
+        JPanel freeBusesSpacer = new JPanel();
+        freeBusesSpacer.setPreferredSize(new Dimension(35,50));
+        freeBusesSpacer.setBackground(Color.decode("#FAFAFA"));
+
+        freeContainer.add(freeBusesSpacer);
+
+        // Space between filter and search container
+        JPanel filterSearchSpacer = new JPanel();
+        filterSearchSpacer.setPreferredSize(new Dimension(340,10));
+        filterSearchSpacer.setBackground(Color.decode("#FAFAFA"));
+
 
         // Search Container
         JPanel searchContainer = new JPanel();
@@ -272,6 +341,24 @@ public class StartScreen extends JFrame {
         findBusButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                // 1 Henter alle knapper i Bus filter gruppen
+                Enumeration allBusRadioButtons = busFilter.getElements();
+                // 2 Henter første element fra Enumeration
+                JRadioButton firstElement = (JRadioButton)allBusRadioButtons.nextElement();
+                // 3 Er knappen valgt
+                boolean isSelected = firstElement.isSelected();
+
+                System.out.println(isSelected);
+
+                // Inline version af ovenstående(123)
+                // System.out.println(busFilter.getElements().nextElement().isSelected());
+
+
+
+
+
+
+
                 // Teksten nedenunder fjerner alt indhold og tilføjer nyt
                 changeScreen(getPage2());
             }
@@ -283,13 +370,14 @@ public class StartScreen extends JFrame {
         pContent.add(destinationContainer);
         pContent.add(destinationSpacer);
         pContent.add(getDivider());
-        pContent.add(dateSpacer);
         pContent.add(dateContainer);
         pContent.add(timeContainer);
         pContent.add(getDivider());
+        pContent.add(filterSpacer);
         pContent.add(allBussesContainer);
         pContent.add(mediumContainer);
         pContent.add(freeContainer);
+        pContent.add(filterSearchSpacer);
         pContent.add(getDivider());
         pContent.add(searchContainer);
 
