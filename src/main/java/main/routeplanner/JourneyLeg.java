@@ -14,13 +14,12 @@ import main.Walk;
  */
 public class JourneyLeg {
 
-  // Fields for bus legs
+  // Only one of these two fields is populated at one time
   private RouteTimetable routeTimetable;
+  private Walk walk;
+
   private Stop origin;
   private Stop destination;
-
-  // Fields for walking legs
-  private Walk walk;
   private int startTime;
   private int endTime;
 
@@ -34,6 +33,8 @@ public class JourneyLeg {
     this.routeTimetable = rt;
     this.origin = origin;
     this.destination = destination;
+    this.startTime = rt.timeAtStop(origin);
+    this.endTime = rt.timeAtStop(destination);
   }
 
   /**
@@ -50,6 +51,20 @@ public class JourneyLeg {
     this.startTime = startTime;
     this.endTime = startTime + walk.walkingTime();
   }
+  
+  public String toString() {
+    String s;
+    if (walk != null) {
+      s = "JourneyLeg: walk from " + 
+        getOrigin() + " to " + getDestination() +
+      " at " + getStartTime();
+    } else {
+      s = "JourneyLeg: bus " + getRouteTimetable().getRoute() + " from " + 
+        getOrigin() + " to " + getDestination() + 
+        " at " + getRouteTimetable().timeAtStop(getOrigin());
+    }
+    return s;
+  }
 
   public String journeyLegType() {
     if (isWalk()) {
@@ -59,6 +74,32 @@ public class JourneyLeg {
     } else {
       return "unknown";
     }
+  }
+
+  /**
+   * Equals method to compare JourneyLeg instances.
+   *
+   * Two JourneyLeg instances are equal only if they are of the same type, they
+   * are from the same origin and to the same destination at the same time.
+   *
+   * @return true if equal, else false
+   */
+  public boolean equals(JourneyLeg otherJourneyLeg) {
+    boolean sameJourneyType = journeyLegType().equals(otherJourneyLeg.journeyLegType());
+    boolean sameOrigin = getOrigin().equals(otherJourneyLeg.getOrigin());
+    boolean sameDestination = getDestination().equals(otherJourneyLeg.getDestination());
+    boolean sameStartTime = getStartTime() == otherJourneyLeg.getStartTime();
+    return (sameJourneyType && sameOrigin && sameDestination && sameStartTime);
+  }
+
+  /**
+   * Equals method to compare JourneyLeg instance with other Object.
+   *
+   * @return true if equal, else false
+   */
+  @Override
+  public boolean equals(Object o) {
+    return (o instanceof JourneyLeg && equals((JourneyLeg) o));
   }
 
   public boolean isWalk() {

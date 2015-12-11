@@ -29,7 +29,7 @@ public class ItineraryFinder {
   private LocalDate date;
   private int time;
 
-  private CostEstimator costEstimator = new CostEstimator(endingStop);
+  public CostEstimator costEstimator;
 
   // Fields for the calculation of least time itinerary
   private List<Stop> openNodes;
@@ -62,11 +62,18 @@ public class ItineraryFinder {
      */
     public TArc(Stop ni, Stop nj, Path si, int time) {
       setStartNode(ni);
-      setEndNode(ni);
+      setEndNode(nj);
       setService(si);
       setTime(time);
     }
 
+    public String toString() {
+      return "TArc(" + 
+        getStartNode() + ", " + 
+        getEndNode() + ", " + 
+        getService() + ", " + 
+        getTime() + ")";
+    }
     /**
      * Convert t-arc into JourneyLeg class.
      *
@@ -89,7 +96,7 @@ public class ItineraryFinder {
         return new JourneyLeg(
             schedule.nextDepartureRouteTimetable(getTime(), getStartNode(), (Route) getService()),
             getStartNode(),
-            getEndingStop()
+            getEndNode()
             );
       }
     }
@@ -163,21 +170,31 @@ public class ItineraryFinder {
     setEndingStop(endingStop);
     setDate(searchTime);
     setTime(searchTime);
-    setSchedule();
+    setSchedule(); 
+    costEstimator = new CostEstimator(endingStop);
     initializeFinder();
   }
 
   /**
-   * Find all paths between startingStop and endingStop.
+   * Find the best itinerary for this journey.
    *
-   * This method searches for all possible paths (i.e. journeys involving one
-   * or multiple bus routes) between the startingStop and the endingStop.
+   * This method uses the calculateLeastTimePath private method to calculate
+   * the least time path for the desired journey.
    *
-   * @return a nested list, each entry containing a list of routes representing
-   *  a path between startingStop and endingStop
+   * @return the best itinerary for this journey, represented by a series of
+   *  journey legs each representing a RouteTimetable travelling from an origin
+   *  to a destination
    */
-  public List<List<Route>> findPaths() {
-    return null;
+  public List<JourneyLeg> findBestItinerary() {
+    List<TArc> ltp = calculateLeastTimePath();
+    if (ltp == null) { 
+      return null;
+    }
+    List<JourneyLeg> itinerary = new ArrayList<>();
+    for (TArc t : ltp) {
+      itinerary.add(t.toJourneyLeg());
+    }
+    return itinerary;
   }
 
   /**
@@ -410,7 +427,7 @@ public class ItineraryFinder {
    * @return true if immediately previous leg was walked, else false
    */
   public boolean walkedLastLeg() {
-    return usedPaths.get(usedPaths.size()-1) instanceof Walk;
+    return (usedPaths.size() > 0 && usedPaths.get(usedPaths.size()-1) instanceof Walk);
   }
 
   /**
@@ -435,7 +452,12 @@ public class ItineraryFinder {
    * @param ni node for which to get value of g'
    */
   public int gPrime(Stop ni) {
-    return gs.get(ni);
+    Integer g = gs.get(ni);
+    if (g == null) {
+      return CostEstimator.UNCONNECTED;
+    } else {
+      return g;
+    }
   }
 
   /**
@@ -479,8 +501,6 @@ public class ItineraryFinder {
   /**
    * Calculate the Least Time path for the desired route.
    *
-
-   *
    * This implementation uses the pre-defined Stop and RouteTimetable classes
    * and attributes thereon.
    *
@@ -494,13 +514,15 @@ public class ItineraryFinder {
 
       // Set the route leading to this node to already traversed, and set ni
       // to the value of initial time plus the value of g'(ni)
-      setAlreadyTraversed(getPre(ni).getService());
+      if (getPre(ni) != null) {
+        setAlreadyTraversed(getPre(ni).getService());
+      }
       int currentTi = getTime() + gPrime(ni); 
 
       // If this node is equal to the ending node, then we are finished and need
       // simply to reconstruct the itinerary from node list. Otherwise move node
       // from open to closed list, and carry out next step.
-      if (ni == getEndingStop()) {
+      if (ni.equals(getEndingStop())) {
         return reconstructItinerary();
       } else {
         changeOpenToClosed(ni);
@@ -561,8 +583,10 @@ public class ItineraryFinder {
    */
   private List<TArc> reconstructItinerary() {
     List<TArc> itinerary = new ArrayList<>();
-    for (TArc thisPre = getPre(getEndingStop()); thisPre != null ;) {
+    TArc thisPre = getPre(getEndingStop());
+    while (thisPre != null) {
       itinerary.add(0, thisPre);
+      thisPre = getPre(thisPre.getStartNode());
     }
     return itinerary;
   }
@@ -576,7 +600,7 @@ public class ItineraryFinder {
    * @return the open node with minimum f'(n) value
    */
   private Stop selectMinimumOpenNode() {
-    int min = 1_000_000; // Set initial min to high value
+    int min = 1_000_000_000; // Set initial min to high value
     Stop minNode = null;
     for (Stop s : getOpenNodes()) {
       if (fPrime(s) < min) {

@@ -8,297 +8,284 @@ import static org.mockito.Mockito.*;
 import java.util.*;
 import java.time.*;
 
+import main.Path;
 import main.Schedule;
+import main.Schedule.DayOptions;
 import main.Route;
 import main.RouteTimetable;
 import main.Bus;
 import main.Stop;
+import main.Walk;
 
 /**
  * ItineraryFinderTest class contains a series of unit tests for the ItineraryFinder class.
  *
  * The ItineraryFinder class enables a user to find the best (quickest or least crowded)
  * way of transport from a to b.
+ *
  */
 public class ItineraryFinderTest {
 
+  private static Schedule schedule;
+  private static Stop[] nodes;
+  private static List<Path> services;
+  private static Route[] routes;
+  private static Walk[] walks;
+
   private ItineraryFinder itineraryFinder;
 
-  private LocalDateTime routeFindDateTime; // DateTime to use for all route finding
-
-  private Schedule schedule;
-  private Date scheduleDateFrom;
-  private Date scheduleDateTo;
-
-  private Stop startingStop;
-  private Stop changeStop1;
-  private Stop changeStop2;
-  private Stop endingStop;
-  private List<Stop> otherStops;
-
-  // validPaths will contain the route sequences for journeys which go from
-  // startingStop to endingStop
-  private List<List<Route>> validPaths; 
-  private List<List<RouteTimetable>> validRouteTimetables;
-  private List<Route> routes;
-  private List<Bus> buses;
-  private List<RouteTimetable> routeTimetables;
-
-  private List<Bus> desiredBuses;
-
   /**
-   * Set-up the class before testing.
+   * Set-up before any testing begins.
    *
-   * This test class requires a quite elaborate set-up. To properly test the 
-   * route finder, a number of different Routes, Buses and RouteTimetables
-   * must be set-up which describe paths specific buses will take at specific
-   * times.
+   * This method creates a weekday schedule for the period 1st January 2015 to 
+   * 31st December 2015 with the following entries:-
    *
-   * The testing must allow for a path between two Stops which may require 
-   * multiple bus journeys to complete. For these purposes, we test a 3-bus
-   * journey. This will require:-
+   * Route L1
+   * --------
+   *   N1    N2    N3
+   *  6:02  6:14  6:25
+   *  6:08  6:20  6:31
+   *  6:13  6:25  6:36
+   *  6:18  6:30  6:41
+   *  6:22  6:34  6:45
    *
-   *  * one or more routes containing startingStop & changeStop1;
-   *  * one or more routes containing changeStop1 & changeStop2;
-   *  * one or more routes containing changeStop2 & endingStop.
+   * Route L2
+   * --------
+   *   N4    N1    N2
+   *  6:05  6:18  6:30
+   *  6:15  6:28  6:40
+   *  6:25  6:38  6:50
+   *  6:33  6:46  6:58
+   *  6:41  6:54  7:06
    *
-   * We do not want too many permutations, so we will restrict the first leg 
-   * to only one route, the second leg to two routes, and the third leg to one
-   * route.
+   * Route L3
+   * --------
+   *   N4    N5
+   *  6:05  6:15
+   *  6:10  6:20
+   *  6:15  6:25
+   *  6:20  6:30
+   *  6:23  6:33
    *
-   * We must then create Buses and RouteTimetables and associate them with a
-   * Schedule.
+   * Route L4
+   * --------
+   *   N6    N7
+   *  6:02  6:16
+   *  6:10  6:24
+   *  6:18  6:32
+   *  6:26  6:40
+   *  6:30  6:44
    *
+   * Route L5
+   * --------
+   *   N1    N7
+   *  6:00  6:12
+   *  6:03  6:15
+   *  6:06  6:18
+   *  6:09  6:21
+   *  6:12  6:24
+   *
+   * Walking paths are also created between:
+   *
+   *  N4 - N7: 1 minute (walks 0, 1)
+   *  N3 - N5: 2 minutes (walks 2, 3)
+   *  N3 - N6: 3 minutes (walks 4, 5)
+   *  N5 - N6: 1 minute (walks 6, 7)
    */
-  @Before
-  public void setUp() {
-    routeFindDateTime = LocalDateTime.of(2015, 3, 6, 10, 0); // 6th March 2015, at 10am
-
-    scheduleDateFrom = new GregorianCalendar(2015, GregorianCalendar.JANUARY, 1).getTime();
-    scheduleDateTo = new GregorianCalendar(2015, GregorianCalendar.DECEMBER, 31).getTime();
-    schedule = mock(Schedule.class);
-
-    startingStop = mock(Stop.class);
-    changeStop1 = mock(Stop.class);
-    changeStop2 = mock(Stop.class);
-    endingStop = mock(Stop.class);
-
-    otherStops = new ArrayList<>();
-    // Create 50 other stops for use in Routes
-    for (int i = 0; i < 50; i++) {
-      otherStops.add(mock(Stop.class));
-    }
-
-    routes = new ArrayList<>();
-    buses = new ArrayList<>();
-    routeTimetables = new ArrayList<>();
-
-    Route validRoute1 = mock(Route.class);
-    when(validRoute1.includesStop(startingStop)).thenReturn(true);
-    when(validRoute1.includesStop(changeStop1)).thenReturn(true);
-    when(validRoute1.compareStops(startingStop, changeStop1)).thenReturn(-1);
-    routes.add(validRoute1);
-
-    Route validRoute2 = mock(Route.class);
-    when(validRoute2.includesStop(changeStop1)).thenReturn(true);
-    when(validRoute2.includesStop(changeStop2)).thenReturn(true);
-    when(validRoute2.compareStops(changeStop1, changeStop2)).thenReturn(-1);
-    routes.add(validRoute2);
-
-    Route validRoute3 = mock(Route.class);
-    when(validRoute3.includesStop(changeStop1)).thenReturn(true);
-    when(validRoute3.includesStop(changeStop2)).thenReturn(true);
-    when(validRoute3.compareStops(changeStop1, changeStop2)).thenReturn(-1);
-    routes.add(validRoute3);
-
-    Route validRoute4 = mock(Route.class);
-    when(validRoute4.includesStop(changeStop2)).thenReturn(true);
-    when(validRoute4.includesStop(endingStop)).thenReturn(true);
-    when(validRoute4.compareStops(changeStop2, endingStop)).thenReturn(-1);
-    routes.add(validRoute4);
-
-    // Add routes containing none of the stops
-    for (int i = 0; i < 20; i++) {
-      Route thisRoute = mock(Route.class);
-      when(thisRoute.includesStop(startingStop)).thenReturn(false);
-      when(thisRoute.includesStop(changeStop1)).thenReturn(false);
-      when(thisRoute.includesStop(changeStop2)).thenReturn(false);
-      when(thisRoute.includesStop(endingStop)).thenReturn(false);
-      routes.add(thisRoute);
-    }
-
-    // Add some routes containing stops but in the wrong order, or only
-    // containing one stop
-    Route thisRoute = mock(Route.class);
-    when(thisRoute.includesStop(startingStop)).thenReturn(true);
-    when(thisRoute.includesStop(changeStop1)).thenReturn(true);
-    when(thisRoute.compareStops(startingStop, changeStop1)).thenReturn(1);
-    routes.add(thisRoute);
-
-    thisRoute = mock(Route.class);
-    when(thisRoute.includesStop(changeStop1)).thenReturn(true);
-    when(thisRoute.includesStop(endingStop)).thenReturn(true);
-    when(thisRoute.compareStops(changeStop1, endingStop)).thenReturn(1);
-    routes.add(thisRoute);
-
-    thisRoute = mock(Route.class);
-    when(thisRoute.includesStop(changeStop2)).thenReturn(true);
-    routes.add(thisRoute);
-
-    List<Route> firstValidPath = new ArrayList<>();
-    firstValidPath.add(validRoute1);
-    firstValidPath.add(validRoute2);
-    firstValidPath.add(validRoute4);
-
-    List<Route> secondValidPath = new ArrayList<>();
-    secondValidPath.add(validRoute1);
-    secondValidPath.add(validRoute3);
-    secondValidPath.add(validRoute4);
-
-    List<List<Route>> validPaths = new ArrayList<>();
-    validPaths.add(firstValidPath);
-    validPaths.add(secondValidPath);
-
-    Collections.shuffle(routes);
-
-    // Create routeTimetables for testing timings
-    RouteTimetable thisRouteTimetable;
-
-    // (0) RT for validRoute1 @ 10.05am
-    thisRouteTimetable = mock(RouteTimetable.class);
-    when(thisRouteTimetable.getRoute()).thenReturn(validRoute1);
-    when(thisRouteTimetable.timeAtStop(startingStop)).thenReturn(10*60 + 5);
-    when(thisRouteTimetable.timeAtStop(changeStop1)).thenReturn(10*60 + 15);
-    routeTimetables.add(thisRouteTimetable);
-
-    // (1) RT for validRoute1 @ 10.10am
-    thisRouteTimetable = mock(RouteTimetable.class);
-    when(thisRouteTimetable.getRoute()).thenReturn(validRoute1);
-    when(thisRouteTimetable.timeAtStop(startingStop)).thenReturn(10*60 + 10);
-    when(thisRouteTimetable.timeAtStop(changeStop1)).thenReturn(10*60 + 20);
-    routeTimetables.add(thisRouteTimetable);
-
-    // (2) RT for validRoute2 @ 10.17am
-    thisRouteTimetable = mock(RouteTimetable.class);
-    when(thisRouteTimetable.getRoute()).thenReturn(validRoute2);
-    when(thisRouteTimetable.timeAtStop(changeStop1)).thenReturn(10*60 + 17);
-    when(thisRouteTimetable.timeAtStop(changeStop2)).thenReturn(10*60 + 30);
-    routeTimetables.add(thisRouteTimetable);
- 
-    // (3) RT for validRoute2 @ 10.32am
-    thisRouteTimetable = mock(RouteTimetable.class);
-    when(thisRouteTimetable.getRoute()).thenReturn(validRoute2);
-    when(thisRouteTimetable.timeAtStop(changeStop1)).thenReturn(10*60 + 32);
-    when(thisRouteTimetable.timeAtStop(changeStop2)).thenReturn(10*60 + 45);
-    routeTimetables.add(thisRouteTimetable);
-
-    // (4) RT for validRoute3 @ 10.25am
-    thisRouteTimetable = mock(RouteTimetable.class);
-    when(thisRouteTimetable.getRoute()).thenReturn(validRoute2);
-    when(thisRouteTimetable.timeAtStop(changeStop1)).thenReturn(10*60 + 25);
-    when(thisRouteTimetable.timeAtStop(changeStop2)).thenReturn(10*60 + 36);
-    routeTimetables.add(thisRouteTimetable);
-
-    // (5) RT for validRoute4 @ 10.32am
-    thisRouteTimetable = mock(RouteTimetable.class);
-    when(thisRouteTimetable.getRoute()).thenReturn(validRoute2);
-    when(thisRouteTimetable.timeAtStop(changeStop1)).thenReturn(10*60 + 32);
-    when(thisRouteTimetable.timeAtStop(changeStop2)).thenReturn(10*60 + 45);
-    routeTimetables.add(thisRouteTimetable);
-
-    // (6) RT for validRoute4 @ 10.42am
-    thisRouteTimetable = mock(RouteTimetable.class);
-    when(thisRouteTimetable.getRoute()).thenReturn(validRoute2);
-    when(thisRouteTimetable.timeAtStop(changeStop1)).thenReturn(10*60 + 42);
-    when(thisRouteTimetable.timeAtStop(changeStop2)).thenReturn(10*60 + 55);
-    routeTimetables.add(thisRouteTimetable);
-
-    // (7) RT for validRoute4 @ 10.52am
-    thisRouteTimetable = mock(RouteTimetable.class);
-    when(thisRouteTimetable.getRoute()).thenReturn(validRoute2);
-    when(thisRouteTimetable.timeAtStop(changeStop1)).thenReturn(10*60 + 52);
-    when(thisRouteTimetable.timeAtStop(changeStop2)).thenReturn(11*60 + 5);
-    routeTimetables.add(thisRouteTimetable);
-
-    // Create 2d array containing indiced of RTs for valid routes.
-    validRouteTimetables = new ArrayList<>();
-    int[][] indices = new int[][] {
-      {0, 2, 5},
-      {0, 4, 6},
-      {0, 3, 7},
-      {1, 4, 6},
-      {1, 3, 7}
+  @BeforeClass
+  public static void setUpClass() {
+    // Define stops/nodes
+    nodes = new Stop[] {
+      new Stop(1, "N1", 0, 0),
+      new Stop(2, "N2", 0, 0),
+      new Stop(3, "N3", 0, 0),
+      new Stop(4, "N4", 0, 0),
+      new Stop(5, "N5", 0, 0),
+      new Stop(6, "N6", 0, 0),
+      new Stop(7, "N7", 0, 0)
     };
-    for (int[] is : indices) {
-      List<RouteTimetable> thisRTList = new ArrayList<>();
-      for (int i : is) {
-        thisRTList.add(routeTimetables.get(i));
+    routes = new Route[5];
+
+    routes[0] = new Route("L1", "N1 - N3", nodes[0]);
+    routes[0].addStop(nodes[1], 12, 12);
+    routes[0].addStop(nodes[2], 11, 11);
+
+    routes[1] = new Route("L2", "N4 - N2", nodes[3]);
+    routes[1].addStop(nodes[0], 13, 13);
+    routes[1].addStop(nodes[1], 12, 12);
+
+    routes[2] = new Route("L3", "N4 - N5", nodes[3]);
+    routes[2].addStop(nodes[4], 10, 10);
+
+    routes[3] = new Route("L4", "N6 - N7", nodes[5]);
+    routes[3].addStop(nodes[6], 14, 14);
+
+    routes[4] = new Route("L5", "N1 - N7", nodes[0]);
+    routes[4].addStop(nodes[6], 12, 12);
+
+    walks = new Walk[8];
+
+    // Create walking paths
+    walks[0] = new Walk(nodes[3], nodes[6]) {
+      @Override
+      public int walkingTime() {
+        return 1;
       }
-      validRouteTimetables.add(thisRTList);
+    };
+    walks[1] = new Walk(nodes[6], nodes[3]) {
+      @Override
+      public int walkingTime() {
+        return 1;
+      }
+    };
+    walks[2] = new Walk(nodes[2], nodes[4]) {
+      @Override
+      public int walkingTime() {
+        return 2;
+      }
+    };
+    walks[3] = new Walk(nodes[4], nodes[2]) {
+      @Override
+      public int walkingTime() {
+        return 2;
+      }
+    };
+    walks[4] = new Walk(nodes[2], nodes[5]) {
+      @Override
+      public int walkingTime() {
+        return 3;
+      }
+    };
+    walks[5] = new Walk(nodes[5], nodes[2]) {
+      @Override
+      public int walkingTime() {
+        return 3;
+      }
+    };
+    walks[6] = new Walk(nodes[4], nodes[5]) {
+      @Override
+      public int walkingTime() {
+        return 1;
+      }
+    };
+    walks[7] = new Walk(nodes[5], nodes[4]) {
+      @Override
+      public int walkingTime() {
+        return 1;
+      }
+    };
+
+    services = new ArrayList<>();
+    for (int i = 0; i < 5; i++) {
+      services.add(routes[i]);
+    }
+    for (int i = 0; i < 8; i++) {
+      services.add(walks[i]);
     }
 
-    itineraryFinder = new ItineraryFinder(startingStop, endingStop, routeFindDateTime);
+    schedule = new Schedule(
+        new GregorianCalendar(2015, GregorianCalendar.JANUARY, 1).getTime(),
+        new GregorianCalendar(2015, GregorianCalendar.DECEMBER, 31).getTime(),
+        Schedule.DayOptions.WEEKDAYS
+        );
+
+    RouteTimetable rt;
+    Route r;
+
+    r = routes[0];
+    rt = new RouteTimetable(r, schedule, 6 * 60 + 2, false);
+    rt = new RouteTimetable(r, schedule, 6 * 60 + 8, false);
+    rt = new RouteTimetable(r, schedule, 6 * 60 + 13, false);
+    rt = new RouteTimetable(r, schedule, 6 * 60 + 18, false);
+    rt = new RouteTimetable(r, schedule, 6 * 60 + 22, false);
+
+    r = routes[1];
+    rt = new RouteTimetable(r, schedule, 6 * 60 + 5, false);
+    rt = new RouteTimetable(r, schedule, 6 * 60 + 15, false);
+    rt = new RouteTimetable(r, schedule, 6 * 60 + 25, false);
+    rt = new RouteTimetable(r, schedule, 6 * 60 + 33, false);
+    rt = new RouteTimetable(r, schedule, 6 * 60 + 41, false);
+
+    r = routes[2];
+    rt = new RouteTimetable(r, schedule, 6 * 60 + 5, false);
+    rt = new RouteTimetable(r, schedule, 6 * 60 + 10, false);
+    rt = new RouteTimetable(r, schedule, 6 * 60 + 15, false);
+    rt = new RouteTimetable(r, schedule, 6 * 60 + 20, false);
+    rt = new RouteTimetable(r, schedule, 6 * 60 + 23, false);
+
+    r = routes[3];
+    rt = new RouteTimetable(r, schedule, 6 * 60 + 2, false);
+    rt = new RouteTimetable(r, schedule, 6 * 60 + 10, false);
+    rt = new RouteTimetable(r, schedule, 6 * 60 + 18, false);
+    rt = new RouteTimetable(r, schedule, 6 * 60 + 26, false);
+    rt = new RouteTimetable(r, schedule, 6 * 60 + 30, false);
+
+    r = routes[4];
+    rt = new RouteTimetable(r, schedule, 6 * 60, false);
+    rt = new RouteTimetable(r, schedule, 6 * 60 + 3, false);
+    rt = new RouteTimetable(r, schedule, 6 * 60 + 6, false);
+    rt = new RouteTimetable(r, schedule, 6 * 60 + 9, false);
+    rt = new RouteTimetable(r, schedule, 6 * 60 + 12, false);
+  }
+
+  @AfterClass
+  public static void tearDownClass() {
+    for (Stop s : new ArrayList<Stop>(Stop.getAllStops())) {
+      Stop.removeStop(s);
+    }
+    for (Schedule s : new ArrayList<Schedule>(Schedule.getAllSchedules())) {
+      Schedule.removeSchedule(s);
+    }
+    for (Path p : new ArrayList<Path>(Path.getAllPaths())) {
+      Path.removePath(p);
+    }
   }
 
   /**
-   * Test the findPaths method.
+   * Test the findBestItinerary method.
    *
-   * The findPaths method returns a nested list of a list of routes, each
-   * representing one path between two desired stops. It should return a list 
-   * of routes, sorted by the number of different routes contained, with the
-   * paths containing the fewest routes coming first.
+   * This test finds the best itinerary for a journey between N1 and N5 at 
+   * 6:02am on Weds 2nd December 2015.
+   *
+   * There are a number of itineraries which could be used to make the trip:
+   *
+   *  Option 1
+   *  --------
+   *  L1 from N1 at 6:02am - N3 at 6:25am;
+   *  walk from N3 at 6:25am - N5 at 6:27am
+   *
+   *  Option 2
+   *  --------
+   *  L2 from N1 at 6:18am - N2 at 6:30am;
+   *  L1 from N2 at 6:34am - N3 at 6:45am;
+   *  walk from N3 at 6:45am - N5 at 6:47am
+   *
+   *  Option 3
+   *  --------
+   *  L5 from N1 at 6:03am - N7 at 6:15am;
+   *  walk from N7 at 6:15am - N4 at 6:16am;
+   *  L3 from N4 at 6:20am - N5 at 6:30am
+   *
+   * It can be seen that Option 1 is the best option, being 3 minutes faster
+   * than Option 3, and 18 minutes faster than option 2. It is therefore
+   * expected that this method will return an itinerary describing Option 1.
    */
   @Test
-  @Ignore
-  public void testFindPaths() {
-    List<List<Route>> actualList = itineraryFinder.findPaths();
-    List<List<Route>> expectedList = validPaths;
-
-    if (actualList.size() != expectedList.size()) {
-      String msg = "actual paths differ from expected paths: " +
-                   "actual paths are " + actualList +
-                   "expected paths are " + expectedList;
-      fail(msg);
-    }
-
-    for (int i = 0; i < actualList.size(); i++) {
-      if (!actualList.get(i).equals(expectedList.get(i))) {
-        String msg = "actual paths differ from expected paths: " +
-                     "actual path is " + actualList.get(i) +
-                     "expected path is " + expectedList.get(i);
-        fail(msg);
-      }
-    }
-  }
-
-  /**
-   * Test the findTimedPaths method.
-   *
-   * The findTimedPaths method finds buses running on the Routes determined by 
-   * the findPaths method which can be taken to make the desired trip. (This 
-   * method actually finds RouteTimetables, as this is what defines the timing 
-   * of a particular bus at a particular stop.)
-   */
-  @Test
-  @Ignore
-  public void testFindTimedPaths() {
-    List<List<RouteTimetable>> actualList = itineraryFinder.findTimedPaths();
-    List<List<RouteTimetable>> expectedList = validRouteTimetables;
-
-    if (actualList.size() != expectedList.size()) {
-      String msg = "actual bus lists differ from expected bus lists: " +
-                   "actual bus lists are " + actualList +
-                   "expected bus lists are " + expectedList;
-      fail(msg);
-    }
-
-    for (int i = 0; i < actualList.size(); i++) {
-      if (!actualList.get(i).equals(expectedList.get(i))) {
-        String msg = "actual bus lists differ from expected bus lists: " +
-                     "actual bus list is " + actualList.get(i) +
-                     "expected bus list is " + expectedList.get(i);
-        fail(msg);
-      }
-    }
+  public void testFindBestItinerary() {
+    // Create itinerary finder between N1 -> N5,
+    // at 6:02am on Weds 2nd December 2015
+    itineraryFinder = new ItineraryFinder(nodes[0], nodes[4], LocalDateTime.of(2015, Month.DECEMBER, 2, 6, 2, 0));
+    assertEquals(services.size(), Path.getAllPaths().size());
+    assertEquals(services, Path.getAllPaths());
+    List<JourneyLeg> expected = Arrays.asList(
+        new JourneyLeg(
+          schedule.nextDepartureRouteTimetable(60 * 6 + 2, nodes[0], routes[0]),
+          nodes[0],
+          nodes[2]
+          ),
+        new JourneyLeg(walks[2], 60 * 6 + 25)
+        );
+    List<JourneyLeg> actual = itineraryFinder.findBestItinerary();
+    assertEquals(expected, actual);
   }
 }

@@ -24,8 +24,7 @@ public class CostEstimator {
    */
   public static final int UNCONNECTED = 1_000_000;
 
-
-  private static HashMap<StopPair, Integer> costsTable;
+  private static HashMap<StopPair, Integer> costsTable = new HashMap<StopPair, Integer>();
 
   // Flag whether costs table has been initalized, and whether it has been
   // fully populated.
@@ -37,7 +36,7 @@ public class CostEstimator {
    *
    * This is solely used as a key in costsTable.
    */
-  private static class StopPair {
+  static class StopPair {
     
     private Stop s1;
     private Stop s2;
@@ -49,6 +48,17 @@ public class CostEstimator {
      * @param s2 second stop in pair
      */
     public StopPair(Stop s1, Stop s2) {
+      if (s1 == null || s2 == null) {
+        String msg = "cannot pass a null stop into StopPair - received null value for ";
+        if (s1 == null) {
+          msg += "s1";
+        } else if (s2 == null) {
+          msg += "s2";
+        } else {
+          msg += "???";
+        }
+        throw new IllegalArgumentException(msg);
+      }
       this.s1 = s1;
       this.s2 = s2;
     }
@@ -72,30 +82,36 @@ public class CostEstimator {
       return s2;
     }
 
+    public String toString() {
+      return "StopPair: " + s1 + ", " + s2;
+    }
 
     /**
      * Determine StopPair equality.
      *
-     * @return true if S1 == otherS1 and S2 == otherS2, else false
+     * @return true if S1 equals otherS1 and S2 equals otherS2, else false
      */
     public boolean equals(StopPair otherStopPair) {
-      return (getS1() == otherStopPair.getS1() &&
-              getS2() == otherStopPair.getS2());
+      return (getS1().equals(otherStopPair.getS1()) &&
+              getS2().equals(otherStopPair.getS2()));
     }
 
+    public boolean equals(Object o) {
+      if (o instanceof StopPair) {
+        return equals((StopPair) o);
+      } else {
+        return false;
+      }
+    }
     /**
      * Override hashCode method to ensure equivalent StopPairs are treated
      * as such as keys in HashMap.
-     *
-     * This method creates a number based on the ID# of s1 and the ID# of s2.
-     * It assumes that the ID# will never exceed 9999, which would be a huge
-     * number of stops for a system of this nature.
      *
      * @return hash value of this StopPair
      */
     @Override
     public int hashCode() {
-      return s1.getID() * 10_000 + s2.getID();
+      return getS1().getID() * 10_000 + getS2().getID();
     }
   }
 
@@ -178,14 +194,20 @@ public class CostEstimator {
    * @return H value for path between s1 & s2
    */
   private static int getH(Stop s1, Stop s2) {
-    return costsTable.get(new StopPair(s1, s2));
+    StopPair pair = new StopPair(s1, s2);
+    if (costsTable.get(pair) == null) {
+      return UNCONNECTED;
+    } else {
+      return costsTable.get(pair);
+    }
   }
 
   /**
    * Set the H value for stops s1 & s2.
    */
   private static void setH(Stop s1, Stop s2, int cost) {
-    costsTable.put(new StopPair(s1, s2), cost);
+    StopPair key = new StopPair(s1, s2);
+    costsTable.put(key, cost);
   }
 
   /**
@@ -202,12 +224,18 @@ public class CostEstimator {
     for (Path p : Path.getAllPaths()) {
       for (Stop s1 : p.getStops()) {
         for (Stop s2 : p.getStops()) {
+          int t = 0;
           try {
-            int t = p.journeyTimeBetweenStops(s1, s2, false);
-            costsTable.put(new CostEstimator.StopPair(s1, s2), t);
+            if (!s1.equals(s2)) {
+              t = p.journeyTimeBetweenStops(s1, s2, false);
+            }
           } catch (IllegalArgumentException e) {
-            // IllegalArgumentException thrown if no route between stops. If
-            costsTable.put(new CostEstimator.StopPair(s1, s2), UNCONNECTED);
+            // IllegalArgumentException thrown if no route between stops.
+            t = UNCONNECTED;
+          }
+          // Only set new value if lower than existing
+          if (t < getH(s1, s2)) {
+            setH(s1, s2, t);
           }
         }
       }
@@ -217,7 +245,7 @@ public class CostEstimator {
     for (Stop sK : Stop.getAllStops()) {
       for (Stop sI : Stop.getAllStops()) {
         for (Stop sJ : Stop.getAllStops()) {
-          if (getH(sI, sJ) > getH(sI, sK) + getH(sK, sJ)) {
+          if (!sI.equals(sJ) && getH(sI, sJ) > getH(sI, sK) + getH(sK, sJ)) {
             setH(sI, sJ, getH(sI, sK) + getH(sK, sJ));
           }
         }
@@ -225,4 +253,5 @@ public class CostEstimator {
     }
     setCostsTablePopulated();
   }
+
 }
