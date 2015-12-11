@@ -28,6 +28,7 @@ public class RouteTimetable {
         this.schedule = schedule;
         this.isRushHour = isrushhour;
         this.route = route;
+        schedule.addRouteTimetable(this);
     }
 
     /**
