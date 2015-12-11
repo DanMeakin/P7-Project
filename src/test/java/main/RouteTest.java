@@ -81,9 +81,9 @@ public class RouteTest {
 
   @After
   public void tearDown() {
-    route.remove();
-    routeWithStops.remove();
-    invertedRoute.remove();
+    for (Route r : Route.getAllRoutes()) {
+      r.remove();
+    }
   }
 
   /**
