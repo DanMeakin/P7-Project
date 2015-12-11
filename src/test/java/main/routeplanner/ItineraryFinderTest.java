@@ -95,13 +95,13 @@ public class ItineraryFinderTest {
   @BeforeClass
   public static void setUpClass() {
     // Clear all existing Stops, Paths & Schedules
-    for (Schedule s : Schedule.getAllSchedules()) {
+    for (Schedule s : new ArrayList<Schedule>(Schedule.getAllSchedules())) {
       Schedule.removeSchedule(s);
     }
-    for (Stop s : Stop.getAllStops()) {
+    for (Stop s : new ArrayList<Stop>(Stop.getAllStops())) {
       Stop.removeStop(s);
     }
-    for (Path p : Path.getAllPaths()) {
+    for (Path p : new ArrayList<Path>(Path.getAllPaths())) {
       Path.removePath(p);
     }
     // Define stops/nodes
