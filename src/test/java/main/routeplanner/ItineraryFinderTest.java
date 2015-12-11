@@ -94,6 +94,16 @@ public class ItineraryFinderTest {
    */
   @BeforeClass
   public static void setUpClass() {
+    // Clear all existing Stops, Paths & Schedules
+    for (Schedule s : Schedule.getAllSchedules()) {
+      Schedule.removeSchedule(s);
+    }
+    for (Stop s : Stop.getAllStops()) {
+      Stop.removeStop(s);
+    }
+    for (Path p : Path.getAllPaths()) {
+      Path.removePath(p);
+    }
     // Define stops/nodes
     nodes = new Stop[] {
       new Stop(1, "N1", 0, 0),
@@ -275,7 +285,7 @@ public class ItineraryFinderTest {
     // Create itinerary finder between N1 -> N5,
     // at 6:02am on Weds 2nd December 2015
     itineraryFinder = new ItineraryFinder(nodes[0], nodes[4], LocalDateTime.of(2015, Month.DECEMBER, 2, 6, 2, 0));
-    assertEquals(services.size(), Path.getAllPaths().size());
+    assertEquals("expected " + services.size() + ", actual " + Path.getAllPaths().size(), services.size(), Path.getAllPaths().size());
     assertEquals(services, Path.getAllPaths());
     List<JourneyLeg> expected = Arrays.asList(
         new JourneyLeg(
