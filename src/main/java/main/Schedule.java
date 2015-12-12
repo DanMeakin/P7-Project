@@ -6,7 +6,6 @@ import java.util.*;
  * The Schedule class defines schedule type objects that hold
  * characteristics of the schedule such as validFromDate, validToDate etc.
  * and implements several domain specific methods such as addRoutetimeTable.
- * @authors Ivo Hendriks, Janus Avbæk Larsen, Helle Hyllested Larsen, Dan Meakin.
  */
 public class Schedule {
   // the options for the days for which this schedule is valid
@@ -47,7 +46,7 @@ public class Schedule {
    *
    * @param schedule the schedule to add to the list
    */
-  public static void addSchedule(Schedule schedule) throws IllegalArgumentException {
+  private static void addSchedule(Schedule schedule) throws IllegalArgumentException {
     if (scheduleExists(schedule)) {
       String msg = schedule.getOperatingDay() + " Schedule for period is already defined";
       throw new IllegalArgumentException(msg);
@@ -64,6 +63,14 @@ public class Schedule {
     allSchedules.remove(schedule);
   }
 
+  /**
+   * Get all schedules within system.
+   *
+   * @return list of all schedules in system
+   */
+  public static List<Schedule> getAllSchedules() {
+    return allSchedules;
+  }
   /**
    * Find the schedule for a desired date and operating day.
    *
@@ -104,6 +111,45 @@ public class Schedule {
     }
     this.routeTimetableList.add(routeTimetable);
     this.busList.add(bus);
+  }
+
+  /**
+   * Determine the time of the next departure of a given route from a given stop.
+   *
+   * @param time the time from which to get next departure
+   * @param stop the stop from which departure is to take place
+   * @param route the route on which to travel
+   * @return the departure time (as an integer representing minutes since
+   *  midnight) of the next bus on route departing from stop
+   */
+  public int nextDepartureTime(int time, Stop stop, Route route) {
+    return nextDepartureRouteTimetable(time, stop, route).timeAtStop(stop);
+  }
+
+  /**
+   * Find the RouteTimetable on which the next departure of a route from a stop takes place.
+   *
+   * Similar to the nextDepartureTime method, this method finds the 
+   * RouteTimetable representing the next departure of a bus from a given stop
+   * after a particular point in time.
+   *
+   * @param time the time from which to get next departure
+   * @param stop the stop from which departure is to take place
+   * @param route the route on which to travel
+   * @return the RouteTimetable representing the next departure of the next bus
+   *  on the given route from the given stop
+   */
+  public RouteTimetable nextDepartureRouteTimetable(int time, Stop stop, Route route) {
+    int nextDepartureTime = 1_000_000; // Set time to initial high value
+    RouteTimetable nextDepartureRT = null;
+    List<RouteTimetable> rts = getAllocatedRouteTimetables(route);
+    for (RouteTimetable thisRT : rts) {
+      if (thisRT.timeAtStop(stop) >= time && thisRT.timeAtStop(stop) < nextDepartureTime) {
+        nextDepartureRT = thisRT;
+        nextDepartureTime = thisRT.timeAtStop(stop);
+      }
+    }
+    return nextDepartureRT;
   }
 
   /**
@@ -279,18 +325,22 @@ public class Schedule {
   /** 
    * Check if Schedule already exists within the system.
    *
-   * A Schedule already exists if the time period, or part of the time period,
-   * covered by the Schedule for the specified day option has already been
-   * covered by a Schedule within the system.
+   * A schedule already exists if:-
+   *
+   *  * Another schedule exists of the same type; and
+   *  * It does not end before the other schedule begins, or begin after the 
+   *    other schedule ends.
    *
    * @param schedule the schedule object to check for existence
    * @return true if Schedule already exists, else false.
    */
   private static boolean scheduleExists(Schedule schedule) {
-    for (Schedule s : allSchedules) {
-      boolean scheduleBeforeS = schedule.getValidToDate().before(s.getValidFromDate());
-      boolean scheduleAfterS = schedule.getValidFromDate().after(s.getValidToDate());
-      if (schedule.getOperatingDay() == s.getOperatingDay() && !(scheduleBeforeS || scheduleAfterS)) {
+    for (Schedule otherSchedule : allSchedules) {
+      boolean scheduleBeforeOther = schedule.getValidToDate().before(otherSchedule.getValidFromDate());
+      boolean scheduleAfterOther = schedule.getValidFromDate().after(otherSchedule.getValidToDate());
+      boolean sameScheduleType = schedule.getOperatingDay() == otherSchedule.getOperatingDay();
+      boolean withinOtherSchedule = !(scheduleBeforeOther || scheduleAfterOther);
+      if (sameScheduleType && withinOtherSchedule) {
         return true;
       }
     }

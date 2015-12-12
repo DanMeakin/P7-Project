@@ -21,9 +21,12 @@ import main.Schedule.DayOptions;
 
 public class ScheduleTest {
 
-  private static Schedule schedule;
-  private static Date scheduleStart;
-  private static Date scheduleEnd;
+  private static Date weekdayScheduleStart;
+  private static Date weekdayScheduleEnd;
+  private static Date saturdayScheduleStart;
+  private static Date saturdayScheduleEnd;
+  private static Date sundayScheduleStart;
+  private static Date sundayScheduleEnd;
 
   private static Schedule weekdaySchedule;
   private static Schedule saturdaySchedule;
@@ -46,7 +49,9 @@ public class ScheduleTest {
     when(mockedBus.equals(mockedBus)).thenReturn(true);
 
     mockedRoute1 = mock(Route.class);
+    when(mockedRoute1.equals(mockedRoute1)).thenReturn(true);
     mockedRoute2 = mock(Route.class);
+    when(mockedRoute2.equals(mockedRoute2)).thenReturn(true);
 
     mockedRouteTimetable = mock(RouteTimetable.class);
     when(mockedRouteTimetable.getRoute()).thenReturn(mockedRoute1);
@@ -61,6 +66,8 @@ public class ScheduleTest {
       } else {
         when(rt.getRoute()).thenReturn(mockedRoute2);
       }
+      // Define timeAtStop for nextDepartureRouteTimetable test
+      when(rt.timeAtStop(any(Stop.class))).thenReturn(10 * 60 + i * 5);
       busRouteTimetables.add(rt);
     }
 
@@ -70,23 +77,26 @@ public class ScheduleTest {
     anotherMockedBus = mock(Bus.class);
     when(anotherMockedBus.equals(anotherMockedBus)).thenReturn(true);
     
-    scheduleStart = new GregorianCalendar(2015, GregorianCalendar.JANUARY, 1).getTime();
-    scheduleEnd = new GregorianCalendar(2015, GregorianCalendar.DECEMBER, 31).getTime();
-    schedule = new Schedule(
-        scheduleStart,
-        scheduleEnd,
-        DayOptions.SATURDAY
-        );
+    weekdayScheduleStart = new GregorianCalendar(2016, GregorianCalendar.JANUARY, 1).getTime();
+    weekdayScheduleEnd = new GregorianCalendar(2016, GregorianCalendar.DECEMBER, 31).getTime();
+    saturdayScheduleStart = new GregorianCalendar(2015, GregorianCalendar.JANUARY, 1).getTime();
+    saturdayScheduleEnd = new GregorianCalendar(2015, GregorianCalendar.DECEMBER, 31).getTime();
+    sundayScheduleStart = new GregorianCalendar(2014, GregorianCalendar.JANUARY, 1).getTime();
+    sundayScheduleEnd = new GregorianCalendar(2014, GregorianCalendar.DECEMBER, 31).getTime();
 
     weekdaySchedule = new Schedule(
-        scheduleStart,
-        scheduleEnd,
+        weekdayScheduleStart,
+        weekdayScheduleEnd,
         DayOptions.WEEKDAYS
         );
-    saturdaySchedule = schedule;
+    saturdaySchedule = new Schedule(
+        saturdayScheduleStart,
+        saturdayScheduleEnd,
+        DayOptions.SATURDAY
+        );
     sundaySchedule = new Schedule(
-        scheduleStart,
-        scheduleEnd,
+        sundayScheduleStart,
+        sundayScheduleEnd,
         DayOptions.SUNDAY
         );
   }
@@ -94,24 +104,45 @@ public class ScheduleTest {
   @After
   public void tearDown() { 
     // This must be done to allow schedule to be recreated in next tests
-    Schedule.removeSchedule(schedule);
-    Schedule.removeSchedule(weekdaySchedule);
-    Schedule.removeSchedule(saturdaySchedule);
-    Schedule.removeSchedule(sundaySchedule);
+    List<Schedule> allSchedules = new ArrayList<>(Schedule.getAllSchedules());
+    for (Schedule s : allSchedules) {
+      Schedule.removeSchedule(s);
+    }
   }
 
   @Rule
   public ExpectedException thrown = ExpectedException.none();
 
   /**
-   * Test the creation of an invalid Schedule.
+   * Test the creation of a schedule overlapping with an earlier saturdaySchedule.
    *
    * The class should reject an attempt to create a Schedule for a period and
-   * operating day for which a Schedule has already been created.
+   * operating day for which a Schedule has already been created. In this case,
+   * the schedule has a partial overlap with an earlier saturdaySchedule.
    *
    */
   @Test
-  public void testCreateInvalidSchedule() {
+  public void testCreateScheduleOverlappingWithEarlier() {
+    thrown.expect(IllegalArgumentException.class);
+    String msg = "SUNDAY Schedule for period is already defined";
+    thrown.expectMessage(msg);
+    new Schedule(
+        new GregorianCalendar(2014, GregorianCalendar.JANUARY, 20).getTime(),
+        new GregorianCalendar(2015, GregorianCalendar.JANUARY, 19).getTime(),
+        DayOptions.SUNDAY
+        );
+  }
+
+  /**
+   * Test the creation of a schedule overlapping with a later saturdaySchedule.
+   *
+   * The class should reject an attempt to create a Schedule for a period and
+   * operating day for which a Schedule has already been created. In this case,
+   * the schedule has a partial overlap with a later saturdaySchedule.
+   *
+   */
+  @Test
+  public void testCreateScheduleOverlappingWithLater() {
     thrown.expect(IllegalArgumentException.class);
     String msg = "WEEKDAYS Schedule for period is already defined";
     thrown.expectMessage(msg);
@@ -119,6 +150,48 @@ public class ScheduleTest {
         new GregorianCalendar(2015, GregorianCalendar.JANUARY, 20).getTime(),
         new GregorianCalendar(2016, GregorianCalendar.JANUARY, 19).getTime(),
         DayOptions.WEEKDAYS
+        );
+  }
+
+  /**
+   * Test the creation of a schedule for a period falling within another.
+   *
+   * The class should reject an attempt to create a Schedule for a period and
+   * operating day for which a Schedule has already been created. In this case,
+   * the schedule falls wholly within a period defined by another.
+   *
+   */
+  @Test
+  public void testCreateScheduleWithinAnother() {
+    thrown.expect(IllegalArgumentException.class);
+    String msg = "SATURDAY Schedule for period is already defined";
+    thrown.expectMessage(msg);
+    new Schedule(
+        new GregorianCalendar(2015, GregorianCalendar.MAY, 3).getTime(),
+        new GregorianCalendar(2015, GregorianCalendar.JUNE, 30).getTime(),
+        DayOptions.SATURDAY
+        );
+  }
+
+  /**
+   * Test the creation of a schedule for a period wholly covering that of 
+   * another saturdaySchedule.
+   *
+   * The class should reject an attempt to create a Schedule for a period and
+   * operating day for which a Schedule has already been created. In this case,
+   * the schedule entirely covers the period of another schedule, with a period
+   * in addition to this also.
+   *
+   */
+  @Test
+  public void testCreateScheduleWhollyCoveringAnother() {
+    thrown.expect(IllegalArgumentException.class);
+    String msg = "SATURDAY Schedule for period is already defined";
+    thrown.expectMessage(msg);
+    new Schedule(
+        new GregorianCalendar(2014, GregorianCalendar.AUGUST, 15).getTime(),
+        new GregorianCalendar(2016, GregorianCalendar.FEBRUARY, 27).getTime(),
+        DayOptions.SATURDAY
         );
   }
 
@@ -131,24 +204,56 @@ public class ScheduleTest {
    */
   @Test
   public void testFindSchedule() {
-    Date sunday = new GregorianCalendar(2015, GregorianCalendar.MARCH, 1).getTime();
-    Date weekday = new GregorianCalendar(2015, GregorianCalendar.JUNE, 10).getTime();
+    Date weekday = new GregorianCalendar(2016, GregorianCalendar.SEPTEMBER, 14).getTime();
     Date saturday = new GregorianCalendar(2015, GregorianCalendar.NOVEMBER, 28).getTime();
+    Date sunday = new GregorianCalendar(2014, GregorianCalendar.MARCH, 9).getTime();
 
-    Schedule pastSchedule = new Schedule(
-        new GregorianCalendar(2014, GregorianCalendar.JANUARY, 1).getTime(),
-        new GregorianCalendar(2014, GregorianCalendar.DECEMBER, 31).getTime(), 
-        DayOptions.WEEKDAYS);
-    Schedule futureSchedule = new Schedule(
-        new GregorianCalendar(2016, GregorianCalendar.JANUARY, 1).getTime(),
-        new GregorianCalendar(2016, GregorianCalendar.DECEMBER, 31).getTime(), 
-        DayOptions.SATURDAY);
+    Date futureDate = new GregorianCalendar(2025, GregorianCalendar.OCTOBER, 7).getTime();
+    Date pastDate = new GregorianCalendar(2000, GregorianCalendar.JANUARY, 1).getTime();
+    Date weekday2015 = new GregorianCalendar(2015, GregorianCalendar.APRIL, 23).getTime();
 
-    assertEquals(Schedule.findSchedule(weekday), weekdaySchedule);
-    assertEquals(Schedule.findSchedule(saturday), saturdaySchedule);
-    assertEquals(Schedule.findSchedule(sunday), sundaySchedule);
+    assertEquals(weekdaySchedule, Schedule.findSchedule(weekday));
+    assertEquals(saturdaySchedule, Schedule.findSchedule(saturday));
+    assertEquals(sundaySchedule, Schedule.findSchedule(sunday));
+
+    assertEquals(null, Schedule.findSchedule(pastDate));
+    assertEquals(null, Schedule.findSchedule(futureDate));
+    assertEquals(null, Schedule.findSchedule(weekday2015));
   }
 
+  /**
+   * Test scheduleExists method.
+   *
+   * The scheduleExists method is a private method, called only through
+   * Schedule.addSchedule, which is called in-turn only by the constructor.
+   * To test the scheduleExists method, this test instantiates a number of
+   * different Schedules with properties testing the logic of the scheduleExists
+   * method.
+   */
+  @Test
+  public void testScheduleExists() {
+    try {
+      new Schedule(
+          new GregorianCalendar(2013, GregorianCalendar.DECEMBER, 1).getTime(),
+          new GregorianCalendar(2013, GregorianCalendar.DECEMBER, 31).getTime(),
+          DayOptions.SUNDAY
+          );
+      new Schedule(
+          new GregorianCalendar(2015, GregorianCalendar.JANUARY, 1).getTime(),
+          new GregorianCalendar(2015, GregorianCalendar.JANUARY, 31).getTime(),
+          DayOptions.SUNDAY
+          );
+    } catch (IllegalArgumentException e) {
+      return;
+    }
+  }
+
+  @Test
+  public void testGetAllSchedules() {
+    List<Schedule> expected = Arrays.asList(weekdaySchedule, saturdaySchedule, sundaySchedule);
+    List<Schedule> actual = Schedule.getAllSchedules();
+    assertEquals(expected, actual);
+  }
   /**
    * Test values of DayOptions enum.
    *
@@ -190,8 +295,8 @@ public class ScheduleTest {
    */
   @Test
   public void testAddRouteTimetable() {
-    schedule.addRouteTimetable(mockedRouteTimetable);
-    assertTrue(schedule.hasRouteTimetable(mockedRouteTimetable));
+    saturdaySchedule.addRouteTimetable(mockedRouteTimetable);
+    assertTrue(saturdaySchedule.hasRouteTimetable(mockedRouteTimetable));
   }
 
   /**
@@ -203,9 +308,9 @@ public class ScheduleTest {
    */
   @Test
   public void testAddRouteTimetableWithBus() {
-    schedule.addRouteTimetable(mockedRouteTimetable, mockedBus);
-    assertTrue(schedule.hasRouteTimetable(mockedRouteTimetable));
-    assertTrue(schedule.hasBus(mockedBus));
+    saturdaySchedule.addRouteTimetable(mockedRouteTimetable, mockedBus);
+    assertTrue(saturdaySchedule.hasRouteTimetable(mockedRouteTimetable));
+    assertTrue(saturdaySchedule.hasBus(mockedBus));
   }
 
   /**
@@ -218,7 +323,7 @@ public class ScheduleTest {
   public void testAddRouteTimetableWithNull() {
     thrown.expect(IllegalArgumentException.class);
     thrown.expectMessage("cannot add a null RouteTimetable");
-    schedule.addRouteTimetable(null);
+    saturdaySchedule.addRouteTimetable(null);
   }
 
   /**
@@ -231,15 +336,15 @@ public class ScheduleTest {
   @Test
   public void testHasBus() {
     // Try with empty schedule
-    assertFalse(schedule.hasBus(mockedBus));
+    assertFalse(saturdaySchedule.hasBus(mockedBus));
     // Add buses to schedule and try again
-    schedule.addRouteTimetable(anotherMockedRouteTimetable, anotherMockedBus);
-    schedule.addRouteTimetable(anotherMockedRouteTimetable);
-    schedule.addRouteTimetable(mockedRouteTimetable, mockedBus);
-    assertTrue(schedule.hasBus(mockedBus));
-    assertTrue(schedule.hasBus(anotherMockedBus));
+    saturdaySchedule.addRouteTimetable(anotherMockedRouteTimetable, anotherMockedBus);
+    saturdaySchedule.addRouteTimetable(anotherMockedRouteTimetable);
+    saturdaySchedule.addRouteTimetable(mockedRouteTimetable, mockedBus);
+    assertTrue(saturdaySchedule.hasBus(mockedBus));
+    assertTrue(saturdaySchedule.hasBus(anotherMockedBus));
     // Try with null
-    assertFalse(schedule.hasBus(null));
+    assertFalse(saturdaySchedule.hasBus(null));
   }
 
   /**
@@ -252,13 +357,13 @@ public class ScheduleTest {
   @Test
   public void testHasRouteTimetable() {
     // Try with empty schedule
-    assertFalse(schedule.hasRouteTimetable(mockedRouteTimetable));
+    assertFalse(saturdaySchedule.hasRouteTimetable(mockedRouteTimetable));
     // Add routetimetables and try again
-    schedule.addRouteTimetable(anotherMockedRouteTimetable);
-    schedule.addRouteTimetable(mockedRouteTimetable);
-    assertTrue(schedule.hasRouteTimetable(mockedRouteTimetable));
+    saturdaySchedule.addRouteTimetable(anotherMockedRouteTimetable);
+    saturdaySchedule.addRouteTimetable(mockedRouteTimetable);
+    assertTrue(saturdaySchedule.hasRouteTimetable(mockedRouteTimetable));
     // Try with null
-    assertFalse(schedule.hasRouteTimetable(null));
+    assertFalse(saturdaySchedule.hasRouteTimetable(null));
   }
 
   /**
@@ -270,10 +375,10 @@ public class ScheduleTest {
   @Test
   public void testGetAllocatedBus() {
     // Add other mocked RouteTimetable and Bus first
-    schedule.addRouteTimetable(anotherMockedRouteTimetable, anotherMockedBus);
+    saturdaySchedule.addRouteTimetable(anotherMockedRouteTimetable, anotherMockedBus);
 
-    schedule.addRouteTimetable(mockedRouteTimetable, mockedBus);
-    assertEquals(schedule.getAllocatedBus(mockedRouteTimetable), mockedBus);
+    saturdaySchedule.addRouteTimetable(mockedRouteTimetable, mockedBus);
+    assertEquals(saturdaySchedule.getAllocatedBus(mockedRouteTimetable), mockedBus);
   }
 
   /**
@@ -289,7 +394,7 @@ public class ScheduleTest {
       "\" is not found within Schedule";
     thrown.expect(IllegalArgumentException.class);
     thrown.expectMessage(msg);
-    schedule.getAllocatedBus(mockedRouteTimetable);
+    saturdaySchedule.getAllocatedBus(mockedRouteTimetable);
   }
 
   /**
@@ -301,13 +406,13 @@ public class ScheduleTest {
   @Test 
   public void testGetAllocatedRouteTimetablesWithBus() {
     // Add other mocked RouteTimetable and Bus first
-    schedule.addRouteTimetable(anotherMockedRouteTimetable, anotherMockedBus);
+    saturdaySchedule.addRouteTimetable(anotherMockedRouteTimetable, anotherMockedBus);
 
     // Add RouteTimetables with associated Bus
     for (RouteTimetable rt : busRouteTimetables) {
-      schedule.addRouteTimetable(rt, mockedBus);
+      saturdaySchedule.addRouteTimetable(rt, mockedBus);
     }
-    List<RouteTimetable> actualRouteTimetables = schedule.getAllocatedRouteTimetables(mockedBus);
+    List<RouteTimetable> actualRouteTimetables = saturdaySchedule.getAllocatedRouteTimetables(mockedBus);
     for (int i = 0; i < actualRouteTimetables.size(); i++) {
       assertEquals(actualRouteTimetables.get(i), busRouteTimetables.get(i));
     }
@@ -326,7 +431,7 @@ public class ScheduleTest {
       "\" is not found within Schedule";
     thrown.expect(IllegalArgumentException.class);
     thrown.expectMessage(msg);
-    schedule.getAllocatedRouteTimetables(mockedBus);
+    saturdaySchedule.getAllocatedRouteTimetables(mockedBus);
   }
 
   /**
@@ -338,14 +443,14 @@ public class ScheduleTest {
   @Test 
   public void testGetAllocatedRouteTimetablesWithRoute() {
     // Add RouteTimetables
-    schedule.addRouteTimetable(mockedRouteTimetable);
-    schedule.addRouteTimetable(anotherMockedRouteTimetable);
+    saturdaySchedule.addRouteTimetable(mockedRouteTimetable);
+    saturdaySchedule.addRouteTimetable(anotherMockedRouteTimetable);
     for (RouteTimetable rt : busRouteTimetables) {
-      schedule.addRouteTimetable(rt);
+      saturdaySchedule.addRouteTimetable(rt);
     }
 
-    List<RouteTimetable> actualRTforRoute1 = schedule.getAllocatedRouteTimetables(mockedRoute1);
-    List<RouteTimetable> actualRTforRoute2 = schedule.getAllocatedRouteTimetables(mockedRoute2);
+    List<RouteTimetable> actualRTforRoute1 = saturdaySchedule.getAllocatedRouteTimetables(mockedRoute1);
+    List<RouteTimetable> actualRTforRoute2 = saturdaySchedule.getAllocatedRouteTimetables(mockedRoute2);
     assertEquals(actualRTforRoute1.size(), 4);
     assertEquals(actualRTforRoute2.size(), 4);
   }
@@ -364,7 +469,7 @@ public class ScheduleTest {
       "\" is not found within Schedule";
     thrown.expect(IllegalArgumentException.class);
     thrown.expectMessage(msg);
-    schedule.getAllocatedRouteTimetables(anotherMockedRoute);
+    saturdaySchedule.getAllocatedRouteTimetables(anotherMockedRoute);
   }
 
   /**
@@ -409,7 +514,9 @@ public class ScheduleTest {
         fail("scheduled dates must not be empty");
       }
       for (Date d : actualDates) {
-        if (d.before(scheduleStart) || d.after(scheduleEnd)) {
+        if ((i == 0 && (d.before(weekdayScheduleStart) || d.after(weekdayScheduleEnd))) || 
+            (i == 1 && (d.before(saturdayScheduleStart) || d.after(saturdayScheduleEnd))) ||
+            (i == 2 && (d.before(sundayScheduleStart) || d.after(sundayScheduleEnd)))) {
           String msg = "schedule dates contains dates outside of the " + 
             "specified date range for the schedule: " + d;
           fail(msg);
@@ -420,6 +527,36 @@ public class ScheduleTest {
       }
     }
   } 
+
+  /**
+   * Test the nextDepartureRouteTimetable method.
+   *
+   * The nextDepartureRouteTimetable method returns a route timetable which
+   * represents the RT of the next service departing a given stop on or after
+   * a given time.
+   */
+  @Test
+  public void testNextDepartureRouteTimetable() {
+    // Add all route timetables to schedule in a semi-random order
+    // The order is picked to test all logical options in method
+    int[] indices = new int[] {0, 2, 4, 5, 3, 1};
+    for (int i = 0; i < 6; i++) {
+      saturdaySchedule.addRouteTimetable(busRouteTimetables.get(indices[i]));
+    }
+    assertEquals(saturdaySchedule.nextDepartureRouteTimetable(10 * 60 + 9, mock(Stop.class), mockedRoute1), busRouteTimetables.get(2));
+    assertEquals(saturdaySchedule.nextDepartureRouteTimetable(10 * 60 + 18, mock(Stop.class), mockedRoute2), busRouteTimetables.get(4));
+  }
+
+  /**
+   * Test the nextDepartureTime method.
+   *
+   * This method relies upon the nextDepartureRouteTimetable method, and this
+   * test reflects this.
+   */
+  @Test
+  public void testNextDepartureTime() { testNextDepartureRouteTimetable(); // Run test to create dependent variables
+    assertEquals(saturdaySchedule.nextDepartureTime(10 * 60 + 9, mock(Stop.class), mockedRoute1), 10 * 60 + 10);
+  }
 
   /**
    * Helper method to determine numerical day of week from a date.
