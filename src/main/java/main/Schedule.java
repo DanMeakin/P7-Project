@@ -3,12 +3,18 @@ package main;
 import java.util.*;
 
 /**
- * The Schedule class defines schedule type objects that hold
- * characteristics of the schedule such as validFromDate, validToDate etc.
- * and implements several domain specific methods such as addRoutetimeTable.
+ * Defines a schedule which contains planned operations and scheduling of bus
+ * travel within the Aalborg area.
  */
 public class Schedule {
-  // the options for the days for which this schedule is valid
+  
+  /**
+   * Provides options for the day type on which a schedule operates.
+   *
+   * A schedule may operate on a weekday, a Saturday, a Sunday or
+   * a holiday (the last being a special case). This enum provides these values
+   * for use within a schedule instance.
+   */
   public static enum DayOptions {
     WEEKDAYS, SATURDAY, SUNDAY
   }
@@ -31,8 +37,8 @@ public class Schedule {
    * Creates a schedule.
    *
    * @param validFromDate the date from which this scedule is valid.
-   * @param validToDate the date to which this scedule is valid.
-   * @param operatingDay the days for which this schedule is valid.
+   * @param validToDate   the date to which this scedule is valid.
+   * @param operatingDay  the days for which this schedule is valid.
    */
   public Schedule (Date validFromDate, Date validToDate, DayOptions operatingDay) {
     this.validFromDate = validFromDate;
@@ -42,7 +48,7 @@ public class Schedule {
   }
 
   /**
-   * Add schedule to the allSchedules list.
+   * Adds schedule to the allSchedules list.
    *
    * @param schedule the schedule to add to the list
    */
@@ -55,7 +61,7 @@ public class Schedule {
   }
 
   /**
-   * Remove a schedule from the allSchedules list.
+   * Removes a schedule from list of all schedules.
    *
    * @param schedule the schedule to remove from the list
    */
@@ -64,18 +70,19 @@ public class Schedule {
   }
 
   /**
-   * Get all schedules within system.
+   * Gets all schedules within system.
    *
    * @return list of all schedules in system
    */
   public static List<Schedule> getAllSchedules() {
     return allSchedules;
   }
+
   /**
-   * Find the schedule for a desired date and operating day.
+   * Finds the schedule for a desired date and operating day.
    *
-   * @param date the date for which to obtain a schedule
-   * @return schedule applicable to the input date
+   * @param date the date for which a schedule is desired
+   * @return schedule in operation for the specified date
    */
   public static Schedule findSchedule (Date date) {
     for (Schedule s : allSchedules) {
@@ -89,8 +96,12 @@ public class Schedule {
   }
 
   /**
-   * Add a routeTimeTable to the schedule through the routeTimetableList
+   * Adds a routeTimeTable to the schedule through the routeTimetableList
    * without associating a bus with it.
+   *
+   * This method simply calls the 
+   * {@link #addRouteTimetable(RouteTimetable, Bus) addRouteTimetable} method
+   * with a null value for bus.
    *
    * @param routeTimetable the route timetable to add to the schedule.
    */
@@ -99,13 +110,15 @@ public class Schedule {
   }
 
   /**
-   * Add a routeTimeTable to the schedule through the routeTimetableList
+   * Adds a routeTimeTable to the schedule through the routeTimetableList
    * and associate a bus with it.
    *
    * @param routeTimetable the route timetable to add to the schedule.
    * @param bus the bus that will be associated with this routeTimeTable.
+   * @throws IllegalArgumentException if routeTimetable is null (a bus may
+   *                                  be null, however)
    */
-  public void addRouteTimetable(RouteTimetable routeTimetable, Bus bus) {
+  public void addRouteTimetable(RouteTimetable routeTimetable, Bus bus) throws IllegalArgumentException {
     if (routeTimetable == null) {
       throw new IllegalArgumentException("cannot add a null RouteTimetable");
     }
@@ -114,20 +127,39 @@ public class Schedule {
   }
 
   /**
-   * Determine the time of the next departure of a given route from a given stop.
+   * Allocates a bus to a particular RouteTimetable associated with schedule.
    *
-   * @param time the time from which to get next departure
-   * @param stop the stop from which departure is to take place
+   * @param routeTimetable the route timetable with which to associate bus
+   * @param bus            the bus to associate with the specified route 
+   *                       timetable
+   * @throws IllegalArgumentException if specified route timetable is not found
+   *                                  within schedule
+   */
+  public void allocateBus(RouteTimetable routeTimetable, Bus bus) throws IllegalArgumentException {
+    if (!hasRouteTimetable(routeTimetable)) {
+      String msg = "RouteTimetable " + routeTimetable + "is not within Schedule";
+      throw new IllegalArgumentException(msg);
+    }
+    int index = this.routeTimetableList.indexOf(routeTimetable);
+    this.busList.set(index, bus);
+  }
+
+  /**
+   * Determines the time of the next departure of a given route from a given stop.
+   *
+   * @param time  the time from which to get next departure
+   * @param stop  the stop from which departure is to take place
    * @param route the route on which to travel
    * @return the departure time (as an integer representing minutes since
-   *  midnight) of the next bus on route departing from stop
+   *         midnight) of the next bus on route departing from stop
    */
   public int nextDepartureTime(int time, Stop stop, Route route) {
     return nextDepartureRouteTimetable(time, stop, route).timeAtStop(stop);
   }
 
   /**
-   * Find the RouteTimetable on which the next departure of a route from a stop takes place.
+   * Finds the RouteTimetable on which the next departure of a route from a
+   * stop takes place.
    *
    * Similar to the nextDepartureTime method, this method finds the 
    * RouteTimetable representing the next departure of a bus from a given stop
@@ -153,14 +185,13 @@ public class Schedule {
   }
 
   /**
-   * Get the bus associated with a route timetable.
+   * Gets the bus associated with a route timetable.
    *
    * @param routeTimetable the route timetable to find the assiated bus for.
-   *
-   * @return busList.get(i) the entry in busList holding the bus associated
-   * with the routeTimetable.
-   *
-   * @exception msg if the routeTimetable is not assoiated with the schedule.
+   * @return the entry in busList holding the bus associated
+   *         with the routeTimetable.
+   * @throws IllegalArgumentException if the routeTimetable is not associated 
+   *                                  with the schedule.
    */
   public Bus getAllocatedBus(RouteTimetable routeTimetable) throws IllegalArgumentException {
     String msg = "RouteTimetable \"" + routeTimetable + 
@@ -174,14 +205,14 @@ public class Schedule {
   }
 
   /**
-   * Get the route timetable that a bus is allocated to.
+   * Gets the route timetable that a bus is allocated to.
    *
    * @param bus the bus to find the allocated route timetable for.
    *
    * @return allocatedRouteTimetables a list of all route timetables
-   * associated with the bus.
+   *         associated with the bus.
    *
-   * @exception msg if busList is empty.
+   * @throws IllegalArgumentException if busList is empty.
    */
   public List<RouteTimetable> getAllocatedRouteTimetables(Bus bus) throws IllegalArgumentException {
     List<RouteTimetable> allocatedRouteTimetables = new ArrayList<>();
@@ -199,13 +230,13 @@ public class Schedule {
   }
 
   /**
-   * Get the route timetables for a given route.
+   * Gets the route timetables for a given route.
    *
    * @param route the route to find allocated route timetables for.
    *
    * @return a list of all route timetables for the route
    *
-   * @exception msg if busList is empty.
+   * @throws IllegalArgumentException if busList is empty.
    */
   public List<RouteTimetable> getAllocatedRouteTimetables(Route route) throws IllegalArgumentException {
     List<RouteTimetable> allocatedRouteTimetables = new ArrayList<>();
@@ -224,7 +255,7 @@ public class Schedule {
 
 
   /**
-   * Check whether a route timetable is associated with a schedule.
+   * Checks whether a route timetable is associated with a schedule.
    *
    * @param routeTimetable the route timetible to check association for.
    *

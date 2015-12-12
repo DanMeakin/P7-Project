@@ -327,6 +327,21 @@ public class ScheduleTest {
   }
 
   /**
+   * Test allocateBus method.
+   *
+   * The allocateBus method is used to allocate a bus to a RouteTimetable
+   * where either no bus is allocated to a particular RouteTimetable or where
+   * the allocation requires to change.
+   */
+  @Test
+  public void testAllocateBus() {
+    saturdaySchedule.addRouteTimetable(mockedRouteTimetable);
+    saturdaySchedule.allocateBus(mockedRouteTimetable, mockedBus);
+    assertTrue(saturdaySchedule.hasBus(mockedBus));
+    assertEquals(saturdaySchedule.getAllocatedBus(mockedRouteTimetable), mockedBus);
+  }
+
+  /**
    * Test hasBus method.
    *
    * The hasBus method tests whether a bus is allocated within a Schedule.
