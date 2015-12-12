@@ -6,6 +6,10 @@ import java.util.*;
  * couples routes with timings.
  */
 public class RouteTimetable {
+    /** counter for generating unique ID's for each route timetable  */
+    private static int routeTimetableCounter = 0;
+    /** the unique ID number for this route timetable  */
+    public final int routeTimetableID;
     /** the route associated with the route timetable  */
     private final Route route;
     /** the start time for the route timetable  */
@@ -29,6 +33,7 @@ public class RouteTimetable {
         this.isRushHour = isrushhour;
         this.route = route;
         schedule.addRouteTimetable(this);
+        this.routeTimetableID = routeTimetableCounter++;
     }
 
     /**
@@ -52,10 +57,19 @@ public class RouteTimetable {
     /**
      * Get route for a route timetable.
      *
-     * @return route the route for the route timetable
+     * @return route the route for the route timetable.
      */
     public Route getRoute(){
         return this.route;
+    }
+
+    /**
+     * Get ID for a route timetable.
+     *
+     * @return routeTimetableID the ID for the route timetable.
+     */
+    public int getRouteTimetableID(){
+        return this.routeTimetableID;
     }
 
     /**

@@ -1,5 +1,6 @@
 package main;
 
+import java.text.DecimalFormat;
 import java.util.*;
 import java.util.Date;
 import java.util.Observable;
@@ -308,7 +309,7 @@ public class Bus extends Observable {
   /**
    * Set a bus to be on a route timetable.
    *
-   * @param rt the route rimetable the bus is set to be at.
+   * @param rt the route timetable the bus is set to be at.
    */
   private void setRouteTimetable(RouteTimetable rt) {
     this.route = rt;
@@ -348,6 +349,12 @@ public class Bus extends Observable {
    */
   public boolean isOnRoute() {
     return (getRouteTimetable() != null);
+  }
+
+  public double getOccupationRate(){
+    DecimalFormat rateFormat = new DecimalFormat("#.00");
+    double occupiedCapacity = (Math.round( (double) this.getNumPassengers() / (double) this.getTotalCapacity()*100)/100d);
+    return occupiedCapacity;
   }
 
   /**
