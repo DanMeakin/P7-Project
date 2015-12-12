@@ -247,6 +247,7 @@ public class CapacityDataStoreTest {
 
     }
     @Test
+    @Ignore
     public void testWriteBusStateChange() {
         String[] expectedBusData = new String[buses.size()];
         for (int i = 0; i < buses.size(); i++) {
