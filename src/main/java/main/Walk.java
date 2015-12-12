@@ -18,6 +18,8 @@ public class Walk extends Path {
 
   /**
    * Get WALKING_SPEED value.
+   *
+   * @return value of WALKING_SPEED constant in metres per hour
    */
   public static int getWalkingSpeed() {
     return WALKING_SPEED;

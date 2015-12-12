@@ -103,7 +103,7 @@ public class Stop {
    * This method uses the .distanceBetweenStops method to calculate the
    * distance to another stop from the receiver of the call.
    *
-   * See {@link Stop.distanceBetweenStops}.
+   * See {@link #distanceBetweenStops(Stop, Stop) distanceBetweenStops}.
    *
    * @param otherStop the stop to calculate the distance to
    * @return the distance to the other stop in metres
