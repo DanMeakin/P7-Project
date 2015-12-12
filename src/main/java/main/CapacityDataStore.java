@@ -55,7 +55,7 @@ public class CapacityDataStore {
                 System.out.println("Bus has no RouteTimetable associated with it");
             }
             writer.write((bus.getRouteTimetable().getRoute().getDescription() + ","));
-            writer.write((bus.getRouteTimetable().getRouteTimetableID() + ","));
+            writer.write((bus.getRouteTimetable().getID() + ","));
             try{
                 writer.write((bus.getStop().getID() + ","));
             }

@@ -257,7 +257,7 @@ public class CapacityDataStoreTest {
 
             expectedBusData[i] = (CapacityDataStore.getCurrentDayMonth() + "," + CapacityDataStore.getCurrentTime() + "," + buses.get(i).getFleetNumber() + "," +
                     buses.get(i).getRouteTimetable().getRoute().getNumber() + "," + buses.get(i).getRouteTimetable().getRoute().getDescription() + "," +
-                    buses.get(i).getRouteTimetable().getRouteTimetableID() + "," + buses.get(i).getStop().getID() + "," + buses.get(i).getStop().getName() + "," +
+                    buses.get(i).getRouteTimetable().getID() + "," + buses.get(i).getStop().getID() + "," + buses.get(i).getStop().getName() + "," +
                     buses.get(i).getNumPassengersExited() + "," + buses.get(i).getNumPassengersBoarded() + "," + buses.get(i).getNumPassengers() + "," +
                     buses.get(i).getOccupationRate() + ",");
 
