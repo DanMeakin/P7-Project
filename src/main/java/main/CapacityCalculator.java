@@ -6,11 +6,21 @@ import org.apache.commons.math3.stat.regression.SimpleRegression;
 
 public class CapacityCalculator {
 
-    Date toDate;
-    Date fromDate;
+    private Date toDate;
+    private Date fromDate;
 
     private RouteTimetable routeTimetable;
     private Stop requestedStop;
+    private Stop currentStop = routeTimetable.getAllocatedBus().getLastStop();
+
+    private List<String> historicRequestedStopSeatedOccupation = CapacityDataStoreReader.filterHistoricStopData(fromDate, toDate, routeTimetable, requestedStop, CapacityDataStoreWriter.ColumnHeaderNames.SEATED_OCCUPATION_RATE);
+    private List<String> historicRequestedStopTotalOccupation = CapacityDataStoreReader.filterHistoricStopData(fromDate, toDate, routeTimetable, requestedStop, CapacityDataStoreWriter.ColumnHeaderNames.TOTAL_OCCUPATION_RATE);
+
+    private List<String> historicCurrentStopSeatedOccupation = CapacityDataStoreReader.filterHistoricStopData(fromDate, toDate, routeTimetable, currentStop, CapacityDataStoreWriter.ColumnHeaderNames.SEATED_OCCUPATION_RATE);
+    private List<String> historicCurrentStopTotalOccupation = CapacityDataStoreReader.filterHistoricStopData(fromDate, toDate, routeTimetable, currentStop, CapacityDataStoreWriter.ColumnHeaderNames.TOTAL_OCCUPATION_RATE);
+
+    private double currentSeatedOccupation = routeTimetable.getAllocatedBus().getSeatedOccupationRate();
+    private double currentTotalOccupation = routeTimetable.getAllocatedBus().getTotalOccupationRate();
 
     //should be the same through runtime, breaks comparison otherwise.
     private final double crowdednessFactor;
@@ -21,16 +31,16 @@ public class CapacityCalculator {
         GREEN, ORANGE, RED
     }
 
-    public CapacityCalculator(Double crowdednessFactor, Stop requestedStop, RouteTimetable routeTimetable) {
+    public CapacityCalculator(Double crowdednessFactor,  RouteTimetable routeTimetable, Stop requestedStop) {
         this.crowdednessFactor = crowdednessFactor;
         this.routeTimetable = routeTimetable;
         this.requestedStop = requestedStop;
+
         toDate = getToDate();
         fromDate = getFromDate();
     }
 
     public crowdednessIndicator getCrowdednessIndicator() {
-        pickCalculator();
             if(pickCalculator().get(0) <= 0) {
                 return crowdednessIndicator.GREEN;
             }
@@ -41,93 +51,81 @@ public class CapacityCalculator {
     }
 
     public List<Double> pickCalculator(){
+        List<Double> crowdednessPrediction = new ArrayList<>();
         if(routeTimetable.getAllocatedBus() != null){
-            Stop currentStop;
-            currentStop = routeTimetable.getAllocatedBus().getStop();
-            return calculateCrowdedness(fromDate, toDate, routeTimetable, currentStop, requestedStop);
+            crowdednessPrediction.add(calculateCrowdedness(true, fromDate, toDate, routeTimetable, currentStop, requestedStop));
+            crowdednessPrediction.add(calculateCrowdedness(false, fromDate, toDate, routeTimetable, currentStop, requestedStop));
+            return crowdednessPrediction;
         }
-        return calculateCrowdedness(fromDate, toDate, routeTimetable, requestedStop);
+        crowdednessPrediction.add(calculateCrowdedness(true, fromDate, toDate, routeTimetable, requestedStop));
+        crowdednessPrediction.add(calculateCrowdedness(false, fromDate, toDate, routeTimetable, requestedStop));
+        return crowdednessPrediction;
     }
 
     /*
     * Relies on org.apache.commons.math3
     */
-    public List<Double> calculateCrowdedness(Date fromDate, Date toDate, RouteTimetable routeTimetable, Stop currentStop, Stop requestedStop) throws IllegalArgumentException {
-
-        List<List<Double>> requestedStopHistoricData = new ArrayList<>(CapacityDataStoreWriter.readHistoricRequestedStopCrowdedness(fromDate, toDate, routeTimetable, requestedStop));
-
-        List<List<Double>> currentStopHistoricData = new ArrayList<>(CapacityDataStoreWriter.readHistoricCurrentStopCrowdedness(fromDate, toDate, routeTimetable, requestedStop, currentStop));
+    public Double calculateCrowdedness(boolean occupationSeated, Date fromDate, Date toDate, RouteTimetable routeTimetable, Stop currentStop, Stop requestedStop) throws IllegalArgumentException {
 
         SimpleRegression simpleRegression = new SimpleRegression();
 
-        if (!requestedStopHistoricData.isEmpty() && !currentStopHistoricData.isEmpty() && requestedStopHistoricData.size() == currentStopHistoricData.size()) {
+        List<Double> historicRequestedStopOccupationDouble = new ArrayList<>();
+        List<Double> historicCurrentStopOccupationDouble = new ArrayList<>();
 
-            List<List> sourceDataRequested = new ArrayList<>();
-            List<Double> sourceDataRequestedContent = new ArrayList();
-
-            List<List> sourceDataCurrent = new ArrayList<>();
-            List<Double> sourceDataCurrentContent = new ArrayList();
-            List<Double> resultData = new ArrayList<>();
-            List<Double> requestedStopHistoricDataSeated = new ArrayList<>();
-
-           forrequestedStopHistoricData.get(0))
-
-                for (int i = 0; i < requestedStopHistoricData) {
-                    System.out.println(c.getName());
-                }
+        if (occupationSeated) {
+            compareListSizes(historicRequestedStopSeatedOccupation, historicCurrentStopSeatedOccupation);
+            for (int i = 0; i < historicRequestedStopSeatedOccupation.size(); i++) {
+                historicRequestedStopOccupationDouble.add(Double.parseDouble(historicRequestedStopSeatedOccupation.get(i)));
+                historicCurrentStopOccupationDouble.add(Double.parseDouble(historicCurrentStopSeatedOccupation.get(i)));
             }
-
-            Iterator<List<Double>> it = CapacityDataStoreWriter.readHistoricRequestedStopCrowdedness(getFromDate(), getToDate(), routeTimetable, requestedStop).iterator();
-                while(it.hasNext())
-                {
-                    Iterator<Double> itr = it.next().iterator();
-                    while(itr.hasNext())
-                    {
-                        resultData.add(simpleRegression(itr.next(), sourceDataRequested.itr.next();
-                    }
-                    simpleRegression.clear();
-                }
-
-            for(List<String> csv : csvList)
-            {
-                //dumb logic to place the commas correctly
-                if(!csv.isEmpty())
-                {
-                    System.out.print(csv.get(0));
-                    for(int i=1; i < csv.size(); i++)
-                    {
-                        System.out.print("," + csv.get(i));
-                    }
-                }
-                System.out.print("\n");
-
-
-
-            for (int i = 0; i < sourceDataRequested.size(); i++) {
-                sourceDataRequested.add(requestedStopHistoricData.get(i));
-                sourceDataCurrent.add(currentStopHistoricData.get(i));
-                for (int j = 0; j < sourceDataRequested.size(); j++) {
-                    sourceDataCurrent.get(i);
-                    sourceDataCurrentContent.add(sourceDataCurrent.get(j));
-                }
+            for (int i = 0; i < historicRequestedStopOccupationDouble.size(); i++) {
+                simpleRegression.addData(historicRequestedStopOccupationDouble.get(i), historicCurrentStopOccupationDouble.get(i));
             }
+            return (Math.round((simpleRegression.predict(currentSeatedOccupation)) * crowdednessFactor) * 100) / 100d;
         }
-        return (Math.round( (simpleRegression.predict(currentCrowdedness))*crowdednessFactor) *100)/100d;
-        //(Math.round( (simpleRegressionTotal.predict(currentCrowdedness))*crowdednessFactor) *100)/100d;
+        compareListSizes(historicRequestedStopTotalOccupation, historicCurrentStopTotalOccupation);
+        for (int i = 0; i < historicRequestedStopTotalOccupation.size(); i++) {
+            historicRequestedStopOccupationDouble.add(Double.parseDouble(historicRequestedStopTotalOccupation.get(i)));
+            historicCurrentStopOccupationDouble.add(Double.parseDouble(historicCurrentStopTotalOccupation.get(i)));
+        }
+
+        for (int i = 0; i < historicRequestedStopOccupationDouble.size(); i++) {
+            simpleRegression.addData(historicRequestedStopOccupationDouble.get(i), historicCurrentStopOccupationDouble.get(i));
+        }
+        return (Math.round((simpleRegression.predict(currentTotalOccupation)) * crowdednessFactor) * 100) / 100d;
     }
 
-    public List<Double> calculateCrowdedness(Date fromDate, Date toDate, double crowdednessFactor, RouteTimetable routeTimetable, Stop requestedStop) {
 
-        List<Double> requestedStopHistoricData = new ArrayList<Double>(CapacityDataStoreWriter.readHistoricRequestedStopCrowdedness(getFromDate(), getToDate(), routeTimetable, requestedStop));
+    public Double calculateCrowdedness(boolean occupationSeated, Date fromDate, Date toDate, RouteTimetable routeTimetable, Stop RequestedStop) {
 
+        List<Double> historicRequestedStopOccupationDouble = new ArrayList<>();
         double averageCrowdedness = 0;
-        if (!requestedStopHistoricData.isEmpty()) {
-            for (Double dataPoint : requestedStopHistoricData) {
+
+        if (occupationSeated && !historicRequestedStopSeatedOccupation.isEmpty()) {
+            for (int i = 0; i < historicRequestedStopSeatedOccupation.size(); i++) {
+                historicRequestedStopOccupationDouble.add(Double.parseDouble(historicRequestedStopSeatedOccupation.get(i)));
+            }
+            for (Double dataPoint : historicRequestedStopOccupationDouble) {
                 averageCrowdedness += dataPoint;
             }
-            return averageCrowdedness / requestedStopHistoricData.get(0).size();
+            return (Math.round(averageCrowdedness / historicRequestedStopOccupationDouble.size() * crowdednessFactor) * 100) / 100d;
         }
-        return (Math.round( averageCrowdedness*crowdednessFactor) *100)/100d;
+        for (int i = 0; i < historicRequestedStopTotalOccupation.size(); i++) {
+            historicRequestedStopOccupationDouble.add(Double.parseDouble(historicRequestedStopTotalOccupation.get(i)));
+        }
+        for (Double dataPoint : historicRequestedStopOccupationDouble) {
+            averageCrowdedness += dataPoint;
+        }
+        return (Math.round(averageCrowdedness / historicRequestedStopOccupationDouble.size() * crowdednessFactor) * 100) / 100d;
+    }
+
+    public void compareListSizes(List<String> currentStopList, List<String> requestedStopList) {
+        for (int i = 0; i < currentStopList.size(); i++) {
+            if (!CapacityDataStoreReader.filterHistoricStopData(fromDate, toDate, routeTimetable, requestedStop, CapacityDataStoreWriter.ColumnHeaderNames.WRITE_DATE).get(i).
+                    equals(CapacityDataStoreReader.filterHistoricStopData(fromDate, toDate, routeTimetable, currentStop, CapacityDataStoreWriter.ColumnHeaderNames.WRITE_DATE).get(i))) {
+                currentStopList.remove(i);
+            }
+        }
     }
 
     public double getCrowdednessFactor(double cf){
@@ -138,12 +136,13 @@ public class CapacityCalculator {
         return calendar.getTime();
     }
 
-    private void setNumOfDaysFromNowForFromDate(int days){
-        numOfDaysFromCurrentForFromDate = days;
-    }
-
     public Date getFromDate(){
         calendar.add(Calendar.DATE, numOfDaysFromCurrentForFromDate);
         return calendar.getTime();
     }
+
+    private void setNumOfDaysFromNowForFromDate(int days){
+        numOfDaysFromCurrentForFromDate = days;
+    }
+
 }

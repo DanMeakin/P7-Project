@@ -3,9 +3,7 @@ package main;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.text.ParseException;
 
 public class CapacityDataStoreWriter {
@@ -75,8 +73,6 @@ public class CapacityDataStoreWriter {
         }
     }
 
-
-
     public static String getCurrentDayMonth(){
         Date date = new Date();
         SimpleDateFormat dayMonthYear = new SimpleDateFormat("dd/MM/yyyy");
@@ -97,31 +93,7 @@ public class CapacityDataStoreWriter {
         fileLocked = false;
     }
 
-    public static boolean lockStatus(){
+    public static boolean getLockStatus(){
         return fileLocked;
-    }
-
-    public static Date convertSimpleYearMonth(String simpleDate) {
-        String expectedPattern = "dd/MM/yyyy";
-        SimpleDateFormat formatter = new SimpleDateFormat(expectedPattern);
-        Date dayMonthYear = null;
-        try {
-            dayMonthYear = formatter.parse(simpleDate);
-        } catch (ParseException ex) {
-            ex.printStackTrace();
-        }
-    return dayMonthYear;
-    }
-
-    public static Date convertSimpleTime(String simpleDate) {
-        String expectedPattern = "HH:mm:ss Z";
-        SimpleDateFormat formatter = new SimpleDateFormat(expectedPattern);
-        Date time = null;
-        try {
-            time = formatter.parse(simpleDate);
-        } catch (ParseException ex) {
-            ex.printStackTrace();
-        }
-        return time;
     }
 }
