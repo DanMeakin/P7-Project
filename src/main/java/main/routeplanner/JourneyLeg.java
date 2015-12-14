@@ -52,20 +52,6 @@ public class JourneyLeg {
     this.endTime = startTime + walk.walkingTime();
   }
   
-  public String toString() {
-    String s;
-    if (walk != null) {
-      s = "JourneyLeg: walk from " + 
-        getOrigin() + " to " + getDestination() +
-      " at " + getStartTime();
-    } else {
-      s = "JourneyLeg: bus " + getRouteTimetable().getRoute() + " from " + 
-        getOrigin() + " to " + getDestination() + 
-        " at " + getRouteTimetable().timeAtStop(getOrigin());
-    }
-    return s;
-  }
-
   public String journeyLegType() {
     if (isWalk()) {
       return "walk";
