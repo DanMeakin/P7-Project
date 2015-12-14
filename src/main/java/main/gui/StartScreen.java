@@ -1,5 +1,6 @@
 package main.gui;
 
+import main.Stop;
 import org.jdesktop.swingx.JXDatePicker;
 import org.jdesktop.swingx.border.DropShadowBorder;
 
@@ -8,6 +9,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.*;
+import java.util.List;
 
 
 /**
@@ -39,7 +41,7 @@ public class StartScreen extends JFrame {
     }
 
     public StartScreen(){
-        super ("StartScreen");
+        super ("Compute My Commute");
         setSize (new Dimension(SCREEN_WIDTH,SCREEN_HEIGHT));
         setResizable(false);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -90,7 +92,7 @@ public class StartScreen extends JFrame {
         //pContentContainer.setPreferredSize();
         pContentContainer.setLayout(new CardLayout(15,0)); // sets hGap and vGap to 15 each
 
-        // Content
+         // Content
         JPanel pContent = new JPanel();
         pContent.setLayout(new FlowLayout(FlowLayout.LEADING));
         pContent.setBackground(Color.decode("#FAFAFA"));
@@ -120,8 +122,10 @@ public class StartScreen extends JFrame {
         // TODO: Make it possible to press enter so the dropdrown disapreares. Find a way to not show suggestions unless he user has begun typing and limit the amount of suggestions shown.
         // TODO: Set Default button!
         AutoComboBox fromBox = new AutoComboBox();
-        // TODO: Udskiftes med resultatsæt fra rejseplanen.
-        String[] itemArray = {"Boulevarden","Bornholmsgade", "Nytorv"};
+        // TODO: Udskiftes med resultatsæt fra rejseplanen. I dette tilfælde sæ
+        /*String[] itemArray = {"Boulevarden","Bornholmsgade", "Nytorv"};*/
+        List<Stop> stopList = Stop.
+        for ()
         fromBox.setKeyWord(itemArray);
         fromBox.setPreferredSize(new Dimension(230,30));
         fromBox.setBackground(Color.decode("#FAFAFA"));
@@ -350,15 +354,6 @@ public class StartScreen extends JFrame {
 
                 System.out.println(isSelected);
 
-                // Inline version af ovenstående(123)
-                // System.out.println(busFilter.getElements().nextElement().isSelected());
-
-
-
-
-
-
-
                 // Teksten nedenunder fjerner alt indhold og tilføjer nyt
                 changeScreen(getPage2());
             }
@@ -366,6 +361,7 @@ public class StartScreen extends JFrame {
         searchContainer.add(findBusButton);
 
         // Last add
+        /*pContentContainer.add(barSpacer);*/
         pContent.add(fromContainer);
         pContent.add(destinationContainer);
         pContent.add(destinationSpacer);

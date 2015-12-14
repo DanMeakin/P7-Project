@@ -24,6 +24,7 @@ public class Page2 extends JPanel{
     private final String SECONDARY_COLOR = "#FAFAFA";
     private final String TERTIARY_COLOR = "#D2D4D2";
     private final String TEXT_COLOR = "#616161";
+    private final String FIRST_TEXT_COLOR = "#212121";
     private final Font h1 = new Font("Roboto", Font.PLAIN, 24);
     private final Font h2 = new Font("Roboto", Font.PLAIN, 18);
     private final Font h3 = new Font("Roboto", Font.PLAIN, 14);
@@ -71,6 +72,12 @@ public class Page2 extends JPanel{
 
         pSearchContent.add(fromLabel);
 
+        JLabel typeFrom = new JLabel("Bornholmsgade");
+        typeFrom.setFont(h2);
+        typeFrom.setForeground(Color.decode(FIRST_TEXT_COLOR));
+        pSearchContent.add(typeFrom);
+
+
         //Search Container - Icon
         JPanel pSearchIcon = new JPanel();
         pSearchIcon.setLayout(new GridLayout(0,1));
@@ -87,6 +94,11 @@ public class Page2 extends JPanel{
 
         pSearchContent.add(toLabel);
 
+        JLabel typeTo = new JLabel("Bornholmsgade");
+        typeTo.setFont(h2);
+        typeTo.setForeground(Color.decode(FIRST_TEXT_COLOR));
+        pSearchContent.add(typeTo);
+
 
         //Scrollbar
         JScrollPane scrollPane = new JScrollPane();
@@ -101,8 +113,7 @@ public class Page2 extends JPanel{
 
         // Content
         JPanel pContent = new JPanel();
-        //pContent.setBackground(Color.decode("#783478"));
-               pContent.setPreferredSize(new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT + 1700));
+        pContent.setPreferredSize(new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT + 400));
         scrollPane.setBorder(BorderFactory.createLineBorder(Color.decode(SECONDARY_COLOR), 0));
 
         DropShadowBorder shadow = new DropShadowBorder();
@@ -116,8 +127,8 @@ public class Page2 extends JPanel{
         //scrollPane.setBorder(shadow);
 
 
-        // Ã¸nskes fleksibel layout for resultater find Layoutmanager og set layout til automatisk at tilpasse indhold(GridBagLayout)
-        pContent.setPreferredSize(new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT + 1700));
+        // Ønskes fleksibel layout for resultater find Layoutmanager og set layout til automatisk at tilpasse indhold(GridBagLayout)
+        //pContent.setPreferredSize(new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT + 1700));
         scrollPane.setBorder(BorderFactory.createLineBorder(Color.decode(SECONDARY_COLOR), 0));
 
         for (int i = 0; i < pContent.getComponents().length; i++) {
@@ -128,7 +139,7 @@ public class Page2 extends JPanel{
         //JPanel allResultsContainer
 
         //results
-        JPanel pResult = new JPanel();
+       /* JPanel pResult = new JPanel();
         pResult.setLayout(new BoxLayout(pResult, BoxLayout.Y_AXIS));
         pResult.setBackground(Color.decode(SECONDARY_COLOR));
         pResult.setPreferredSize((new Dimension(SCREEN_WIDTH -40, 150)));
@@ -141,7 +152,7 @@ public class Page2 extends JPanel{
         busIcon.setBackground(Color.decode(SECONDARY_COLOR));
 
         JPanel pResultTextContainer = new JPanel();
-        pResultTextContainer.setLayout(new GridLayout(2, 2));
+        pResultTextContainer.setLayout(new GridLayout(2, 2));*/
 
 /*        JLabel pResultNumber = new JLabel("2C               Monday, 30.11.2015");
         pResultNumber.setFont(h2);
@@ -154,13 +165,13 @@ public class Page2 extends JPanel{
         this.add(pSearchContainer);
         this.add(scrollPane);
 
-        pContent.add(new ResultCard(10));
-        pContent.add(new ResultCard(35));
+        pContent.add(new ResultCard(80,"2D","monday, 30.11.2015","12:45","Bornholmsdage(Aalborg)",56));
+       /* pContent.add(new ResultCard(35));
         pContent.add(new ResultCard(80));
         pContent.add(new ResultCard(30));
         pContent.add(new ResultCard(10));
         pContent.add(new ResultCard(80));
-        pContent.add(new ResultCard(60));
+        pContent.add(new ResultCard(60));*/
 
         setVisible(true);
     }

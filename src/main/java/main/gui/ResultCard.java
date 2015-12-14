@@ -12,6 +12,7 @@ public class ResultCard extends JPanel {
     private final String SECONDARY_COLOR = "#FAFAFA";
     private final String TEXT_COLOR = "#616161";
     private final String FIRST_TEXT_COLOR = "#212121";
+    private final Font h1 = new Font("Roboto", Font.PLAIN, 24);
     private final Font h2 = new Font("Roboto", Font.PLAIN, 18);
     private final Font h3 = new Font("Roboto", Font.PLAIN, 14);
     private ImageIcon green = new ImageIcon(getClass().getResource("/main/gui/assets/icons/crowdednessNotCrowded.png"));
@@ -19,7 +20,7 @@ public class ResultCard extends JPanel {
     private ImageIcon red = new ImageIcon(getClass().getResource("/main/gui/assets/icons/crowdednessCrowded-100x100.png"));
 
 
-    public ResultCard(int crowdedness) {
+    public ResultCard(int crowdedness,String busNumber, String date, String departureTime, String busStop, int duration) {
         super();
         this.setLayout(new FlowLayout(FlowLayout.LEFT));
         this.setPreferredSize(new Dimension(CARD_WIDTH, CARD_HEIGHT));
@@ -31,86 +32,59 @@ public class ResultCard extends JPanel {
         busIcon.setPreferredSize(new Dimension (100, 100));
 
         JLabel busIconLabel = new JLabel();
+        busIconLabel.setBorder(BorderFactory.createEmptyBorder(0,5,0,5));
         this.add(busIcon);
+
+        JPanel pResultTextContainer = new JPanel();
+        pResultTextContainer.setLayout(new GridLayout(2,3));
+
+        JLabel pResultNumber = new JLabel(busNumber);
+        pResultNumber.setFont(h1);
+        pResultNumber.setForeground(Color.decode(FIRST_TEXT_COLOR));
+
+        pResultTextContainer.add(pResultNumber);
+
+        JLabel dateContainer = new JLabel(date);
+        dateContainer.setFont(h3);
+        dateContainer.setForeground(Color.decode(TEXT_COLOR));
+
+        pResultTextContainer.add(dateContainer);
+
+
+
+        JTextArea pResultInfo = new JTextArea("Departure " + departureTime + ", " + busStop+ ", \n" + duration + " min.");
+        pResultInfo.setFont(h3);
+        pResultInfo.setForeground(Color.decode(FIRST_TEXT_COLOR));
+        pResultTextContainer.setBackground(Color.decode(SECONDARY_COLOR));
+        pResultTextContainer.setPreferredSize(new Dimension(300, 150));
+
+        pResultTextContainer.add(pResultInfo);
+        this.add(pResultTextContainer);
 
         busIconLabel.setIcon(crowdedness(crowdedness));
         busIcon.add(busIconLabel);
 
         busIcon.setBackground(Color.decode(SECONDARY_COLOR));
 
-       /* JPanel pResultTextContainer = new JPanel();
-        pResultTextContainer.setLayout(new GridLayout(2, 2));
-
-        JLabel pResultNumber = new JLabel("2C                Monday, 30.11.2015");
-        pResultNumber.setFont(h2);
-        pResultNumber.setForeground(Color.BLACK);
-        pResultTextContainer.add(pResultNumber);
-        JLabel pResultInfo = new JLabel("Depature 15:10, BornHolmsgade (Aalborg), 39 min.");
-        pResultInfo.setFont(h3);
-        pResultInfo.setForeground(Color.BLACK);
-        pResultTextContainer.setBackground(Color.decode(SECONDARY_COLOR));
-        pResultTextContainer.setPreferredSize(new Dimension(300, 150));
-        pResultTextContainer.add(pResultInfo);
-        this.add(pResultTextContainer);*/
-
         JPanel pDivider = new JPanel();
         pDivider.setPreferredSize(new Dimension(CARD_WIDTH, 15));
 
         }
-        public ImageIcon crowdedness(int crowdedness){
+
+
+    public ImageIcon crowdedness(int crowdedness){
 
         ImageIcon crowdednessIcon;
 
         if (crowdedness >= 75){
             crowdednessIcon = red;
-            JPanel pResultTextContainer = new JPanel();
 
-            pResultTextContainer.setLayout(new GridLayout(2, 2));
-            JLabel pResultNumber = new JLabel("2C                Monday, 30.11.2015");
-            pResultNumber.setFont(h2);
-            pResultNumber.setForeground(Color.decode(TEXT_COLOR));
-            pResultTextContainer.add(pResultNumber);
-
-            JTextArea pResultInfo = new JTextArea("Depature 15:10, BornHolmsgade (Aalborg),\n 39 min.");
-            pResultInfo.setFont(h3);
-            pResultInfo.setForeground(Color.decode(FIRST_TEXT_COLOR));
-            pResultTextContainer.setBackground(Color.decode(SECONDARY_COLOR));
-            pResultTextContainer.setPreferredSize(new Dimension(300, 150));
-            pResultTextContainer.add(pResultInfo);
-            this.add(pResultTextContainer);
         }else if (crowdedness >= 35){
             crowdednessIcon = yellow;
 
-            JPanel pResultTextContainer1 = new JPanel();
-            pResultTextContainer1.setLayout(new GridLayout(2, 2));
-            JLabel pResultNumber1 = new JLabel("2B                Monday, 30.11.2015");
-            pResultNumber1.setFont(h2);
-            pResultNumber1.setForeground(Color.decode(TEXT_COLOR));
-            pResultTextContainer1.add(pResultNumber1);
-
-            JTextArea pResultInfo1 = new JTextArea("Depature 15:15, BornHolmsgade (Aalborg),\n 40 min.");
-            pResultInfo1.setFont(h3);
-            pResultInfo1.setForeground(Color.BLACK);
-            pResultTextContainer1.setBackground(Color.decode(SECONDARY_COLOR));
-            pResultTextContainer1.setPreferredSize(new Dimension(300, 150));
-            pResultTextContainer1.add(pResultInfo1);
-            this.add(pResultTextContainer1);
         }else {
             crowdednessIcon = green;
 
-            JPanel pResultTextContainer2 = new JPanel();
-            pResultTextContainer2.setLayout(new GridLayout(2, 2));
-            JLabel pResultNumber2 = new JLabel("2E                Monday, 30.11.2015");
-            pResultNumber2.setFont(h2);
-            pResultNumber2.setForeground(Color.BLACK);
-            pResultTextContainer2.add(pResultNumber2);
-            JTextArea pResultInfo = new JTextArea("Depature 15:20, BornHolmsgade (Aalborg),\n 45 min.");
-            pResultInfo.setFont(h3);
-            pResultInfo.setForeground(Color.BLACK);
-            pResultTextContainer2.setBackground(Color.decode(SECONDARY_COLOR));
-            pResultTextContainer2.setPreferredSize(new Dimension(300, 150));
-            pResultTextContainer2.add(pResultInfo);
-            this.add(pResultTextContainer2);
         }
         return crowdednessIcon;
         }
