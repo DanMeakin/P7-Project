@@ -6,11 +6,13 @@ import javax.swing.*;
 import javax.swing.plaf.ScrollBarUI;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 import java.awt.*;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.time.Year;
+
 
 /**
  * Created by janusalarsen on 04/12/2015.
@@ -21,6 +23,7 @@ public class Page2 extends JPanel{
     private final String PRIMARY_COLOR = "#009688";
     private final String SECONDARY_COLOR = "#FAFAFA";
     private final String TERTIARY_COLOR = "#D2D4D2";
+    private final String TEXT_COLOR = "#616161";
     private final Font h1 = new Font("Roboto", Font.PLAIN, 24);
     private final Font h2 = new Font("Roboto", Font.PLAIN, 18);
     private final Font h3 = new Font("Roboto", Font.PLAIN, 14);
@@ -34,16 +37,15 @@ public class Page2 extends JPanel{
 
         //Search Container
         JPanel pSearchContainer = new JPanel();
-        pSearchContainer.setPreferredSize(new Dimension(SCREEN_WIDTH, 50));
+        pSearchContainer.setPreferredSize(new Dimension(SCREEN_WIDTH, 70));
         //pSearchContainer.setBackground(Color.decode(SECONDARY_COLOR));
         //pSearchContainer.setLayout(new CardLayout());
 
-
         //Search Content
         JPanel pSearchContent = new JPanel();
-        pSearchContent.setLayout(new GridLayout(1, 3));
+        //pSearchContent.setLayout(new GridLayout(1, 3));
 
-        pSearchContent.setPreferredSize(new Dimension(SCREEN_WIDTH -30, SCREEN_HEIGHT -720));
+        pSearchContent.setPreferredSize(new Dimension(SCREEN_WIDTH -30, SCREEN_HEIGHT -700));
         //pSearchContent.setBackground(Color.decode(SECONDARY_COLOR));
 
         DropShadowBorder searchShadow = new DropShadowBorder();
@@ -52,9 +54,8 @@ public class Page2 extends JPanel{
         searchShadow.setShowLeftShadow(true);
         searchShadow.setShowRightShadow(true);
         searchShadow.setShowBottomShadow(true);
-        searchShadow.setShowTopShadow(false);
+        searchShadow.setShowTopShadow(true);
         pSearchContent.setBorder(searchShadow);
-
 
         pSearchContainer.add(pSearchContent);
 
@@ -62,26 +63,32 @@ public class Page2 extends JPanel{
             pSearchContainer.getComponent(i).setBackground(Color.decode(SECONDARY_COLOR));
         }
 
-        //Search Container - From Textfield
+
+        //Search Container - From Label
         JLabel fromLabel = new JLabel ("From");
-        pSearchContent.add(fromLabel);
         fromLabel.setFont(h2);
+        fromLabel.setForeground(Color.decode(TEXT_COLOR));
+
+        pSearchContent.add(fromLabel);
 
         //Search Container - Icon
-        JLabel Icon = new JLabel ("*IMAGE ICON*");
-        pSearchContent.add(Icon);
+        JPanel pSearchIcon = new JPanel();
+        pSearchIcon.setLayout(new GridLayout(0,1));
+        pSearchIcon.add(new JLabel(new ImageIcon(getClass().getResource("/main/gui/assets/icons/arrow.png"))));
+        pSearchIcon.setPreferredSize(new Dimension(48, 48));
+        pSearchIcon.setBackground(Color.decode(SECONDARY_COLOR));
+
+        pSearchContent.add(pSearchIcon);
 
         //Search Container - To Textfield
         JLabel toLabel = new JLabel ("To");
-        pSearchContent.add(toLabel);
+        toLabel.setForeground(Color.decode(TEXT_COLOR));
         toLabel.setFont(h2);
 
-        /*// Content Container
-        JPanel pContentContainer = new JPanel();
-        pContentContainer.setLayout(new FlowLayout());
-        pContentContainer.setBackground(Color.BLUE);
-        pContentContainer.setPreferredSize(new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT - 100));
-*/
+        pSearchContent.add(toLabel);
+
+
+        //Scrollbar
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -95,8 +102,7 @@ public class Page2 extends JPanel{
         // Content
         JPanel pContent = new JPanel();
         //pContent.setBackground(Color.decode("#783478"));
-        // Ønskes fleksibel layout for resultater find Layoutmanager og set layout til automatisk at tilpasse indhold(GridBagLayout)
-        pContent.setPreferredSize(new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT + 1700));
+               pContent.setPreferredSize(new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT + 1700));
         scrollPane.setBorder(BorderFactory.createLineBorder(Color.decode(SECONDARY_COLOR), 0));
 
         DropShadowBorder shadow = new DropShadowBorder();
@@ -110,14 +116,16 @@ public class Page2 extends JPanel{
         //scrollPane.setBorder(shadow);
 
 
+        // Ã¸nskes fleksibel layout for resultater find Layoutmanager og set layout til automatisk at tilpasse indhold(GridBagLayout)
+        pContent.setPreferredSize(new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT + 1700));
+        scrollPane.setBorder(BorderFactory.createLineBorder(Color.decode(SECONDARY_COLOR), 0));
 
         for (int i = 0; i < pContent.getComponents().length; i++) {
             pContent.getComponent(i).setBackground(Color.decode(SECONDARY_COLOR));
 
         }
 
-        // All Results Container
-        //JPanel allResultsContainer =
+        //JPanel allResultsContainer
 
         //results
         JPanel pResult = new JPanel();
@@ -135,69 +143,24 @@ public class Page2 extends JPanel{
         JPanel pResultTextContainer = new JPanel();
         pResultTextContainer.setLayout(new GridLayout(2, 2));
 
-        JLabel pResultNumber = new JLabel("2C               Monday, 30.11.2015");
+/*        JLabel pResultNumber = new JLabel("2C               Monday, 30.11.2015");
         pResultNumber.setFont(h2);
         pResultNumber.setForeground(Color.BLACK);
-        pResultTextContainer.add(pResultNumber);
-
-        pResult.add(pResultTextContainer);
-
-        JLabel pResultInfo = new JLabel("Depature 15:10, BornHolmsgade (Aalborg), 39 min.");
-
-        pResultInfo.setFont(h3);
-
-        pResultInfo.setForeground(Color.BLACK);
-
-        pResultTextContainer.add(pResultInfo);
-
-        pResultTextContainer.setBackground(Color.decode(SECONDARY_COLOR));
-
-        pResultTextContainer.setPreferredSize(new Dimension(300, 150));
+        pResultTextContainer.add(pResultNumber);*/
 
 
-
-        JPanel pResult1 = new JPanel();
-
-        pResult1.setLayout(new GridLayout(1, 3));
-
-        pResult1.setBackground(Color.decode(SECONDARY_COLOR));
-
-        pResult1.setPreferredSize((new Dimension(SCREEN_WIDTH -50, 150)));
-
-        JLabel pResultText1 = new JLabel("Second bus Result");
-
-        pResultText1.setFont(h2);
-
-        pResultText1.setForeground(Color.BLACK);
-
-        pResult1.add(pResultText1);
-
-
-        JPanel pResult2 = new JPanel();
-
-        pResult2.setLayout(new GridLayout(1, 3));
-
-        pResult2.setBackground(Color.decode(SECONDARY_COLOR));
-
-        pResult2.setPreferredSize((new Dimension(SCREEN_WIDTH -50, 150)));
-
-        JLabel pResultText2 = new JLabel("Third bus Result");
-
-        pResultText2.setFont(h2);
-
-        pResultText2.setForeground(Color.BLACK);
-
-        pResult2.add(pResultText2);
-
-
-
+        //Last adds
         scrollPane.setViewportView(pContent);
         this.add(pSearchContainer);
         this.add(scrollPane);
 
-        pContent.add(pResult);
-        pContent.add(pResult1);
-        pContent.add(pResult2);
+        pContent.add(new ResultCard(10));
+        pContent.add(new ResultCard(35));
+        pContent.add(new ResultCard(80));
+        pContent.add(new ResultCard(30));
+        pContent.add(new ResultCard(10));
+        pContent.add(new ResultCard(80));
+        pContent.add(new ResultCard(60));
 
         setVisible(true);
     }

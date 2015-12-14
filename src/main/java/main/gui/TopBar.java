@@ -1,5 +1,7 @@
 package main.gui;
 
+import org.jdesktop.swingx.border.DropShadowBorder;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
