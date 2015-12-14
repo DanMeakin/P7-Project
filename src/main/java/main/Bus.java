@@ -97,8 +97,8 @@ public class Bus extends Observable {
       String msg = "bus is already at a stop";
       throw new UnsupportedOperationException(msg);
     }
-    setLastStop(null);
     setStop(stop);
+    setLastStop(null);
     setNumPassengersBoarded(0);
     setNumPassengersExited(0);
     setChanged(); // Mark as changed for observers
