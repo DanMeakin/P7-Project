@@ -8,7 +8,7 @@ import static org.mockito.Mockito.*;
 import java.io.*;
 import java.util.*;
 
-public class CapacityDataStoreTest {
+public class CapacityDataStoreWriterTest {
 
     private static File dataStore = new File("data/dataStore.csv");
 
@@ -48,7 +48,7 @@ public class CapacityDataStoreTest {
     private static List<Route> busRoutes;
     private static List<String> routeNumbers;
     private static List<String> routeDescriptions;
-    
+
     private static List<RouteTimetable> routeTimetables;
     private static List<Route> routeTimetableRoutes;
 
@@ -58,7 +58,7 @@ public class CapacityDataStoreTest {
 
     private static List<RouteTimetable> busRouteTimetables;
     private static RouteTimetable mockedRouteTimetable;
-    
+
     List<Bus> mockedBuses = new ArrayList<>();
 
     @Before
@@ -152,7 +152,7 @@ public class CapacityDataStoreTest {
                 scheduleEnd,
                 Schedule.DayOptions.WEEKDAYS
         );
-        
+
         for (int i = 0; i < stopsRoute0.size()-1; i++) {
             busRoutes.get(0).addStop(
                     stopsRoute0.get(i+1),
@@ -222,7 +222,6 @@ public class CapacityDataStoreTest {
         when(mockedBuses.get(1).getNumPassengersBoarded()).thenReturn(buses.get(1).getNumPassengersBoarded());
         when(mockedBuses.get(1).getNumPassengers()).thenReturn(buses.get(1).getNumPassengers());
         when(mockedBuses.get(1).getOccupationRate()).thenReturn(buses.get(1).getOccupationRate());
-
         when(mockedBuses.get(2).getFleetNumber()).thenReturn(buses.get(2).getFleetNumber());
         when(mockedBuses.get(2).getRouteTimetable().getRoute().getNumber()).thenReturn(buses.get(2).getRouteTimetable().getRoute().getNumber());
         when(mockedBuses.get(2).getRouteTimetable().getRoute().getDescription()).thenReturn(buses.get(2).getRouteTimetable().getRoute().getDescription());
@@ -237,7 +236,6 @@ public class CapacityDataStoreTest {
 
     }
     @Test
-    @Ignore
     public void testWriteBusStateChange() {
         String[] expectedBusData = new String[buses.size()];
         for (int i = 0; i < buses.size(); i++) {
@@ -245,12 +243,11 @@ public class CapacityDataStoreTest {
             buses.get(i).passengersBoard(21);
             buses.get(i).passengersExit(8);
             CapacityDataStoreWriter.writeBusStateChange(buses.get(i));
-
             expectedBusData[i] = (CapacityDataStoreWriter.getCurrentDayMonth() + "," + CapacityDataStoreWriter.getCurrentTime() + "," + buses.get(i).getFleetNumber() + "," +
                     buses.get(i).getRouteTimetable().getRoute().getNumber() + "," + buses.get(i).getRouteTimetable().getRoute().getDescription() + "," +
-                    buses.get(i).getRouteTimetable().getID() + "," + buses.get(i).getStop().getID() + "," + buses.get(i).getStop().getName() + "," +
+                    buses.get(i).getRouteTimetable().getID() + "," + buses.get(i).getLastStop().getID() + "," + buses.get(i).getLastStop().getName() + "," +
                     buses.get(i).getNumPassengersExited() + "," + buses.get(i).getNumPassengersBoarded() + "," + buses.get(i).getNumPassengers() + "," +
-                    buses.get(i).getOccupationRate() + ",");
+                    buses.get(i).getSeatedOccupationRate() + "," + buses.get(i).getTotalOccupationRate() + ",");
 
             buses.get(i).leavesStop();
         }
@@ -286,15 +283,15 @@ public class CapacityDataStoreTest {
 
 
 
-                    //System.out.println(CapacityDataStoreWriter.readHistoricRequestedStopCrowdedness(fromDate, toDate, routeTimetables.get(0), stopsRoute0.get(0)).size());
-        //System.out.println(CapacityDataStoreWriter.readHistoricCurrentStopCrowdedness(fromDate, toDate, routeTimetables.get(0), stopsRoute0.get(0), stopsRoute0.get(1)).get(20));
-        //System.out.println(CapacityDataStoreWriter.getColumnHeaderPosition(CapacityDataStoreWriter.ColumnHeaderNames.BUS_ID));
-        //CapacityCalculator c = new CapacityCalculator();
-        //System.out.println(c.calculateCrowdedness(1, fromDate, toDate, routeTimetables.get(0), stopsRoute0.get(0)));
-        //System.out.println(c.calculateCrowdedness(1, fromDate, toDate, 4, routeTimetables.get(0), stopsRoute0.get(0), stopsRoute0.get(1)));
+    //System.out.println(CapacityDataStoreWriter.readHistoricRequestedStopCrowdedness(fromDate, toDate, routeTimetables.get(0), stopsRoute0.get(0)).size());
+    //System.out.println(CapacityDataStoreWriter.readHistoricCurrentStopCrowdedness(fromDate, toDate, routeTimetables.get(0), stopsRoute0.get(0), stopsRoute0.get(1)).get(20));
+    //System.out.println(CapacityDataStoreWriter.getColumnHeaderPosition(CapacityDataStoreWriter.ColumnHeaderNames.BUS_ID));
+    //CapacityCalculator c = new CapacityCalculator();
+    //System.out.println(c.calculateCrowdedness(1, fromDate, toDate, routeTimetables.get(0), stopsRoute0.get(0)));
+    //System.out.println(c.calculateCrowdedness(1, fromDate, toDate, 4, routeTimetables.get(0), stopsRoute0.get(0), stopsRoute0.get(1)));
 
 
-    }
+}
 
     /*
     @Test
@@ -317,15 +314,11 @@ public class CapacityDataStoreTest {
             }
             busRouteTimetables.add(rt);
         }
-
         anotherMockedRouteTimetable = mock(RouteTimetable.class);
         when(anotherMockedRouteTimetable.getRoute()).thenReturn(mockedRoute2);
-
         anotherMockedBus = mock(Bus.class);
         when(anotherMockedBus.equals(anotherMockedBus)).thenReturn(true);
     }
-
-
     @After
     public void tearDown() {
         // This must be done to allow schedule to be recreated in next tests
@@ -335,4 +328,3 @@ public class CapacityDataStoreTest {
         Schedule.removeSchedule(sundaySchedule);
     }
     */
-
