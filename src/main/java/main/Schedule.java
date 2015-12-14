@@ -152,9 +152,15 @@ public class Schedule {
    * @param route the route on which to travel
    * @return the departure time (as an integer representing minutes since
    *         midnight) of the next bus on route departing from stop
+   * @throws UnsupportedOperationException if there is no departure information
+   *                                       available for this date
    */
-  public int nextDepartureTime(int time, Stop stop, Route route) {
-    return nextDepartureRouteTimetable(time, stop, route).timeAtStop(stop);
+  public int nextDepartureTime(int time, Stop stop, Route route) throws UnsupportedOperationException {
+    RouteTimetable rt = nextDepartureRouteTimetable(time, stop, route);
+    if (rt == null) {
+      throw new UnsupportedOperationException("no next departures available today");
+    }
+    return rt.timeAtStop(stop);
   }
 
   /**
@@ -170,8 +176,10 @@ public class Schedule {
    * @param route the route on which to travel
    * @return the RouteTimetable representing the next departure of the next bus
    *  on the given route from the given stop
+   * @throws UnsupportedOperationException if there is no departure information
+   *                                       available for this date 
    */
-  public RouteTimetable nextDepartureRouteTimetable(int time, Stop stop, Route route) {
+  public RouteTimetable nextDepartureRouteTimetable(int time, Stop stop, Route route) throws UnsupportedOperationException {
     int nextDepartureTime = 1_000_000; // Set time to initial high value
     RouteTimetable nextDepartureRT = null;
     List<RouteTimetable> rts = getAllocatedRouteTimetables(route);
@@ -180,6 +188,9 @@ public class Schedule {
         nextDepartureRT = thisRT;
         nextDepartureTime = thisRT.timeAtStop(stop);
       }
+    }
+    if (nextDepartureRT == null) {
+      throw new UnsupportedOperationException("no next departures available today");
     }
     return nextDepartureRT;
   }

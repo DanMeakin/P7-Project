@@ -66,6 +66,7 @@ public class ItineraryFinderTest {
    *  6:15  6:25
    *  6:20  6:30
    *  6:23  6:33
+   *  6:26  6:36
    *
    * Route L4
    * --------
@@ -222,6 +223,7 @@ public class ItineraryFinderTest {
     rt = new RouteTimetable(r, schedule, 6 * 60 + 15, false);
     rt = new RouteTimetable(r, schedule, 6 * 60 + 20, false);
     rt = new RouteTimetable(r, schedule, 6 * 60 + 23, false);
+    rt = new RouteTimetable(r, schedule, 6 * 60 + 26, false);
 
     r = routes[3];
     rt = new RouteTimetable(r, schedule, 6 * 60 + 2, false);
@@ -264,6 +266,11 @@ public class ItineraryFinderTest {
    *  L1 from N1 at 6:02am - N3 at 6:25am;
    *  walk from N3 at 6:25am - N5 at 6:27am
    *
+   *  Option 1a
+   *  ---------
+   *  L1 from N1 at 6:08am - N3 at 6:31am;
+   *  walk from N3 at 6:31am - N5 at 6:33am
+   *
    *  Option 2
    *  --------
    *  L2 from N1 at 6:18am - N2 at 6:30am;
@@ -276,9 +283,15 @@ public class ItineraryFinderTest {
    *  walk from N7 at 6:15am - N4 at 6:16am;
    *  L3 from N4 at 6:20am - N5 at 6:30am
    *
+   *  Option 3a
+   *  ---------
+   *  L5 from N1 at 6:06am - N7 at 6:18am;
+   *  walk from N7 at 6:18am - N4 at 6:19am;
+   *  L3 from N4 at 6:20am - N5 at 6:30am
+   *
    * It can be seen that Option 1 is the best option, being 3 minutes faster
-   * than Option 3, and 18 minutes faster than option 2. It is therefore
-   * expected that this method will return an itinerary describing Option 1.
+   * than Option 3. It is therefore expected that this method will return an 
+   * itinerary describing Option 1.
    */
   @Test
   public void testFindBestItinerary() {
@@ -297,5 +310,155 @@ public class ItineraryFinderTest {
         );
     List<JourneyLeg> actual = itineraryFinder.findBestItinerary();
     assertEquals(expected, actual);
+  }
+
+  /**
+   * Test the findKBestItineraries method.
+   *
+    *  Option 1
+   *  --------
+   *  L1 from N1 at 6:02am - N3 at 6:25am;
+   *  walk from N3 at 6:25am - N5 at 6:27am
+   *
+   *  Option 1a
+   *  ---------
+   *  L1 from N1 at 6:08am - N3 at 6:31am;
+   *  walk from N3 at 6:31am - N5 at 6:33am
+   *
+   *  Option 2
+   *  --------
+   *  L2 from N1 at 6:18am - N2 at 6:30am;
+   *  L1 from N2 at 6:34am - N3 at 6:45am;
+   *  walk from N3 at 6:45am - N5 at 6:47am
+   *
+   *  Option 3
+   *  --------
+   *  L5 from N1 at 6:03am - N7 at 6:15am;
+   *  walk from N7 at 6:15am - N4 at 6:16am;
+   *  L3 from N4 at 6:20am - N5 at 6:30am
+   *
+   *  Option 3a
+   *  ---------
+   *  L5 from N1 at 6:06am - N7 at 6:18am;
+   *  walk from N7 at 6:18am - N4 at 6:19am;
+   *  L3 from N4 at 6:20am - N5 at 6:30am
+   *
+   *  Option 3b
+   *  ---------
+   *  L5 from N1 at 6:09am - N7 at 6:21am;
+   *  walk from N7 at 6:21am - N4 at 6:22am;
+   *  L3 from N4 at 6:23am - N5 at 6:33am
+   *
+   * It can be seen that Option 1 is the best option, being 3 minutes faster
+   * than Option 3. It is therefore expected that this method will return an 
+   * itinerary describing Option 1.
+   */ 
+  @Test
+  public void testCalculateKLeastTimePaths() {
+    // Create itinerary finder between N1 -> N5
+    // at 6:02am on Weds 2nd December 2015
+    itineraryFinder = new ItineraryFinder(nodes[0], nodes[4], LocalDateTime.of(2015, Month.DECEMBER, 2, 6, 2, 0));
+    assertEquals("expected " + services.size() + ", actual " + Path.getAllPaths().size(), services.size(), Path.getAllPaths().size());
+    assertEquals(services, Path.getAllPaths());
+    List<JourneyLeg> expected1 = Arrays.asList(
+        new JourneyLeg(
+          schedule.nextDepartureRouteTimetable(60 * 6 + 2, nodes[0], routes[0]),
+          nodes[0],
+          nodes[2]
+          ),
+        new JourneyLeg(walks[2], 60 * 6 + 25)
+        );
+    List<JourneyLeg> expected2 = Arrays.asList(
+        new JourneyLeg(
+          schedule.nextDepartureRouteTimetable(60 * 6 + 3, nodes[0], routes[4]),
+          nodes[0],
+          nodes[6]
+          ),
+        new JourneyLeg(walks[1], 6 * 60 + 15),
+        new JourneyLeg(
+          schedule.nextDepartureRouteTimetable(60 * 6 + 20, nodes[3], routes[2]),
+          nodes[3],
+          nodes[4]
+          )
+        );
+    List<JourneyLeg> expected3 = Arrays.asList(
+        new JourneyLeg(
+          schedule.nextDepartureRouteTimetable(60 * 6 + 4, nodes[0], routes[4]),
+          nodes[0],
+          nodes[6]
+          ),
+        new JourneyLeg(walks[1], 6 * 60 + 18),
+        new JourneyLeg(
+          schedule.nextDepartureRouteTimetable(60 * 6 + 20, nodes[3], routes[2]),
+          nodes[3],
+          nodes[4]
+          )
+        );
+    List<JourneyLeg> expected4 = Arrays.asList(
+        new JourneyLeg(
+          schedule.nextDepartureRouteTimetable(60 * 6 + 7, nodes[0], routes[4]),
+          nodes[0],
+          nodes[6]
+          ),
+        new JourneyLeg(walks[1], 6 * 60 + 21),
+        new JourneyLeg(
+          schedule.nextDepartureRouteTimetable(60 * 6 + 23, nodes[3], routes[2]),
+          nodes[3],
+          nodes[4]
+          )
+        );
+    List<JourneyLeg> expected5 = Arrays.asList(
+        new JourneyLeg(
+          schedule.nextDepartureRouteTimetable(60 * 6 + 10, nodes[0], routes[4]),
+          nodes[0],
+          nodes[6]
+          ),
+        new JourneyLeg(walks[1], 6 * 60 + 24),
+        new JourneyLeg(
+          schedule.nextDepartureRouteTimetable(60 * 6 + 26, nodes[3], routes[2]),
+          nodes[3],
+          nodes[4]
+          )
+        );
+    List<List<JourneyLeg>> expected = Arrays.asList(expected1, expected2, expected3, expected4, expected5);
+    List<List<JourneyLeg>> actual = itineraryFinder.findKBestItineraries(5);
+    for (int i = 0; i < actual.size(); i++) {
+      assertEquals(expected.get(i), actual.get(i));
+    }
+  }
+
+  /**
+   * Test the TArc#equals method.
+   */
+  @Test
+  public void testTArcEquals() {
+    itineraryFinder = new ItineraryFinder(nodes[0], nodes[4], LocalDateTime.of(2015, Month.DECEMBER, 2, 6, 2, 0));
+    Stop s1 = new Stop(101, "S101", 0, 0);
+    Stop s2 = new Stop(102, "S102", 0, 0);
+    Stop s3 = new Stop(103, "S103", 0, 0);
+    
+    Path p1 = mock(Path.class);
+    Path p2 = mock(Path.class);
+    when(p1.equals(p2)).thenReturn(false);
+    when(p1.equals(p1)).thenReturn(true);
+    when(p2.equals(p1)).thenReturn(false);
+    when(p2.equals(p2)).thenReturn(true);
+
+    int t1 = 100;
+    int t2 = 200;
+
+    ItineraryFinder.TArc a = itineraryFinder.new TArc(s1, s2, p1, t1);
+    ItineraryFinder.TArc b = itineraryFinder.new TArc(s1, s3, p1, t1);
+    ItineraryFinder.TArc c = itineraryFinder.new TArc(s2, s1, p1, t1);
+    ItineraryFinder.TArc d = itineraryFinder.new TArc(s2, s1, p2, t1);
+    ItineraryFinder.TArc e = itineraryFinder.new TArc(s2, s1, p1, t2);
+    ItineraryFinder.TArc a2 = itineraryFinder.new TArc(s1, s2, p1, t1);
+    ItineraryFinder.TArc b2 = itineraryFinder.new TArc(s1, s3, p1, t1);
+    assertTrue(a.equals(a2));
+    assertTrue(b.equals(b2));
+    assertFalse(a.equals(b));
+    assertFalse(a.equals(c));
+    assertFalse(a.equals(d));
+    assertFalse(a.equals(e));
   }
 }

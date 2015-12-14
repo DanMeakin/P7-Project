@@ -34,6 +34,15 @@ public class Stop {
 	}
 
   /**
+   * Creates a string representation of a stop.
+   *
+   * @return string representation of stop
+   */
+  public String toString() {
+    return "Stop #" + getID() + ": " + getName();
+  }
+
+  /**
    * Add a Stop to the list of all stops.
    *
    * @param stop The stop object to add to the list

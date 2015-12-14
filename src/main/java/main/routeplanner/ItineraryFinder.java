@@ -9,6 +9,9 @@ import main.Walk;
 
 import java.time.*;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -38,20 +41,18 @@ public class ItineraryFinder {
   private HashMap<Stop, Integer> gs;
   private HashMap<Stop, TArc> pres;
 
-  private List<TArc> excludedTArcs; // List of excluded t-arcs
-
   /** 
    * The TArc inner class is used to represent one t-arc within an itinerary.
    *
    * The class is very minimal and is used simply to represent one t-arc used
    * within the route finding algorithm.
    */
-  private class TArc {
+  class TArc {
     
-    private Stop startNode;
-    private Stop endNode;
-    private Path service;
-    private int time;
+    private final Stop startNode;
+    private final Stop endNode;
+    private final Path service;
+    private final int time;
 
     /**
      * TArc constructor.
@@ -61,10 +62,10 @@ public class ItineraryFinder {
      * stops; if a t-arc represents a walk, a null Route should be passed.
      */
     public TArc(Stop ni, Stop nj, Path si, int time) {
-      setStartNode(ni);
-      setEndNode(nj);
-      setService(si);
-      setTime(time);
+      this.startNode = ni;
+      this.endNode = nj;
+      this.service = si;
+      this.time = time;
     }
 
     public String toString() {
@@ -73,6 +74,21 @@ public class ItineraryFinder {
         getEndNode() + ", " + 
         getService() + ", " + 
         getTime() + ")";
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+      return (o instanceof TArc && equals((TArc) o));
+    }
+
+    public boolean equals(TArc otherTArc) {
+      return (
+          this != null && otherTArc != null &&
+          getStartNode().equals(otherTArc.getStartNode()) &&
+          getEndNode().equals(otherTArc.getEndNode()) &&
+          getService().equals(otherTArc.getService()) &&
+          getTime() == otherTArc.getTime()
+          );
     }
     /**
      * Convert t-arc into JourneyLeg class.
@@ -110,16 +126,73 @@ public class ItineraryFinder {
      * The formula to calculate pi is (in words):-
      *
      *  arrival time at endNode using the first departing vehicle on route
-     *  service from startNode, minus initial time time.
+     *  service from startNode, minus initial time time; or
+     *  walking time between nodes, plus the starting time
      *
      * @return value of pi for this t-arc
      */
     public int pi() {
+      return arrivalTime() - getTime();
+    }
+
+    /**
+     * Calculate departure time for this t-arc.
+     *
+     * If there is no next departure for this service, this method will return
+     * the value of CostEstimator.UNCONNECTED to signal that this t-arc should
+     * be ignored.
+     *
+     * @return departure time (in minutes since midnight) from startNode for 
+     *         this t-arc
+     */
+    public int departureTime() {
+      try {
+        int nextDepartureTime = schedule.nextDepartureTime(
+            getTime(), 
+            getStartNode(), (Route) getService()
+            );
+        return nextDepartureTime;
+      } catch (UnsupportedOperationException e) {
+        // If this is caught, it means there is no next departure time info
+        // available. This should return a very large value for the purpose
+        // of route planning calculations.
+        return CostEstimator.UNCONNECTED;
+      }
+    }
+
+    /**
+     * Calculate journey time between nodes for this t-arc.
+     *
+     * @return journey time (in minutes) from startNode to endNode
+     */
+    public int journeyTime() {
+      try {
+        boolean isRushHour = 
+          getService() instanceof Route && 
+          schedule.nextDepartureRouteTimetable(getTime(), getStartNode(), (Route) getService()).isRushHour();
+        return getService().journeyTimeBetweenStops(getStartNode(), getEndNode(), isRushHour);
+      } catch (UnsupportedOperationException e) {
+        // If this is caught, it means there is no next departure time info
+        // available. This should return a very large value for the purpose
+        // of route planning calculations.
+        return CostEstimator.UNCONNECTED;
+      }
+    }
+
+    /**
+     * Calculate arrival time for this t-arc.
+     *
+     * This will be the time of the next departure of the specified service
+     * from the endNode of this t-arc, or the walking time for this t-arc,
+     * plus the starting time.
+     *
+     * @return arrival time (in minutes since midnight) for this t-arc
+     */
+    public int arrivalTime() {
       if (getService() instanceof Walk) {
-        return ((Walk) getService()).walkingTime();
+        return ((Walk) getService()).walkingTime() + getTime();
       } else {
-        int arrivalTime = schedule.nextDepartureTime(getTime(), getEndNode(), (Route) getService());
-        return arrivalTime - getTime();
+        return departureTime() + journeyTime();
       }
     }
 
@@ -127,34 +200,17 @@ public class ItineraryFinder {
       return startNode;
     }
 
-    private void setStartNode(Stop n) {
-      startNode = n;
-    }
-
     public Stop getEndNode() {
       return endNode;
-    }
-
-    private void setEndNode(Stop n) {
-      endNode = n;
     }
 
     public Path getService() {
       return service;
     }
 
-    private void setService(Path s) {
-      service = s;
-    }
-
     public int getTime() {
       return time;
     }
-
-    private void setTime(int t) {
-      time = t;
-    }
-
   }
 
   /** 
@@ -172,7 +228,6 @@ public class ItineraryFinder {
     setTime(searchTime);
     setSchedule(); 
     costEstimator = new CostEstimator(endingStop);
-    initializeFinder();
   }
 
   /**
@@ -182,32 +237,47 @@ public class ItineraryFinder {
    * the least time path for the desired journey.
    *
    * @return the best itinerary for this journey, represented by a series of
-   *  journey legs each representing a RouteTimetable travelling from an origin
-   *  to a destination
+   *         journey legs each representing a RouteTimetable or a walk from an 
+   *         origin to a destination
    */
   public List<JourneyLeg> findBestItinerary() {
-    List<TArc> ltp = calculateLeastTimePath();
-    if (ltp == null) { 
-      return null;
-    }
-    List<JourneyLeg> itinerary = new ArrayList<>();
-    for (TArc t : ltp) {
-      itinerary.add(t.toJourneyLeg());
-    }
-    return itinerary;
+    return convertPathToItinerary(calculateLeastTimePath());
   }
 
   /**
-   * Determine all timed paths between startingStop and endingStop.
+   * Finds the k best itineraries for this journey.
    *
-   * This method uses the paths found in the findPaths method to determine
-   * the timings of all journeys which cover the desired route.
+   * This method uses the calculateKLeastTimePaths private method to calculate
+   * the k least time paths for the desired journey.
+   * 
+   * @return the k best itineraries for this journey, represented by a nested
+   *         list of journey leg lists, each representing a RouteTimetable or
+   *         a walk from an origin to a destination
+   */ 
+  public List<List<JourneyLeg>> findKBestItineraries(int k) {
+    List<List<JourneyLeg>> bestItineraries = new ArrayList<>();
+    List<List<TArc>> bestPaths = calculateKLeastTimePaths(k);
+    for (List<TArc> path : bestPaths) {
+      bestItineraries.add(convertPathToItinerary(path));
+    }
+    return bestItineraries;
+  }
+
+  /**
+   * Converts a path to an itinerary.
    *
-   * @return a nested list, each entry containing a list of RouteTimetables 
-   *  which will cover the desired journey between startingStop and endingStop
+   * A path consists of a list of TArcs. An itinerary consists of a list of
+   * JourneyLegs. This method converts the former to the latter.
+   *
+   * @param path a t-arc list representing a path
+   * @return a list of journey legs representing an itinerary
    */
-  public List<List<RouteTimetable>> findTimedPaths() {
-    return null;
+  private List<JourneyLeg> convertPathToItinerary(List<TArc> path) {
+    List<JourneyLeg> itinerary = new ArrayList<>();
+    for (TArc t : path) {
+      itinerary.add(t.toJourneyLeg());
+    }
+    return itinerary;
   }
 
   /**
@@ -274,7 +344,16 @@ public class ItineraryFinder {
    * @param time the desired time from which to search for journeys
    */
   private void setTime(LocalDateTime time) {
-    this.time = time.getHour() * 60 + time.getMinute();
+    setTime(time.getHour() * 60 + time.getMinute());
+  }
+
+  /**
+   * Set time field on ItineraryFinder.
+   *
+   * @param time the desired time (in minutes after midnight)
+   */
+  private void setTime(int time) {
+    this.time = time;
   }
 
   /**
@@ -492,10 +571,32 @@ public class ItineraryFinder {
     usedPaths = new ArrayList<>();
     gs = new HashMap<>();
     pres = new HashMap<>();
-    excludedTArcs = new ArrayList<>();
 
     setOpenNode(getStartingStop());
     setGPrime(getStartingStop(), 0);
+  }
+
+  /**
+   * Calculates the k least time paths for the desired route.
+   *
+   * This method augments the procedure in the calculateLeastTimePath method
+   * by iteratively excluding individual t-arcs from the least time path to
+   * obtain a second-, third-, ... k-th least time path.
+   *
+   * @param k number of paths to obtain
+   * @return a nested list of a list of nodes each containing legs of the k-th
+   *         least time path {@see ItineraryFinder#calculateLeastTimePath()}
+   */
+  private List<List<TArc>> calculateKLeastTimePaths(int k) {
+    List<List<TArc>> leastTimePaths = new ArrayList<>();
+    leastTimePaths.add(calculateLeastTimePath());
+    while (leastTimePaths.size() < k) {
+      List<TArc> previousLTP = leastTimePaths.get(leastTimePaths.size()-1);
+      int previousLTPDeparture = previousLTP.get(0).departureTime();
+      setTime(previousLTPDeparture + 1);
+      leastTimePaths.add(calculateLeastTimePath());
+    }
+    return leastTimePaths;
   }
 
   /**
@@ -505,74 +606,74 @@ public class ItineraryFinder {
    * and attributes thereon.
    *
    * @return a list of nodes defining each point within an itinerary where the
-   *  trip begins, ends or an exchange of buses occurs
+   *         trip begins, ends or an exchange of buses occurs
    */
   private List<TArc> calculateLeastTimePath() {
+    initializeFinder();
+    Stop ni = null;
     while (!getOpenNodes().isEmpty()) {
       // Select open node with minimum value for f'(ni)
-      Stop ni = selectMinimumOpenNode();
-
-      // Set the route leading to this node to already traversed, and set ni
-      // to the value of initial time plus the value of g'(ni)
-      if (getPre(ni) != null) {
-        setAlreadyTraversed(getPre(ni).getService());
-      }
-      int currentTi = getTime() + gPrime(ni); 
-
-      // If this node is equal to the ending node, then we are finished and need
-      // simply to reconstruct the itinerary from node list. Otherwise move node
-      // from open to closed list, and carry out next step.
-      if (ni.equals(getEndingStop())) {
-        return reconstructItinerary();
-      } else {
-        changeOpenToClosed(ni);
-      }
-
-      // Get all paths from node ni to all other connected nodes
-      for (Path p : Path.findPathsIncludingStop(ni)) {
-        // Get all ni+ nodes - called ni2 here
-        for (Stop ni2 : p.getStops()) {
-          // Check that stop ni2 comes after stop ni - if not, this does not
-          // represent a t-arc - there is no connection between s and ni on this
-          // route.
-          if (p.compareStops(ni, ni2) >= 0) {
-            continue;
-          }
-
-          // Create t-arc and then skip this iteration if the second node is
-          // closed (we don't return to closed nodes), if the route has already
-          // been traversed, or its inverse (a passenger will not go back over
-          // the same route twice), or if this t-arc is excluded from
-          // consideration - this will be the case when trying to determine 
-          // additional itinerary options.
-          TArc tArc = new TArc(ni, ni2, p, currentTi);
-          if (isClosed(ni2)) {
-            continue;
-          }
-          if (walkedLastLeg()) {
-            continue;
-          }
-          if (pathAlreadyTraversed(p) || pathAlreadyTraversed(p.findInverted())) {
-            continue;
-          }
-          if (excludedTArc(tArc)) {
-            continue;
-          }
-
-          int pi = tArc.pi(); // Calculate pi value
-          if (gPrime(ni) + pi >= gPrime(ni2)) {
-            continue;
-          } else if (isNew(ni2)) {
-            setOpenNode(ni2);
-          }
-          setGPrime(ni2, gPrime(ni) + pi);
-          setPre(ni2, tArc);
-        }
-      }
+      ni = selectMinimumOpenNode();
+      selectPathFromNode(ni);
     }
-    return null; // This should only be hit if there is no itinerary between stops
+    return reconstructItinerary();
   }
 
+private void selectPathFromNode(Stop ni) {
+  // Set the route leading to this node to already traversed, and set ni
+  // to the value of initial time plus the value of g'(ni)
+  if (getPre(ni) != null) {
+    setAlreadyTraversed(getPre(ni).getService());
+  }
+  int currentTi = getTime() + gPrime(ni); 
+
+  // If this node is equal to the ending node, then we are finished and need
+  // simply to reconstruct the itinerary from node list. Otherwise move node
+  // from open to closed list, and carry out next step.
+  changeOpenToClosed(ni);
+  if (ni.equals(getEndingStop())) {
+    return;
+  } 
+
+  // Get all paths from node ni to all other connected nodes
+  for (Path p : Path.findPathsIncludingStop(ni)) {
+    // Get all ni+ nodes - called ni2 here
+    for (Stop ni2 : p.getStops()) {
+      // Check that stop ni2 comes after stop ni - if not, this does not
+      // represent a t-arc - there is no connection between s and ni on this
+      // route.
+      if (p.compareStops(ni, ni2) >= 0) {
+        continue;
+      }
+
+      // Create t-arc and then skip this iteration if the second node is
+      // closed (we don't return to closed nodes), if the route has already
+      // been traversed, or its inverse (a passenger will not go back over
+      // the same route twice), or if this t-arc is excluded from
+      // consideration - this will be the case when trying to determine 
+      // additional itinerary options.
+      TArc tArc = new TArc(ni, ni2, p, currentTi);
+      if (isClosed(ni2)) {
+        continue;
+      }
+      if (p instanceof Walk && walkedLastLeg()) {
+        continue;
+      }
+      if (pathAlreadyTraversed(p) || pathAlreadyTraversed(p.findInverted())) {
+        continue;
+      }
+
+      int pi = tArc.pi(); // Calculate pi value
+      if (gPrime(ni) + pi >= gPrime(ni2)) {
+        continue;
+      } else if (isNew(ni2)) {
+        setOpenNode(ni2);
+      }
+      setGPrime(ni2, gPrime(ni) + pi);
+      setPre(ni2, tArc);
+    }
+  }
+}
   /**
    * Reconstruct least time itinerary.
    *
@@ -609,29 +710,5 @@ public class ItineraryFinder {
       }
     }
     return minNode;
-  }
-
-  /**
-   * Flag whether t-arc is excluded from consideration in itinerary finder.
-   *
-   * A t-arc can be excluded for a number of reasons. Principally it will be
-   * excluded where a number of different itinerary options are desired, as
-   * excluding, e.g. the last leg of a journey will open up other options to
-   * the itinerary planner.
-   *
-   * @param tArc the t-arc to test for exclusion
-   * @return true if t is excluded from consideration, else false
-   */
-  private boolean excludedTArc(TArc tArc) {
-    return excludedTArcs.contains(tArc);
-  }
-
-  /**
-   * Add t-arc to exclusion list.
-   *
-   * @param tArc the t-arc to add to exclusion list
-   */
-  private void excludeTArc(TArc tArc) {
-    excludedTArcs.add(tArc);
   }
 }
