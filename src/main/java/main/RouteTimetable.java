@@ -7,7 +7,7 @@ import java.util.*;
  */
 public class RouteTimetable {
     /** counter for generating unique ID's for each route timetable  */
-    private static int counter = 0;
+    private static int counter = 10000;
     /** the unique ID number for this route timetable  */
     private final int id;
     /** the route associated with the route timetable  */

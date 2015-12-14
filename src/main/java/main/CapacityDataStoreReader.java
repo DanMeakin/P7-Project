@@ -3,21 +3,23 @@ package main;
 import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author Ivo on 14-12-2015.
  */
 public class CapacityDataStoreReader {
 
-    private static File dataStore = new File("data/dataStore.csv");
+    private static Calendar calendar = GregorianCalendar.getInstance();
+    private static int numOfDaysBeforeCurrentForFromDate = -90;
 
     private CapacityDataStoreReader(){
     }
 
-    public static List<String> filterHistoricStopData(Date fromDate, Date toDate, RouteTimetable routeTimetable, Stop stop, CapacityDataStoreWriter.ColumnHeaderNames columnHeaderName){
+    public static List<String> filterHistoricData(RouteTimetable routeTimetable, Stop stop, CapacityDataStoreWriter.ColumnHeaderNames columnHeaderName){
+
+        Date toDate = getToDate();
+        Date fromDate = getFromDate();
 
         SimpleDateFormat dayMonthYear = new SimpleDateFormat("dd/MM/yyyy");
         SimpleDateFormat time = new SimpleDateFormat("HH:mm:ss Z");
@@ -26,11 +28,17 @@ public class CapacityDataStoreReader {
         List<String> filteredBusData = new ArrayList<>();
 
         for(int i = 0; i < sourceData.size(); i++){
-            String[] splittedLine = readHistoricStopCrowdedness(routeTimetable, stop).get(i).split(",");
-            if(convertSimpleYearMonth(splittedLine[getColumnHeaderPosition(CapacityDataStoreWriter.ColumnHeaderNames.WRITE_DATE)]).after(fromDate)
-                    && convertSimpleYearMonth(splittedLine[getColumnHeaderPosition(CapacityDataStoreWriter.ColumnHeaderNames.WRITE_DATE)]).before(toDate)) {
-                filteredBusData.add(splittedLine[getColumnHeaderPosition(columnHeaderName)]);
+            String[] splitLine = sourceData.get(i).split(",");
+            System.out.println("SourceData: " + sourceData.get(i));
+            //System.out.println("SplitData: " + splitLine[12]);
+            System.out.println(dayMonthYear.format(fromDate) + " " + dayMonthYear.format(toDate));
+            if(convertSimpleYearMonth(splitLine[getColumnHeaderPosition(CapacityDataStoreWriter.ColumnHeaderNames.WRITE_DATE)]).after(fromDate)
+                    && convertSimpleYearMonth(splitLine[getColumnHeaderPosition(CapacityDataStoreWriter.ColumnHeaderNames.WRITE_DATE)]).before(toDate)) {
+                filteredBusData.add(splitLine[getColumnHeaderPosition(columnHeaderName)]);
             }
+        }
+        for(int i = 0; i < filteredBusData.size(); i ++) {
+            System.out.println(filteredBusData.get(0));
         }
         return filteredBusData;
     }
@@ -39,16 +47,18 @@ public class CapacityDataStoreReader {
 
         List<String> busData = new ArrayList<>();
 
-        String[] dataToMatch = new String[] { Integer.toString(routeTimetable.getStartTime()), routeTimetable.getSchedule().getOperatingDay().toString(), stop.toString() };
+        //String[] dataToMatch = new String[] { "10000", "0", "WEEKDAYS", "1" };
+        String[] dataToMatch = new String[] { Integer.toString(routeTimetable.getID()), Integer.toString(routeTimetable.getStartTime()), routeTimetable.getSchedule().getOperatingDay().toString(), Integer.toString(stop.getID()) };
         try {
-            if(CapacityDataStoreWriter.getLockStatus()){
-                throw new IOException("File" + dataStore.getAbsolutePath() + "is currently in use!");
+            if (CapacityDataStoreWriter.getLockStatus()) {
+                throw new IOException("File" + CapacityDataStoreWriter.dataStore.getAbsolutePath() + "is currently in use!");
             }
-            BufferedReader reader = new BufferedReader(new FileReader(dataStore));
-            String line = reader.readLine();
-            while(line != null) {
+            BufferedReader reader = new BufferedReader(new FileReader(CapacityDataStoreWriter.dataStore));
+            reader.readLine(); //skip first line
+            String line = null;
+            while ((line = reader.readLine()) != null) {
                 boolean conditionsMet = true;
-                for (int i = 1; i < dataToMatch.length; i++) {
+                for (int i = 0; i < dataToMatch.length; i++) {
                     conditionsMet = line.contains(dataToMatch[i]);
                     if (!conditionsMet) {
                         break;
@@ -59,9 +69,8 @@ public class CapacityDataStoreReader {
                 }
             }
             reader.close();
-        }
-        catch (IOException ex) {
-            System.out.println("Failed to read from file" + dataStore.getAbsolutePath());
+        } catch (IOException ex) {
+            System.out.println("Failed to read from file" + CapacityDataStoreWriter.dataStore.getAbsolutePath());
             ex.printStackTrace();
         }
         return busData;
@@ -71,9 +80,9 @@ public class CapacityDataStoreReader {
         int indexPos = 0;
         try {
             if(CapacityDataStoreWriter.getLockStatus()){
-                throw new IOException("File" + dataStore.getAbsolutePath() + "is currently in use!");
+                throw new IOException("File" + CapacityDataStoreWriter.dataStore.getAbsolutePath() + "is currently in use!");
             }
-            LineNumberReader reader = new LineNumberReader(new FileReader(dataStore));
+            LineNumberReader reader = new LineNumberReader(new FileReader(CapacityDataStoreWriter.dataStore));
 
             reader.setLineNumber(0);
             String[] headers = reader.readLine().split(",");
@@ -86,7 +95,7 @@ public class CapacityDataStoreReader {
             }
         }
         catch (IOException ex) {
-            System.out.println("Failed to read from file" + dataStore.getAbsolutePath());
+            System.out.println("Failed to read from file" + CapacityDataStoreWriter.dataStore.getAbsolutePath());
             ex.printStackTrace();
         }
         return indexPos;
@@ -114,5 +123,22 @@ public class CapacityDataStoreReader {
             ex.printStackTrace();
         }
         return time;
+    }
+
+    private static Date getToDate(){
+        return calendar.getTime();
+    }
+
+    public static Date getFromDate(){
+        calendar.add(Calendar.DATE, numOfDaysBeforeCurrentForFromDate);
+        return calendar.getTime();
+    }
+
+    public static void setNumOfDayBeforeCurrentForFromDate(int days){
+        numOfDaysBeforeCurrentForFromDate = days;
+    }
+
+    public static int getNumOfDayBeforeCurrentForFromDate(){
+        return numOfDaysBeforeCurrentForFromDate;
     }
 }

@@ -6,26 +6,21 @@ import org.apache.commons.math3.stat.regression.SimpleRegression;
 
 public class CapacityCalculator {
 
-    private Date toDate;
-    private Date fromDate;
-
     private RouteTimetable routeTimetable;
     private Stop requestedStop;
     private Stop currentStop = routeTimetable.getAllocatedBus().getLastStop();
 
-    private List<String> historicRequestedStopSeatedOccupation = CapacityDataStoreReader.filterHistoricStopData(fromDate, toDate, routeTimetable, requestedStop, CapacityDataStoreWriter.ColumnHeaderNames.SEATED_OCCUPATION_RATE);
-    private List<String> historicRequestedStopTotalOccupation = CapacityDataStoreReader.filterHistoricStopData(fromDate, toDate, routeTimetable, requestedStop, CapacityDataStoreWriter.ColumnHeaderNames.TOTAL_OCCUPATION_RATE);
+    private List<String> historicRequestedStopSeatedOccupation = CapacityDataStoreReader.filterHistoricData(routeTimetable, requestedStop, CapacityDataStoreWriter.ColumnHeaderNames.SEATED_OCCUPATION_RATE);
+    private List<String> historicRequestedStopTotalOccupation = CapacityDataStoreReader.filterHistoricData(routeTimetable, requestedStop, CapacityDataStoreWriter.ColumnHeaderNames.TOTAL_OCCUPATION_RATE);
 
-    private List<String> historicCurrentStopSeatedOccupation = CapacityDataStoreReader.filterHistoricStopData(fromDate, toDate, routeTimetable, currentStop, CapacityDataStoreWriter.ColumnHeaderNames.SEATED_OCCUPATION_RATE);
-    private List<String> historicCurrentStopTotalOccupation = CapacityDataStoreReader.filterHistoricStopData(fromDate, toDate, routeTimetable, currentStop, CapacityDataStoreWriter.ColumnHeaderNames.TOTAL_OCCUPATION_RATE);
+    private List<String> historicCurrentStopSeatedOccupation = CapacityDataStoreReader.filterHistoricData(routeTimetable, currentStop, CapacityDataStoreWriter.ColumnHeaderNames.SEATED_OCCUPATION_RATE);
+    private List<String> historicCurrentStopTotalOccupation = CapacityDataStoreReader.filterHistoricData(routeTimetable, currentStop, CapacityDataStoreWriter.ColumnHeaderNames.TOTAL_OCCUPATION_RATE);
 
     private double currentSeatedOccupation = routeTimetable.getAllocatedBus().getSeatedOccupationRate();
     private double currentTotalOccupation = routeTimetable.getAllocatedBus().getTotalOccupationRate();
 
     //should be the same through runtime, breaks comparison otherwise.
     private final double crowdednessFactor;
-    private int numOfDaysFromCurrentForFromDate = -90;
-    private Calendar calendar = GregorianCalendar.getInstance();
 
     public static enum crowdednessIndicator {
         GREEN, ORANGE, RED
@@ -35,9 +30,6 @@ public class CapacityCalculator {
         this.crowdednessFactor = crowdednessFactor;
         this.routeTimetable = routeTimetable;
         this.requestedStop = requestedStop;
-
-        toDate = getToDate();
-        fromDate = getFromDate();
     }
 
     public crowdednessIndicator getCrowdednessIndicator() {
@@ -53,19 +45,19 @@ public class CapacityCalculator {
     public List<Double> pickCalculator(){
         List<Double> crowdednessPrediction = new ArrayList<>();
         if(routeTimetable.getAllocatedBus() != null){
-            crowdednessPrediction.add(calculateCrowdedness(true, fromDate, toDate, routeTimetable, currentStop, requestedStop));
-            crowdednessPrediction.add(calculateCrowdedness(false, fromDate, toDate, routeTimetable, currentStop, requestedStop));
+            crowdednessPrediction.add(calculateCrowdedness(true, routeTimetable, currentStop, requestedStop));
+            crowdednessPrediction.add(calculateCrowdedness(false, routeTimetable, currentStop, requestedStop));
             return crowdednessPrediction;
         }
-        crowdednessPrediction.add(calculateCrowdedness(true, fromDate, toDate, routeTimetable, requestedStop));
-        crowdednessPrediction.add(calculateCrowdedness(false, fromDate, toDate, routeTimetable, requestedStop));
+        crowdednessPrediction.add(calculateCrowdedness(true, routeTimetable, requestedStop));
+        crowdednessPrediction.add(calculateCrowdedness(false, routeTimetable, requestedStop));
         return crowdednessPrediction;
     }
 
     /*
     * Relies on org.apache.commons.math3
     */
-    public Double calculateCrowdedness(boolean occupationSeated, Date fromDate, Date toDate, RouteTimetable routeTimetable, Stop currentStop, Stop requestedStop) throws IllegalArgumentException {
+    public Double calculateCrowdedness(boolean occupationSeated, RouteTimetable routeTimetable, Stop currentStop, Stop requestedStop) throws IllegalArgumentException {
 
         SimpleRegression simpleRegression = new SimpleRegression();
 
@@ -96,7 +88,7 @@ public class CapacityCalculator {
     }
 
 
-    public Double calculateCrowdedness(boolean occupationSeated, Date fromDate, Date toDate, RouteTimetable routeTimetable, Stop RequestedStop) {
+    public Double calculateCrowdedness(boolean occupationSeated, RouteTimetable routeTimetable, Stop RequestedStop) {
 
         List<Double> historicRequestedStopOccupationDouble = new ArrayList<>();
         double averageCrowdedness = 0;
@@ -121,8 +113,8 @@ public class CapacityCalculator {
 
     public void compareListSizes(List<String> currentStopList, List<String> requestedStopList) {
         for (int i = 0; i < currentStopList.size(); i++) {
-            if (!CapacityDataStoreReader.filterHistoricStopData(fromDate, toDate, routeTimetable, requestedStop, CapacityDataStoreWriter.ColumnHeaderNames.WRITE_DATE).get(i).
-                    equals(CapacityDataStoreReader.filterHistoricStopData(fromDate, toDate, routeTimetable, currentStop, CapacityDataStoreWriter.ColumnHeaderNames.WRITE_DATE).get(i))) {
+            if (!CapacityDataStoreReader.filterHistoricData(routeTimetable, requestedStop, CapacityDataStoreWriter.ColumnHeaderNames.WRITE_DATE).get(i).
+                    equals(CapacityDataStoreReader.filterHistoricData(routeTimetable, currentStop, CapacityDataStoreWriter.ColumnHeaderNames.WRITE_DATE).get(i))) {
                 currentStopList.remove(i);
             }
         }
@@ -131,18 +123,4 @@ public class CapacityCalculator {
     public double getCrowdednessFactor(double cf){
         return crowdednessFactor;
     }
-
-    private Date getToDate(){
-        return calendar.getTime();
-    }
-
-    public Date getFromDate(){
-        calendar.add(Calendar.DATE, numOfDaysFromCurrentForFromDate);
-        return calendar.getTime();
-    }
-
-    private void setNumOfDaysFromNowForFromDate(int days){
-        numOfDaysFromCurrentForFromDate = days;
-    }
-
 }

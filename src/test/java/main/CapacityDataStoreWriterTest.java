@@ -6,6 +6,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import java.io.*;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class CapacityDataStoreWriterTest {
@@ -83,7 +84,7 @@ public class CapacityDataStoreWriterTest {
             );
         }
 
-        busFleetNumbers = Arrays.asList(100, 101, 102);
+        busFleetNumbers = Arrays.asList(150, 151, 152);
         buses = new ArrayList<Bus>();
         for (int i = 0; i < busFleetNumbers.size(); i++) {
             buses.add(
@@ -95,110 +96,110 @@ public class CapacityDataStoreWriterTest {
             );
         }
 
-        stopIDsRoute0 = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8);
-        stopNamesRoute0 = Arrays.asList("Ritavej", "AAU Busterminal", "Boulevarden", "Nytorv", "Universitet", "Vesterbro", "Kastetvej",
-                "Hadsundvej");
-        stopsRoute0 = new ArrayList<Stop>();
-        for (int i = 0; i < stopIDsRoute0.size(); i++) {
-            stopsRoute0.add(
-                    new Stop(
-                            stopIDsRoute0.get(i),
-                            stopNamesRoute0.get(i),
-                            stopLatitudes = 50.2,
-                            stopLongitudes = 50.3
-                    )
+            stopIDsRoute0 = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8);
+            stopNamesRoute0 = Arrays.asList("Ritavej", "AAU Busterminal", "Boulevarden", "Nytorv", "Universitet", "Vesterbro", "Kastetvej",
+                    "Hadsundvej");
+            stopsRoute0 = new ArrayList<Stop>();
+            for (int i = 0; i < stopIDsRoute0.size(); i++) {
+                stopsRoute0.add(
+                        new Stop(
+                                stopIDsRoute0.get(i),
+                                stopNamesRoute0.get(i),
+                                stopLatitudes = 50.2,
+                                stopLongitudes = 50.3
+                        )
+                );
+            }
+
+            stopIDsRoute1 = Arrays.asList(9, 10, 11, 12, 13, 14, 15);
+            stopNamesRoute1 = Arrays.asList("Humlebakken", "Østre Alle", "Bornholmsgade", "Nyhavnsgade", "City Sud", "Prinsengade", "Danmarksgade",
+                    "Istedgade", "Hasserisvej", "Hobrovej", "Kong Christians Alle", "Ny Kærvej", "Van Boetzelaerstraat");
+            stopsRoute1 = new ArrayList<Stop>();
+            for (int i = 0; i < stopIDsRoute1.size(); i++) {
+                stopsRoute1.add(
+                        new Stop(
+                                stopIDsRoute1.get(i),
+                                stopNamesRoute1.get(i),
+                                stopLatitudes = 50.6,
+                                stopLongitudes = 50.7
+                        )
+                );
+            }
+
+            stopIDsRoute2 = Arrays.asList(16, 17, 18, 19, 20, 999);
+            stopNamesRoute2 = Arrays.asList("Istedgade", "Hasserisvej", "Hobrovej", "Kong Christians Alle", "Ny Kærvej", "Van Boetzelaerstraat");
+            stopsRoute2 = new ArrayList<Stop>();
+            for (int i = 0; i < stopIDsRoute2.size(); i++) {
+                stopsRoute2.add(
+                        new Stop(
+                                stopIDsRoute2.get(i),
+                                stopNamesRoute2.get(i),
+                                stopLatitudes = 50.1,
+                                stopLongitudes = 49.8
+                        )
+                );
+            }
+
+            Route route0 = new Route("4", "Ritavej-Somewhere", stopsRoute0.get(0));
+            Route route1 = new Route("81X", "Humlebakken-Somewhere else", stopsRoute1.get(0));
+            Route route2 = new Route("21", "Istedgade-Somewhere else", stopsRoute2.get(0));
+
+            busRoutes = Arrays.asList(route0, route1, route2);
+
+            scheduleStart = new GregorianCalendar(2015, GregorianCalendar.JANUARY, 1).getTime();
+            scheduleEnd = new GregorianCalendar(2015, GregorianCalendar.DECEMBER, 31).getTime();
+            schedule = new Schedule(
+                    scheduleStart,
+                    scheduleEnd,
+                    Schedule.DayOptions.WEEKDAYS
             );
-        }
 
-        stopIDsRoute1 = Arrays.asList(9, 10, 11, 12, 13, 14, 15);
-        stopNamesRoute1 = Arrays.asList("Humlebakken", "Østre Alle", "Bornholmsgade", "Nyhavnsgade", "City Sud", "Prinsengade", "Danmarksgade",
-                "Istedgade", "Hasserisvej", "Hobrovej", "Kong Christians Alle", "Ny Kærvej", "Van Boetzelaerstraat");
-        stopsRoute1 = new ArrayList<Stop>();
-        for (int i = 0; i < stopIDsRoute1.size(); i++) {
-            stopsRoute1.add(
-                    new Stop(
-                            stopIDsRoute1.get(i),
-                            stopNamesRoute1.get(i),
-                            stopLatitudes = 50.6,
-                            stopLongitudes = 50.7
-                    )
-            );
-        }
+            for (int i = 0; i < stopsRoute0.size() - 1; i++) {
+                busRoutes.get(0).addStop(
+                        stopsRoute0.get(i + 1),
+                        4,
+                        5
+                );
+            }
 
-        stopIDsRoute2 = Arrays.asList(16, 17, 18, 19, 20, 999);
-        stopNamesRoute2 = Arrays.asList("Istedgade", "Hasserisvej", "Hobrovej", "Kong Christians Alle", "Ny Kærvej", "Van Boetzelaerstraat");
-        stopsRoute2 = new ArrayList<Stop>();
-        for (int i = 0; i < stopIDsRoute2.size(); i++) {
-            stopsRoute2.add(
-                    new Stop(
-                            stopIDsRoute2.get(i),
-                            stopNamesRoute2.get(i),
-                            stopLatitudes = 50.1,
-                            stopLongitudes = 49.8
-                    )
-            );
-        }
+            for (int i = 0; i < stopsRoute1.size() - 1; i++) {
+                busRoutes.get(0).addStop(
+                        stopsRoute1.get(i + 1),
+                        3,
+                        4
+                );
+            }
 
-        Route route0 = new Route("4", "Ritavej-Somewhere", stopsRoute0.get(0));
-        Route route1 = new Route("81X", "Humlebakken-Somewhere else", stopsRoute1.get(0));
-        Route route2 = new Route("21", "Istedgade-Somewhere else", stopsRoute2.get(0));
+            for (int i = 0; i < stopsRoute2.size() - 1; i++) {
+                busRoutes.get(0).addStop(
+                        stopsRoute2.get(i + 1),
+                        6,
+                        7
+                );
+            }
 
-        busRoutes = Arrays.asList(route0, route1, route2);
+            routeTimetableRoutes = Arrays.asList(busRoutes.get(0), busRoutes.get(1), busRoutes.get(2));
+            routeTimetables = new ArrayList<RouteTimetable>();
+            for (int i = 0; i < routeTimetableRoutes.size(); i++) {
+                routeTimetables.add(
+                        new RouteTimetable(
+                                routeTimetableRoutes.get(i),
+                                schedule,
+                                (10 * 60 + 30) * (i * 10),
+                                true
+                        )
+                );
+            }
 
-        scheduleStart = new GregorianCalendar(2015, GregorianCalendar.JANUARY, 1).getTime();
-        scheduleEnd = new GregorianCalendar(2015, GregorianCalendar.DECEMBER, 31).getTime();
-        schedule = new Schedule(
-                scheduleStart,
-                scheduleEnd,
-                Schedule.DayOptions.WEEKDAYS
-        );
-
-        for (int i = 0; i < stopsRoute0.size()-1; i++) {
-            busRoutes.get(0).addStop(
-                    stopsRoute0.get(i+1),
-                    4,
-                    5
-            );
-        }
-
-        for (int i = 0; i < stopsRoute1.size()-1; i++) {
-            busRoutes.get(0).addStop(
-                    stopsRoute1.get(i+1),
-                    3,
-                    4
-            );
-        }
-
-        for (int i = 0; i < stopsRoute2.size()-1; i++) {
-            busRoutes.get(0).addStop(
-                    stopsRoute2.get(i+1),
-                    6,
-                    7
-            );
-        }
-
-        routeTimetableRoutes = Arrays.asList(busRoutes.get(0), busRoutes.get(1), busRoutes.get(2));
-        routeTimetables = new ArrayList<RouteTimetable>();
-        for (int i = 0; i < routeTimetableRoutes.size(); i++) {
-            routeTimetables.add(
-                    new RouteTimetable(
-                            routeTimetableRoutes.get(i),
-                            schedule,
-                            (10 * 60 + 30) * (i * 10),
-                            true
-                    )
-            );
-        }
-
-        for (int i = 0; i < routeTimetables.size(); i++) {
-            schedule.addRouteTimetable(routeTimetables.get(i), buses.get(i));
-            buses.get(i).startRoute(routeTimetables.get(i));
-        }
+            for (int i = 0; i < routeTimetables.size(); i++) {
+                schedule.addRouteTimetable(routeTimetables.get(i), buses.get(i));
+                buses.get(i).startRoute(routeTimetables.get(i));
+            }
 
 
-        for(int i = 0; i < buses.size(); i++){
-            mockedBuses.add(mock(Bus.class));
-        }
+            for (int i = 0; i < buses.size(); i++) {
+                mockedBuses.add(mock(Bus.class));
+            }
 
         /*
         when(mockedBuses.get(0).getFleetNumber()).thenReturn(buses.get(0).getFleetNumber());
@@ -234,18 +235,19 @@ public class CapacityDataStoreWriterTest {
         when(mockedBuses.get(2).getOccupationRate()).thenReturn(buses.get(2).getOccupationRate());
         */
 
-    }
+        }
+
     @Test
     public void testWriteBusStateChange() {
         String[] expectedBusData = new String[buses.size()];
         for (int i = 0; i < buses.size(); i++) {
             buses.get(i).arrivesAtStop(buses.get(i).getRouteTimetable().getRoute().getStops().get(0));
-            buses.get(i).passengersBoard(21);
-            buses.get(i).passengersExit(8);
+            buses.get(i).passengersBoard(21 + i * 2);
+            buses.get(i).passengersExit(8 + i * 2);
             CapacityDataStoreWriter.writeBusStateChange(buses.get(i));
             expectedBusData[i] = (CapacityDataStoreWriter.getCurrentDayMonth() + "," + CapacityDataStoreWriter.getCurrentTime() + "," + buses.get(i).getFleetNumber() + "," +
-                    buses.get(i).getRouteTimetable().getRoute().getNumber() + "," + buses.get(i).getRouteTimetable().getRoute().getDescription() + "," +
-                    buses.get(i).getRouteTimetable().getID() + "," + buses.get(i).getLastStop().getID() + "," + buses.get(i).getLastStop().getName() + "," +
+                    buses.get(i).getRouteTimetable().getID() + "," + buses.get(i).getRouteTimetable().getRoute().getNumber() + "," + buses.get(i).getRouteTimetable().getRoute().getDescription() + "," +
+                    buses.get(i).getRouteTimetable().getStartTime() + "," + buses.get(i).getRouteTimetable().getSchedule().getOperatingDay() + "," + buses.get(i).getLastStop().getID() + "," + buses.get(i).getLastStop().getName() + "," +
                     buses.get(i).getNumPassengersExited() + "," + buses.get(i).getNumPassengersBoarded() + "," + buses.get(i).getNumPassengers() + "," +
                     buses.get(i).getSeatedOccupationRate() + "," + buses.get(i).getTotalOccupationRate() + ",");
 
@@ -274,57 +276,46 @@ public class CapacityDataStoreWriterTest {
         }
     }
 
-    @After
-    public void fileDeleted(){
-
-    }
-
-
-
-
-
-    //System.out.println(CapacityDataStoreWriter.readHistoricRequestedStopCrowdedness(fromDate, toDate, routeTimetables.get(0), stopsRoute0.get(0)).size());
-    //System.out.println(CapacityDataStoreWriter.readHistoricCurrentStopCrowdedness(fromDate, toDate, routeTimetables.get(0), stopsRoute0.get(0), stopsRoute0.get(1)).get(20));
-    //System.out.println(CapacityDataStoreWriter.getColumnHeaderPosition(CapacityDataStoreWriter.ColumnHeaderNames.BUS_ID));
-    //CapacityCalculator c = new CapacityCalculator();
-    //System.out.println(c.calculateCrowdedness(1, fromDate, toDate, routeTimetables.get(0), stopsRoute0.get(0)));
-    //System.out.println(c.calculateCrowdedness(1, fromDate, toDate, 4, routeTimetables.get(0), stopsRoute0.get(0), stopsRoute0.get(1)));
-
-
-}
-
-    /*
     @Test
-    public void testReadHistoricCrowdedness(){
-        System.out.println(CapacityDataStoreWriter.readHistoricRequestedStopCrowdedness(fromDate, toDate, routeTimetables.get(0), stopsRoute0.get(1)));
+    public void testGetCurrentDayMonth(){
+        Date date = new Date();
+        SimpleDateFormat dayMonthYear = new SimpleDateFormat("dd/MM/yyyy");
+        assertEquals(dayMonthYear.format(date), CapacityDataStoreWriter.getCurrentDayMonth());
     }
-    */
 
-
-        /*
-        // Create 6 mocked routeTimetables, with the first three on route1 and
-        // the second three on route 2.
-        busRouteTimetables = new ArrayList<RouteTimetable>();
-        for (int i = 0; i < 6; i++) {
-            RouteTimetable rt = mock(RouteTimetable.class);
-            if (i < 3) {
-                when(rt.getRoute()).thenReturn(mockedRoute1);
-            } else {
-                when(rt.getRoute()).thenReturn(mockedRoute2);
-            }
-            busRouteTimetables.add(rt);
-        }
-        anotherMockedRouteTimetable = mock(RouteTimetable.class);
-        when(anotherMockedRouteTimetable.getRoute()).thenReturn(mockedRoute2);
-        anotherMockedBus = mock(Bus.class);
-        when(anotherMockedBus.equals(anotherMockedBus)).thenReturn(true);
+    @Test
+    public void testGetCurrentTime(){
+        Date date = new Date();
+        SimpleDateFormat time = new SimpleDateFormat("HH:mm:ss Z");
+        assertEquals(time.format(date), CapacityDataStoreWriter.getCurrentTime());
     }
+
+    @Test
+    public void testSetLock(){
+        CapacityDataStoreWriter.setLock();
+        assertEquals(CapacityDataStoreWriter.getLockStatus(), true);
+    }
+
+    @Test
+    public void testRemoveLock(){
+        CapacityDataStoreWriter.removeLock();
+        assertEquals(CapacityDataStoreWriter.getLockStatus(), false);
+    }
+
+    @Test
+    public void testGetLockStatus(){
+        assertEquals(CapacityDataStoreWriter.getLockStatus(), false);
+    }
+
     @After
-    public void tearDown() {
-        // This must be done to allow schedule to be recreated in next tests
-        Schedule.removeSchedule(schedule);
-        Schedule.removeSchedule(weekdaySchedule);
-        Schedule.removeSchedule(saturdaySchedule);
-        Schedule.removeSchedule(sundaySchedule);
+    public void clearFile() {
+        try {
+            PrintWriter pw = new PrintWriter("data/dataStore.csv");
+            pw.close();
+        }
+        catch (IOException ex) {
+            System.out.println("Failed to clear file" + dataStore.getAbsolutePath());
+            ex.printStackTrace();
+        }
     }
-    */
+}
