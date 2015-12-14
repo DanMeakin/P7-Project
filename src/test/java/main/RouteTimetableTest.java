@@ -1,6 +1,8 @@
 package main;
 
 import org.junit.*;
+import org.junit.rules.ExpectedException;
+
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -18,6 +20,7 @@ import main.Stop;
 public class RouteTimetableTest {
 
   private static RouteTimetable routeTimetable;
+  private static int routeTimetableCounter;
   private static int startTime;
   private static boolean isRushHour;
 
@@ -44,6 +47,9 @@ public class RouteTimetableTest {
   public static void setUpClass() {
     startTime = 10 * 60 + 30; // 10:30am
     isRushHour = false;
+
+    // Store value of counter prior to creation of RouteTimetable(s)
+    routeTimetableCounter = RouteTimetable.getCounterValue();
 
     mockedRoute = mock(Route.class);
     stopTiming = Arrays.asList(new Integer[] {0, 7, 15, 16, 20, 30});
@@ -80,7 +86,7 @@ public class RouteTimetableTest {
   }
 
   /**
-   * Test getStartTime() getter method.
+   * Test getStartTime getter method.
    */
   @Test
   public void testGetStartTime() {
@@ -88,7 +94,7 @@ public class RouteTimetableTest {
   }
 
   /**
-   * Test isRushHour() getter method.
+   * Test isRushHour getter method.
    */
   @Test
   public void testIsRushHour() {
@@ -96,7 +102,7 @@ public class RouteTimetableTest {
   }
 
   /**
-   * Test timeAtStop() method.
+   * Test timeAtStop method.
    *
    * The timeAtStop method gets the time at which the bus operating a 
    * RouteTimetable is due to arrive at a given stop.
@@ -110,8 +116,27 @@ public class RouteTimetableTest {
     }
   }
 
+  @Rule
+  public ExpectedException thrown = ExpectedException.none();
+
   /**
-   * Test getStopTimes() method.
+   * Test timeAtStop method with invalid stop.
+   *
+   * The timeAtStop method should throw an exception if passed a stop not
+   * contained within the route.
+   */
+  @Test
+  public void testTimeAtStopWithInvalidStop() {
+    thrown.expect(IllegalArgumentException.class);
+    Stop missingStop = mock(Stop.class);
+    String msg = "RouteTimetable does not include stop " + missingStop;
+    thrown.expectMessage(msg);
+
+    routeTimetable.timeAtStop(missingStop);
+  }
+
+  /**
+   * Test getStopTimes method.
    *
    * Each entry in getStopTimes() should be equal to the starting time of the
    * route, plus the cumulative time for that particular stop from the start
@@ -127,7 +152,7 @@ public class RouteTimetableTest {
   }
 
   /**
-   * Test getStops() method.
+   * Test getStops method.
    *
    * A RouteTimetable must provide access to the Stops exposed by the Route.
    * This test ensures this is provided.
@@ -142,7 +167,7 @@ public class RouteTimetableTest {
   }
 
   /**
-   * Test allocatedBus() method.
+   * Test allocatedBus method.
    */
   @Test
   public void testAllocatedBus() {
@@ -150,10 +175,10 @@ public class RouteTimetableTest {
   }
 
   /**
-   * Test get() method.
+   * Test getID method.
    */
   @Test
-  public void testGetRouteTimetableID(){
-    assertEquals(routeTimetable.getRouteTimetableID(), 0); //should be zero, as only one route timetable is created.
+  public void testGetID(){
+    assertEquals(routeTimetableCounter, routeTimetable.getID());
   }
 }

@@ -11,7 +11,6 @@ import java.util.Observable;
  * busType, numOfPassengers etc. and implement
  * a number of domain specific methods such as addBus,
  * startRoute, arrivesAtStop, passengersBoarding etc.
- * @authors Ivo Hendriks, Janus Avbæk Larsen, Helle Hyllested Larsen, Dan Meakin.
  */
 public class Bus extends Observable {
   /** the fleet number of this bus  */

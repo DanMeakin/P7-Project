@@ -4,13 +4,12 @@ import java.util.*;
 /**
  * The RouteTimetable class defines route timtetable type objects that
  * couples routes with timings.
- * @authors Ivo Hendriks, Janus Avbæk Larsen, Helle Hyllested Larsen, Dan Meakin.
  */
 public class RouteTimetable {
     /** counter for generating unique ID's for each route timetable  */
-    private static int routeTimetableCounter = 0;
+    private static int counter = 0;
     /** the unique ID number for this route timetable  */
-    public final int routeTimetableID;
+    private final int id;
     /** the route associated with the route timetable  */
     private final Route route;
     /** the start time for the route timetable  */
@@ -33,7 +32,33 @@ public class RouteTimetable {
         this.schedule = schedule;
         this.isRushHour = isrushhour;
         this.route = route;
-        this.routeTimetableID = routeTimetableCounter++;
+        schedule.addRouteTimetable(this);
+        this.id = counter;
+        counter++;
+    }
+
+    /**
+     * Gets the current value of the counter tracking the number of
+     * RouteTimetables created.
+     *
+     * The counter is used to allocated unique ID numbers to RouteTimetables.
+     * The current value of the counter represents the next ID number to be
+     * allocated to a new RouteTimetable.
+     *
+     * @return value of the ID number to be allocated to the next new
+     *         RouteTimetable
+     */
+    public static int getCounterValue() {
+      return counter;
+    }
+
+    /**
+     * Gets the ID number for this RouteTimetable.
+     *
+     * @return ID number for this RouteTimetable
+     */
+    public int getID() {
+      return this.id;
     }
 
     /**
@@ -46,7 +71,7 @@ public class RouteTimetable {
     }
 
     /**
-     * Checks wether a route timetable uses rush hour timings or not.
+     * Checks whether a route timetable uses rush hour timings or not.
      *
      * @return true if the route timetable uses rush hour time between stops, else false.
      */
@@ -61,15 +86,6 @@ public class RouteTimetable {
      */
     public Route getRoute(){
         return this.route;
-    }
-
-    /**
-     * Get ID for a route timetable.
-     *
-     * @return routeTimetableID the ID for the route timetable.
-     */
-    public int getRouteTimetableID(){
-        return this.routeTimetableID;
     }
 
     /**

@@ -6,7 +6,6 @@ import java.util.*;
  * The BusType class defines bus type objects that hold
  * several characteristics of the type such as make, model,
  * capacities etc.
- * @authors Ivo Hendriks, Janus Avbæk Larsen, Helle Hyllested Larsen, Dan Meakin.
  */
 public class BusType {
 	/** the make of this bus type  */
