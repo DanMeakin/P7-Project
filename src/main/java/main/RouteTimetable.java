@@ -118,4 +118,14 @@ public class RouteTimetable {
         return schedule.getAllocatedBus(this);
     }
 
+    /**
+     * Get the schedule associated with a route timetable.
+     *
+     * @return schedule the schedule this bus is associated with.
+     */
+    public Schedule getSchedule() {
+        return this.schedule;
+    }
+
+
 }

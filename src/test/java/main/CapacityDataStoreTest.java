@@ -1,22 +1,12 @@
 package main;
 
 import org.junit.*;
-import org.junit.rules.ExpectedException;
+
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.Date.*;
-import main.CapacityDataStore;
-import main.Schedule;
-
-import main.Stop;
-import main.Schedule;
-import org.mockito.Mockito;
 
 public class CapacityDataStoreTest {
 
@@ -253,9 +243,9 @@ public class CapacityDataStoreTest {
             buses.get(i).arrivesAtStop(buses.get(i).getRouteTimetable().getRoute().getStops().get(0));
             buses.get(i).passengersBoard(21);
             buses.get(i).passengersExit(8);
-            CapacityDataStore.writeBusStateChange(buses.get(i));
+            CapacityDataStoreWriter.writeBusStateChange(buses.get(i));
 
-            expectedBusData[i] = (CapacityDataStore.getCurrentDayMonth() + "," + CapacityDataStore.getCurrentTime() + "," + buses.get(i).getFleetNumber() + "," +
+            expectedBusData[i] = (CapacityDataStoreWriter.getCurrentDayMonth() + "," + CapacityDataStoreWriter.getCurrentTime() + "," + buses.get(i).getFleetNumber() + "," +
                     buses.get(i).getRouteTimetable().getRoute().getNumber() + "," + buses.get(i).getRouteTimetable().getRoute().getDescription() + "," +
                     buses.get(i).getRouteTimetable().getRouteTimetableID() + "," + buses.get(i).getStop().getID() + "," + buses.get(i).getStop().getName() + "," +
                     buses.get(i).getNumPassengersExited() + "," + buses.get(i).getNumPassengersBoarded() + "," + buses.get(i).getNumPassengers() + "," +
@@ -295,9 +285,9 @@ public class CapacityDataStoreTest {
 
 
 
-                    //System.out.println(CapacityDataStore.readHistoricRequestedStopCrowdedness(fromDate, toDate, routeTimetables.get(0), stopsRoute0.get(0)).size());
-        //System.out.println(CapacityDataStore.readHistoricCurrentStopCrowdedness(fromDate, toDate, routeTimetables.get(0), stopsRoute0.get(0), stopsRoute0.get(1)).get(20));
-        //System.out.println(CapacityDataStore.getColumnHeaderPosition(CapacityDataStore.ColumnHeaderNames.BUS_ID));
+                    //System.out.println(CapacityDataStoreWriter.readHistoricRequestedStopCrowdedness(fromDate, toDate, routeTimetables.get(0), stopsRoute0.get(0)).size());
+        //System.out.println(CapacityDataStoreWriter.readHistoricCurrentStopCrowdedness(fromDate, toDate, routeTimetables.get(0), stopsRoute0.get(0), stopsRoute0.get(1)).get(20));
+        //System.out.println(CapacityDataStoreWriter.getColumnHeaderPosition(CapacityDataStoreWriter.ColumnHeaderNames.BUS_ID));
         //CapacityCalculator c = new CapacityCalculator();
         //System.out.println(c.calculateCrowdedness(1, fromDate, toDate, routeTimetables.get(0), stopsRoute0.get(0)));
         //System.out.println(c.calculateCrowdedness(1, fromDate, toDate, 4, routeTimetables.get(0), stopsRoute0.get(0), stopsRoute0.get(1)));
@@ -308,7 +298,7 @@ public class CapacityDataStoreTest {
     /*
     @Test
     public void testReadHistoricCrowdedness(){
-        System.out.println(CapacityDataStore.readHistoricRequestedStopCrowdedness(fromDate, toDate, routeTimetables.get(0), stopsRoute0.get(1)));
+        System.out.println(CapacityDataStoreWriter.readHistoricRequestedStopCrowdedness(fromDate, toDate, routeTimetables.get(0), stopsRoute0.get(1)));
     }
     */
 

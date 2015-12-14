@@ -1,19 +1,5 @@
 package main;
 
-import org.junit.*;
-import org.junit.rules.ExpectedException;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-
-import java.io.*;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.Date.*;
-import main.CapacityDataStore;
-import main.Schedule;
-import org.mockito.Mockito;
-
 /**
  * @author Ivo on 7-12-2015.
  */
@@ -145,7 +131,7 @@ public class CapacityCalculatorTest {
 
 
     public double testCalculateCrowdedness(int currentCrowdedness, List<double>);
-    CapacityDataStore.writeBusStateChange(mockedBus);
+    CapacityDataStoreWriter.writeBusStateChange(mockedBus);
 
     public int testCalculateCrowdedness(){
         assertEquals()

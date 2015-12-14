@@ -30,6 +30,7 @@ public class Bus extends Observable {
   private RouteTimetable route;
   /** the stop associated with this bus */
   private Stop stop;
+  private Stop lastStop;
   /** a data structure containing all busses */
   private static List<Bus> allBuses = new ArrayList<>();
 
@@ -97,6 +98,7 @@ public class Bus extends Observable {
       String msg = "bus is already at a stop";
       throw new UnsupportedOperationException(msg);
     }
+    setLastStop(null);
     setStop(stop);
     setNumPassengersBoarded(0);
     setNumPassengersExited(0);
@@ -108,6 +110,7 @@ public class Bus extends Observable {
       String msg = "bus is not at a stop";
       throw new UnsupportedOperationException(msg);
     }
+    setLastStop(stop);
     setStop(null);
     notifyObservers(); // Notify observers after leaving stop
   }
@@ -326,6 +329,19 @@ public class Bus extends Observable {
   }
 
   /**
+   * Get the last stop a bus is at.
+   *
+   * @return lastStop the last stop the bus was at. If available, return the Stop the bus is at.
+   */
+  public Stop getLastStop(){
+    if (!isAtStop()) {
+      return this.lastStop;
+    }
+    return this.stop;
+  }
+
+
+  /**
    * Set a bus to be at a Stop.
    *
    * @param stop the Stop the bus is set to be at.
@@ -334,8 +350,22 @@ public class Bus extends Observable {
     this.stop = stop;
   }
 
+
   /**
-   * Check wether a bus in currently at a Stop.
+   * Set the last stop a bus was at.
+   *
+   * @param stop the Stop the bus was last at.
+   */
+  private void setLastStop(Stop stop){
+    if (!isAtStop()) {
+      String msg = "last stop can ony be set when bus is at a stop";
+      throw new UnsupportedOperationException(msg);
+    }
+    this.lastStop = stop;
+  }
+
+  /**
+   * Check whether a bus in currently at a Stop.
    *
    * @return true if a bus is at a Stop, false if not.
    */
@@ -344,7 +374,7 @@ public class Bus extends Observable {
   }
 
   /**
-   * Check wether a bus in currently on a Route.
+   * Check whether a bus in currently on a Route.
    *
    * @return true if a bus is one a Route, false if not.
    */
@@ -352,10 +382,26 @@ public class Bus extends Observable {
     return (getRouteTimetable() != null);
   }
 
-  public double getOccupationRate(){
+  /**
+   * Get the number of passengers divided by the capacity of a bus.
+   *
+   * @return totalOccupationRate the occupation rate of the bus.
+   */
+  public double getTotalOccupationRate(){
     DecimalFormat rateFormat = new DecimalFormat("#.00");
-    double occupiedCapacity = (Math.round( (double) this.getNumPassengers() / (double) this.getTotalCapacity()*100)/100d);
-    return occupiedCapacity;
+    double totalOccupationRate = (Math.round( (double) this.getNumPassengers() / (double) this.getTotalCapacity()*100)/100d);
+    return totalOccupationRate;
+  }
+
+  /**
+   * Get the number of passengers divided by the number of seats on a bus.
+   *
+   * @return seatedOccupationRate the occupation rate of the bus.
+   */
+  public double getSeatedOccupationRate(){
+    DecimalFormat rateFormat = new DecimalFormat("#.00");
+    double seatedOccupationRate = (Math.round( (double) this.getNumPassengers() / (double) this.getSeatedCapacity()*100)/100d);
+    return seatedOccupationRate;
   }
 
   /**
