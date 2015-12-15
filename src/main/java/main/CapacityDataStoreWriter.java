@@ -8,10 +8,10 @@ import java.text.ParseException;
 
 public class CapacityDataStoreWriter {
 
-    private static File dataStore = new File("data/dataStore.csv");
+    public static File dataStore = new File("data/dataStore.csv");
 
     public static enum ColumnHeaderNames {
-        WRITE_DATE, WRITE_TIME, BUS_ID, ROUTE_ID, ROUTE_DESCRIPTION, ROUTETIMETABLE_TIME_START, SCHEDULE_SCHEDULEDAYS, STOP_NUMBER,
+        WRITE_DATE, WRITE_TIME, BUS_ID, ROUTE_TIMETABLE_ID, ROUTE_ID, ROUTE_DESCRIPTION, ROUTETIMETABLE_TIME_START, SCHEDULE_SCHEDULEDAYS, STOP_NUMBER,
         STOP_DESCRIPTION, PASSENGERS_EXITED, PASSENGERS_BOARDED, TOTAL_PASSENGERS, SEATED_OCCUPATION_RATE, TOTAL_OCCUPATION_RATE
     }
 
@@ -47,11 +47,12 @@ public class CapacityDataStoreWriter {
             writer.write(getCurrentTime() + ",");
             writer.write((bus.getFleetNumber() + ","));
             try {
-                writer.write((bus.getRouteTimetable().getRoute().getNumber() + ","));
+                writer.write((bus.getRouteTimetable().getID() + ","));
             }
             catch (NullPointerException ex) {
                 System.out.println("Bus has no RouteTimetable associated with it");
             }
+            writer.write((bus.getRouteTimetable().getRoute().getNumber() + ","));
             writer.write((bus.getRouteTimetable().getRoute().getDescription() + ","));
             writer.write((bus.getRouteTimetable().getStartTime() + ","));
             writer.write((bus.getRouteTimetable().getSchedule().getOperatingDay() + ","));
