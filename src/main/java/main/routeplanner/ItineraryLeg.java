@@ -1,5 +1,6 @@
 package main.routeplanner;
 
+import main.CapacityCalculator;
 import main.RouteTimetable;
 import main.Stop;
 import main.Walk;
@@ -23,6 +24,8 @@ class ItineraryLeg {
   private int startTime;
   private int endTime;
 
+  private CapacityCalculator capacityCalculator;
+
   public enum ItineraryLegType { WALK, BUS };
 
   /**
@@ -37,6 +40,7 @@ class ItineraryLeg {
     this.destination = destination;
     this.startTime = rt.timeAtStop(origin);
     this.endTime = rt.timeAtStop(destination);
+    this.capacityCalculator = new CapacityCalculator(123.123, rt, origin);
   }
 
   /**
@@ -180,6 +184,25 @@ class ItineraryLeg {
    */
   public int getEndTime() {
     return endTime;
+  }
+
+  /**
+   * Gets the estimated crowdedness of this leg.
+   *
+   * Uses the CapacityCalculator class.
+   *
+   * @return enum value of GREEN, ORANGE or RED depending on the capacity of
+   *         the bus for this leg
+   * @throws IllegalArgumentException if attempting to calculate crowdedness
+   *                                  of a walk (only applies to buses)
+   * @see CapacityCalculator
+   */
+  public CapacityCalculator.crowdednessIndicator calculateCrowdedness() {
+    if (isBus()) {
+      return capacityCalculator.getCrowdednessIndicator();
+    }
+    String msg = "unable to calculate crowdedness of a walk leg";
+    throw new IllegalArgumentException(msg);
   }
 
 }

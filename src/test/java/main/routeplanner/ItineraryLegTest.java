@@ -205,4 +205,5 @@ public class ItineraryLegTest {
   public void testGetEndTime() {
     assertEquals(10*60 + 45, legs.get(0).getEndTime());
   }
+
 }

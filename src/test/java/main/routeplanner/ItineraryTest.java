@@ -1,7 +1,9 @@
 package main.routeplanner;
 
 import org.junit.*;
-import org.junit.rules.ExpectedException;
+
+import main.CapacityCalculator;
+
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -43,7 +45,7 @@ public class ItineraryTest {
   }
 
   /**
-   * Tests the #equals(Itinerary) method.
+   * Tests the equals method.
    *
    * Two itineraries should be equal only when they share the same date and
    * same list of legs.
@@ -67,4 +69,51 @@ public class ItineraryTest {
     assertNotEquals(itinerary3, o);
   }
 
+  /**
+   * Tests the determineCrowdedness method.
+   *
+   * This method returns the crowdedness value for an itinerary using the
+   * CapacityCalculator class.
+   */
+  @Test
+  public void testDetermineCrowdedness() {
+    // Each itinerary has 10 legs, so we must mock crowdedness results for
+    // each leg of each itinerary.
+    CapacityCalculator.crowdednessIndicator[] crowdedness1 = new CapacityCalculator.crowdednessIndicator[] { 
+      CapacityCalculator.crowdednessIndicator.GREEN, 
+      CapacityCalculator.crowdednessIndicator.GREEN, 
+      CapacityCalculator.crowdednessIndicator.GREEN, 
+      CapacityCalculator.crowdednessIndicator.ORANGE, 
+      CapacityCalculator.crowdednessIndicator.RED, 
+      CapacityCalculator.crowdednessIndicator.GREEN, 
+      CapacityCalculator.crowdednessIndicator.GREEN, 
+      CapacityCalculator.crowdednessIndicator.ORANGE, 
+      CapacityCalculator.crowdednessIndicator.GREEN,
+      CapacityCalculator.crowdednessIndicator.GREEN 
+    };
+    CapacityCalculator.crowdednessIndicator[] crowdedness2 = new CapacityCalculator.crowdednessIndicator[] { 
+      CapacityCalculator.crowdednessIndicator.ORANGE,
+      CapacityCalculator.crowdednessIndicator.ORANGE, 
+      CapacityCalculator.crowdednessIndicator.ORANGE, 
+      CapacityCalculator.crowdednessIndicator.GREEN, 
+      CapacityCalculator.crowdednessIndicator.GREEN, 
+      CapacityCalculator.crowdednessIndicator.ORANGE, 
+      CapacityCalculator.crowdednessIndicator.ORANGE, 
+      CapacityCalculator.crowdednessIndicator.GREEN,
+      CapacityCalculator.crowdednessIndicator.GREEN, 
+      CapacityCalculator.crowdednessIndicator.RED
+    };
+    for (int i = 0; i < 10; i++) {
+      when(legs1.get(i).calculateCrowdedness()).thenReturn(crowdedness1[i]);
+      when(legs2.get(i).calculateCrowdedness()).thenReturn(crowdedness2[i]);
+      // Only process the first nine legs for crowdedness purposes. Ignore the
+      // last entry
+      if (i < 9) {
+        when(legs1.get(i).isBus()).thenReturn(true);
+        when(legs2.get(i).isBus()).thenReturn(true);
+      }
+    }
+    assertEquals(CapacityCalculator.crowdednessIndicator.RED, itinerary1.determineCrowdedness());
+    assertEquals(CapacityCalculator.crowdednessIndicator.ORANGE, itinerary2.determineCrowdedness());
+  }
 }
