@@ -155,12 +155,13 @@ public class Schedule {
    * @throws UnsupportedOperationException if there is no departure information
    *                                       available for this date
    */
-  public int nextDepartureTime(int time, Stop stop, Route route) throws UnsupportedOperationException {
-    RouteTimetable rt = nextDepartureRouteTimetable(time, stop, route);
-    if (rt == null) {
-      throw new UnsupportedOperationException("no next departures available today");
+  public int nextDepartureTime(int time, Stop stop, Route route) throws IllegalArgumentException {
+    try {
+      RouteTimetable rt = nextDepartureRouteTimetable(time, stop, route);
+      return rt.timeAtStop(stop);
+    } catch (IllegalArgumentException e) {
+      throw new IllegalArgumentException(e);
     }
-    return rt.timeAtStop(stop);
   }
 
   /**
@@ -179,7 +180,7 @@ public class Schedule {
    * @throws UnsupportedOperationException if there is no departure information
    *                                       available for this date 
    */
-  public RouteTimetable nextDepartureRouteTimetable(int time, Stop stop, Route route) throws UnsupportedOperationException {
+  public RouteTimetable nextDepartureRouteTimetable(int time, Stop stop, Route route) throws IllegalArgumentException {
     int nextDepartureTime = 1_000_000; // Set time to initial high value
     RouteTimetable nextDepartureRT = null;
     List<RouteTimetable> rts = getAllocatedRouteTimetables(route);
@@ -190,7 +191,7 @@ public class Schedule {
       }
     }
     if (nextDepartureRT == null) {
-      throw new UnsupportedOperationException("no next departures available today");
+      throw new IllegalArgumentException("no next departures available today");
     }
     return nextDepartureRT;
   }

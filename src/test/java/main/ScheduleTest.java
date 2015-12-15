@@ -342,6 +342,21 @@ public class ScheduleTest {
   }
 
   /**
+   * test allocateBus method with non-existence RouteTimetable.
+   *
+   * Where an attempt is made to allocate a bus to a RouteTimetable not found
+   * within a schedule, an IllegalArgumentException should be thrown.
+   */
+  @Test
+  public void testAllocateBusWithInvalidRouteTimetable() {
+    RouteTimetable invalidRT = mock(RouteTimetable.class);
+    thrown.expect(IllegalArgumentException.class);
+    String msg = "RouteTimetable " + invalidRT + "is not within Schedule";
+    thrown.expectMessage(msg);
+    saturdaySchedule.allocateBus(invalidRT, mock(Bus.class));
+  }
+
+  /**
    * Test hasBus method.
    *
    * The hasBus method tests whether a bus is allocated within a Schedule.
@@ -563,14 +578,50 @@ public class ScheduleTest {
   }
 
   /**
+   * Test the nextDepartureRouteTimetable method when no further departures
+   * are available on a given day.
+   *
+   * Calling this method where no departures are available should throw an
+   * IllegalArgumentException.
+   */
+  @Test
+  public void testNextDepartureRouteTimetableWithNoFurtherDepartures() {
+    thrown.expect(IllegalArgumentException.class);
+    String msg = "no next departures available today";
+    thrown.expectMessage(msg);
+    int[] indices = new int[] {0, 2, 4, 5, 3, 1};
+    for (int i = 0; i < 6; i++) {
+      saturdaySchedule.addRouteTimetable(busRouteTimetables.get(indices[i]));
+    }
+    saturdaySchedule.nextDepartureRouteTimetable(23 * 60 + 55, mock(Stop.class), mockedRoute1);
+  }
+
+  /**
    * Test the nextDepartureTime method.
    *
    * This method relies upon the nextDepartureRouteTimetable method, and this
    * test reflects this.
    */
   @Test
-  public void testNextDepartureTime() { testNextDepartureRouteTimetable(); // Run test to create dependent variables
+  public void testNextDepartureTime() { 
+    testNextDepartureRouteTimetable(); // Run test to create dependent variables
     assertEquals(saturdaySchedule.nextDepartureTime(10 * 60 + 9, mock(Stop.class), mockedRoute1), 10 * 60 + 10);
+  }
+
+  /**
+   * Test the nextDepartureTime method when no further departures
+   * are available on a given day.
+   *
+   * Calling this method where no departures are available should throw an
+   * IllegalArgumentException.
+   */
+  @Test
+  public void testNextDepartureTimeWithNoFurtherDepartures() {
+    thrown.expect(IllegalArgumentException.class);
+    String msg = "no next departures available today";
+    thrown.expectMessage(msg);
+    testNextDepartureRouteTimetable();
+    saturdaySchedule.nextDepartureTime(23 * 60 + 55, mock(Stop.class), mockedRoute1);
   }
 
   /**
