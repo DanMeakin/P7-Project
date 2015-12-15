@@ -138,6 +138,7 @@ public class CostEstimator {
    * The h'(ni) value is used in calculating an optimal itinerary. This method
    * returns the value of h'(ni) for the passed endNode.
    *
+   * @param ni the node for which to get h' value
    * @return value of h'(ni)
    */
   public int hPrime(Stop ni) throws UnsupportedOperationException {

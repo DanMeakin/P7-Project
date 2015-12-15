@@ -44,6 +44,10 @@ public class ItineraryFinder {
    * bus stops. It is not designed to be used with arbitrary locations, and is
    * not capable of calculating routes which involve any element of non-bus
    * transportation, i.e. walking between stops, using the train, etc.
+   *
+   * @param startingStop the stop from which the desired journey is to begin
+   * @param endingStop   the stop at which the desired journey is to end
+   * @param searchTime   the date and time of departure for the desired journey
    */
   public ItineraryFinder(Stop startingStop, Stop endingStop, LocalDateTime searchTime) {
     setStartingStop(startingStop);

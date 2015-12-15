@@ -82,6 +82,8 @@ public class Bus extends Observable {
    * Find a Bus from the list of all buses.
    *
    * @param fleetNumber the fleet number of the desired bus
+   * @return the bus matching with fleet number matching the fleetNumber
+   *         argument
    */
   public static Bus findBus(int fleetNumber) {
     for (Bus b : allBuses) {
