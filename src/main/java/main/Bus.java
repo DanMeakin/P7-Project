@@ -70,6 +70,15 @@ public class Bus extends Observable {
   }
 
   /**
+   * Get list of all buses within system.
+   *
+   * @return list of all buses within system
+   */
+  public static List<Bus> getAllBuses() {
+    return allBuses;
+  }
+
+  /**
    * Find a Bus from the list of all buses.
    *
    * @param fleetNumber the fleet number of the desired bus
@@ -98,7 +107,6 @@ public class Bus extends Observable {
       throw new UnsupportedOperationException(msg);
     }
     setStop(stop);
-    setLastStop(null);
     setNumPassengersBoarded(0);
     setNumPassengersExited(0);
     setChanged(); // Mark as changed for observers
@@ -109,7 +117,7 @@ public class Bus extends Observable {
       String msg = "bus is not at a stop";
       throw new UnsupportedOperationException(msg);
     }
-    setLastStop(stop);
+    setLastStop(getStop());
     setStop(null);
     notifyObservers(); // Notify observers after leaving stop
   }
@@ -330,13 +338,10 @@ public class Bus extends Observable {
   /**
    * Get the last stop a bus is at.
    *
-   * @return lastStop the last stop the bus was at. If available, return the Stop the bus is at.
+   * @return lastStop the last stop the bus was at
    */
   public Stop getLastStop(){
-    if (!isAtStop()) {
-      return this.lastStop;
-    }
-    return this.stop;
+    return this.lastStop;
   }
 
 
@@ -356,10 +361,6 @@ public class Bus extends Observable {
    * @param stop the Stop the bus was last at.
    */
   private void setLastStop(Stop stop){
-    if (!isAtStop()) {
-      String msg = "last stop can ony be set when bus is at a stop";
-      throw new UnsupportedOperationException(msg);
-    }
     this.lastStop = stop;
   }
 
