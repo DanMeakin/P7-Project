@@ -2,16 +2,12 @@ package main.routeplanner;
 
 import main.Path;
 import main.Route;
-import main.RouteTimetable;
 import main.Schedule;
 import main.Stop;
 import main.Walk;
 
 import java.time.*;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -42,178 +38,6 @@ public class ItineraryFinder {
   private HashMap<Stop, TArc> pres;
 
   /** 
-   * The TArc inner class is used to represent one t-arc within an itinerary.
-   *
-   * The class is very minimal and is used simply to represent one t-arc used
-   * within the route finding algorithm.
-   */
-  class TArc {
-    
-    private final Stop startNode;
-    private final Stop endNode;
-    private final Path service;
-    private final int time;
-
-    /**
-     * TArc constructor.
-     *
-     * The constructor requires starting and ending stops/nodes, a service,
-     * and the initial time. The ItineraryFinder supports walking between
-     * stops; if a t-arc represents a walk, a null Route should be passed.
-     */
-    public TArc(Stop ni, Stop nj, Path si, int time) {
-      this.startNode = ni;
-      this.endNode = nj;
-      this.service = si;
-      this.time = time;
-    }
-
-    public String toString() {
-      return "TArc(" + 
-        getStartNode() + ", " + 
-        getEndNode() + ", " + 
-        getService() + ", " + 
-        getTime() + ")";
-    }
-    
-    @Override
-    public boolean equals(Object o) {
-      return (o instanceof TArc && equals((TArc) o));
-    }
-
-    public boolean equals(TArc otherTArc) {
-      return (
-          this != null && otherTArc != null &&
-          getStartNode().equals(otherTArc.getStartNode()) &&
-          getEndNode().equals(otherTArc.getEndNode()) &&
-          getService().equals(otherTArc.getService()) &&
-          getTime() == otherTArc.getTime()
-          );
-    }
-    /**
-     * Convert t-arc into JourneyLeg class.
-     *
-     * This method converts a t-arc instance into a journey leg instance.
-     * The t-arc class uses some methods and representations peculiar to the
-     * graph-based nature of the algorithms used in the itinerary finder. The
-     * JourneyLeg class uses more familiar objects and representations for the
-     * overall itinerary. T-arcs should be converted to JourneyLegs where used
-     * outside of the itinerary finder.
-     *
-     * @return journey leg representation of t-arc
-     */
-    public JourneyLeg toJourneyLeg() {
-      if (getService() instanceof Walk) {
-        return new JourneyLeg(
-            (Walk) getService(),
-            getTime()
-            );
-      } else {
-        return new JourneyLeg(
-            schedule.nextDepartureRouteTimetable(getTime(), getStartNode(), (Route) getService()),
-            getStartNode(),
-            getEndNode()
-            );
-      }
-    }
-
-    /**
-     * Calculate pi value for this t-arc.
-     *
-     * The pi value is calculated with reference to the time of arrival of the
-     * next departing vehicle at the ending stop.
-     *
-     * The formula to calculate pi is (in words):-
-     *
-     *  arrival time at endNode using the first departing vehicle on route
-     *  service from startNode, minus initial time time; or
-     *  walking time between nodes, plus the starting time
-     *
-     * @return value of pi for this t-arc
-     */
-    public int pi() {
-      return arrivalTime() - getTime();
-    }
-
-    /**
-     * Calculate departure time for this t-arc.
-     *
-     * If there is no next departure for this service, this method will return
-     * the value of CostEstimator.UNCONNECTED to signal that this t-arc should
-     * be ignored.
-     *
-     * @return departure time (in minutes since midnight) from startNode for 
-     *         this t-arc
-     */
-    public int departureTime() {
-      try {
-        int nextDepartureTime = schedule.nextDepartureTime(
-            getTime(), 
-            getStartNode(), (Route) getService()
-            );
-        return nextDepartureTime;
-      } catch (UnsupportedOperationException e) {
-        // If this is caught, it means there is no next departure time info
-        // available. This should return a very large value for the purpose
-        // of route planning calculations.
-        return CostEstimator.UNCONNECTED;
-      }
-    }
-
-    /**
-     * Calculate journey time between nodes for this t-arc.
-     *
-     * @return journey time (in minutes) from startNode to endNode
-     */
-    public int journeyTime() {
-      try {
-        boolean isRushHour = 
-          getService() instanceof Route && 
-          schedule.nextDepartureRouteTimetable(getTime(), getStartNode(), (Route) getService()).isRushHour();
-        return getService().journeyTimeBetweenStops(getStartNode(), getEndNode(), isRushHour);
-      } catch (UnsupportedOperationException e) {
-        // If this is caught, it means there is no next departure time info
-        // available. This should return a very large value for the purpose
-        // of route planning calculations.
-        return CostEstimator.UNCONNECTED;
-      }
-    }
-
-    /**
-     * Calculate arrival time for this t-arc.
-     *
-     * This will be the time of the next departure of the specified service
-     * from the endNode of this t-arc, or the walking time for this t-arc,
-     * plus the starting time.
-     *
-     * @return arrival time (in minutes since midnight) for this t-arc
-     */
-    public int arrivalTime() {
-      if (getService() instanceof Walk) {
-        return ((Walk) getService()).walkingTime() + getTime();
-      } else {
-        return departureTime() + journeyTime();
-      }
-    }
-
-    public Stop getStartNode() {
-      return startNode;
-    }
-
-    public Stop getEndNode() {
-      return endNode;
-    }
-
-    public Path getService() {
-      return service;
-    }
-
-    public int getTime() {
-      return time;
-    }
-  }
-
-  /** 
    * Creates an instance of ItineraryFinder.
    *
    * The ItineraryFinder is used to calculate optimal routes between two specified
@@ -241,22 +65,23 @@ public class ItineraryFinder {
    *         origin to a destination
    */
   public List<JourneyLeg> findBestItinerary() {
-    return convertPathToItinerary(calculateLeastTimePath());
+    return findBestItineraries(1).get(0);
   }
 
   /**
-   * Finds the k best itineraries for this journey.
+   * Finds the best itineraries for this journey.
    *
    * This method uses the calculateKLeastTimePaths private method to calculate
    * the k least time paths for the desired journey.
    * 
+   * @param n the number of itineraries to get
    * @return the k best itineraries for this journey, represented by a nested
    *         list of journey leg lists, each representing a RouteTimetable or
    *         a walk from an origin to a destination
    */ 
-  public List<List<JourneyLeg>> findKBestItineraries(int k) {
+  public List<List<JourneyLeg>> findBestItineraries(int n) {
     List<List<JourneyLeg>> bestItineraries = new ArrayList<>();
-    List<List<TArc>> bestPaths = calculateKLeastTimePaths(k);
+    List<List<TArc>> bestPaths = calculateKLeastTimePaths(n);
     for (List<TArc> path : bestPaths) {
       bestItineraries.add(convertPathToItinerary(path));
     }
@@ -383,7 +208,7 @@ public class ItineraryFinder {
    *
    * @return list of open nodes
    */
-  public List<Stop> getOpenNodes() {
+  private List<Stop> getOpenNodes() {
     return openNodes;
   }
 
@@ -404,7 +229,7 @@ public class ItineraryFinder {
    * @param n node to test whether open
    * @return true if open, else false
    */
-  public boolean isOpen(Stop n) {
+  private boolean isOpen(Stop n) {
     return getOpenNodes().contains(n);
   }
 
@@ -413,7 +238,7 @@ public class ItineraryFinder {
    *
    * @return list of closed nodes
    */
-  public List<Stop> getClosedNodes() {
+  private List<Stop> getClosedNodes() {
     return closedNodes;
   }
 
@@ -425,11 +250,7 @@ public class ItineraryFinder {
    *
    * @param n node to move from open to closed list
    */
-  private void changeOpenToClosed(Stop n) throws IllegalArgumentException {
-    if (!openNodes.contains(n)) {
-      String msg = "node " + n + " is not an open node";
-      throw new IllegalArgumentException(msg);
-    }
+  private void changeOpenToClosed(Stop n) {
     openNodes.remove(n);
     closedNodes.add(n);
   }
@@ -440,7 +261,7 @@ public class ItineraryFinder {
    * @param n node to test whether closed
    * @return true if closed, else false
    */
-  public boolean isClosed(Stop n) {
+  private boolean isClosed(Stop n) {
     return getClosedNodes().contains(n);
   }
 
@@ -452,7 +273,7 @@ public class ItineraryFinder {
    * @param n node to test whether new
    * @return true if new, else false
    */
-  public boolean isNew(Stop n) {
+  private boolean isNew(Stop n) {
     return !(isOpen(n) || isClosed(n));
   }
 
@@ -472,7 +293,7 @@ public class ItineraryFinder {
    * @param n the node for which to get value of pre
    * @return t-arc value of pre(n)
    */
-  public TArc getPre(Stop n) {
+  private TArc getPre(Stop n) {
     return pres.get(n);
   }
 
@@ -487,7 +308,7 @@ public class ItineraryFinder {
    * @param p path to test whether already traversed
    * @return true if r has already been traversed, else false
    */
-  public boolean pathAlreadyTraversed(Path p) {
+  private boolean pathAlreadyTraversed(Path p) {
     return (p != null && usedPaths.contains(p)); 
   }
 
@@ -505,7 +326,7 @@ public class ItineraryFinder {
    *
    * @return true if immediately previous leg was walked, else false
    */
-  public boolean walkedLastLeg() {
+  private boolean walkedLastLeg() {
     return (usedPaths.size() > 0 && usedPaths.get(usedPaths.size()-1) instanceof Walk);
   }
 
@@ -521,7 +342,7 @@ public class ItineraryFinder {
    *
    * @param ni node for which to get value of f'
    */
-  public int fPrime(Stop ni) {
+  private int fPrime(Stop ni) {
     return gPrime(ni) + hPrime(ni);
   }
 
@@ -530,7 +351,7 @@ public class ItineraryFinder {
    *
    * @param ni node for which to get value of g'
    */
-  public int gPrime(Stop ni) {
+  private int gPrime(Stop ni) {
     Integer g = gs.get(ni);
     if (g == null) {
       return CostEstimator.UNCONNECTED;
@@ -554,7 +375,7 @@ public class ItineraryFinder {
    *
    * @param ni node for which to get value of h'
    */
-  public int hPrime(Stop ni) {
+  private int hPrime(Stop ni) {
     return costEstimator.hPrime(ni);
   }
 
@@ -589,7 +410,11 @@ public class ItineraryFinder {
    */
   private List<List<TArc>> calculateKLeastTimePaths(int k) {
     List<List<TArc>> leastTimePaths = new ArrayList<>();
+    // First, add the overall least time path
     leastTimePaths.add(calculateLeastTimePath());
+
+    // Once the overall least time path has been found, increment starting
+    // time and find the next LTP. Repeat until k paths are obtained.
     while (leastTimePaths.size() < k) {
       List<TArc> previousLTP = leastTimePaths.get(leastTimePaths.size()-1);
       int previousLTPDeparture = previousLTP.get(0).departureTime();
@@ -600,7 +425,7 @@ public class ItineraryFinder {
   }
 
   /**
-   * Calculate the Least Time path for the desired route.
+   * Calculates the Least Time path for the desired route.
    *
    * This implementation uses the pre-defined Stop and RouteTimetable classes
    * and attributes thereon.
@@ -614,37 +439,52 @@ public class ItineraryFinder {
     while (!getOpenNodes().isEmpty()) {
       // Select open node with minimum value for f'(ni)
       ni = selectMinimumOpenNode();
-      selectPathFromNode(ni);
+      calculateConnectionsFromCurrentNode(ni);
     }
     return reconstructItinerary();
   }
 
-private void selectPathFromNode(Stop ni) {
-  // Set the route leading to this node to already traversed, and set ni
-  // to the value of initial time plus the value of g'(ni)
-  if (getPre(ni) != null) {
-    setAlreadyTraversed(getPre(ni).getService());
-  }
-  int currentTi = getTime() + gPrime(ni); 
+  /**
+   * Calculates connections between the current node and the prospective next
+   * node in the Itinerary.
+   *
+   * This method carries out a number of calculations and checks to determine
+   * which nodes are suitable candidates for consideration as the next node.
+   * The process requires this method to record state to this ItineraryFinder.
+   *
+   * It records that the path leading to ni has already been traversed; it
+   * sets the current time for initiating the next t-arc; it sets ni to closed
+   * to ensure that it will not be returned to in further legs/t-arcs; and it
+   * then ascertains all node candidates for the next leg/t-arc.
+   *
+   * @param ni the current node from which to determine next node
+   */
+  private void calculateConnectionsFromCurrentNode(Stop ni) {
+    // Set the route leading to this node to already traversed, and set ni
+    // to the value of initial time plus the value of g'(ni)
+    if (getPre(ni) != null) {
+      setAlreadyTraversed(getPre(ni).getService());
+    }
+    int currentTi = getTime() + gPrime(ni); 
 
-  // If this node is equal to the ending node, then we are finished and need
-  // simply to reconstruct the itinerary from node list. Otherwise move node
-  // from open to closed list, and carry out next step.
-  changeOpenToClosed(ni);
-  if (ni.equals(getEndingStop())) {
-    return;
-  } 
+    // If this node is equal to the ending node, then we are finished and need
+    // simply to reconstruct the itinerary from node list. Otherwise move node
+    // from open to closed list, and carry out next step.
+    changeOpenToClosed(ni);
+    if (ni.equals(getEndingStop())) {
+      return;
+    } 
 
-  // Get all paths from node ni to all other connected nodes
-  for (Path p : Path.findPathsIncludingStop(ni)) {
-    // Get all ni+ nodes - called ni2 here
-    for (Stop ni2 : p.getStops()) {
-      // Check that stop ni2 comes after stop ni - if not, this does not
-      // represent a t-arc - there is no connection between s and ni on this
-      // route.
-      if (p.compareStops(ni, ni2) >= 0) {
-        continue;
-      }
+    // Get all paths from node ni to all other connected nodes
+    for (Path p : Path.findPathsIncludingStop(ni)) {
+      // Get all ni+ nodes - called ni2 here
+      for (Stop ni2 : p.getStops()) {
+        // Check that stop ni2 comes after stop ni - if not, this does not
+        // represent a t-arc - there is no connection between s and ni on this
+        // route.
+        if (p.compareStops(ni, ni2) >= 0) {
+          continue;
+        }
 
       // Create t-arc and then skip this iteration if the second node is
       // closed (we don't return to closed nodes), if the route has already
@@ -671,11 +511,12 @@ private void selectPathFromNode(Stop ni) {
       }
       setGPrime(ni2, gPrime(ni) + pi);
       setPre(ni2, tArc);
+      }
     }
   }
-}
+
   /**
-   * Reconstruct least time itinerary.
+   * Reconstructs least time itinerary.
    *
    * This method reconstructs the least time itinerary by looping through
    * pre(ni) where ni = nd, nd-, ..., no+.
@@ -693,7 +534,7 @@ private void selectPathFromNode(Stop ni) {
   }
 
   /**
-   * Determine and select the open node with minimum value of f'(n).
+   * Determines and selects the open node with minimum value of f'(n).
    *
    * This method forms part of the calculateLeastTimePath method, and is used
    * to select the most promising node at the beginning of each iteration.
@@ -711,4 +552,217 @@ private void selectPathFromNode(Stop ni) {
     }
     return minNode;
   }
+
+  /** 
+   * The TArc inner class is used to represent one t-arc within an itinerary.
+   *
+   * The class is very minimal and is used simply to represent one t-arc used
+   * within the route finding algorithm.
+   */
+  class TArc {
+    
+    private final Stop startNode;
+    private final Stop endNode;
+    private final Path service;
+    private final int time;
+
+    /**
+     * TArc constructor.
+     *
+     * The constructor requires starting and ending stops/nodes, a service,
+     * and the initial time. The ItineraryFinder supports walking between
+     * stops; if a t-arc represents a walk, a null Route should be passed.
+     *
+     * @param ni   starting node
+     * @param nj   ending node
+     * @param si   service between nodes - can be a bus route or a walk
+     * @param time starting time for journey from t-arc (this does not require
+     *             to be the departure time for the service; departure time is
+     *             calculated from the value of time)
+     */
+    public TArc(Stop ni, Stop nj, Path si, int time) {
+      this.startNode = ni;
+      this.endNode = nj;
+      this.service = si;
+      this.time = time;
+    }
+    
+    /**
+     * Checks for object equality.
+     *
+     * The equals(Object) method is overridden to test for equality with a
+     * TArc instance. A TArc should only be considered equal to another TArc
+     * with the same startNode, endNode, service and time.
+     *
+     * @param o object against which to test equality
+     * @return true if o equals this, else false
+     */
+    @Override
+    public boolean equals(Object o) {
+      return (o instanceof TArc && equals((TArc) o));
+    }
+
+    /**
+     * Checks for equality of two t-arcs.
+     *
+     * Two t-arcs are equal only if they share the same startNode, endNode,
+     * service and time.
+     *
+     * @param o object against which to test equality
+     * @return true if o equals this, else false
+     */
+    public boolean equals(TArc otherTArc) {
+      return (
+          otherTArc != null &&
+          getStartNode().equals(otherTArc.getStartNode()) &&
+          getEndNode().equals(otherTArc.getEndNode()) &&
+          getService().equals(otherTArc.getService()) &&
+          getTime() == otherTArc.getTime()
+          );
+    }
+
+    /**
+     * Converts t-arc into JourneyLeg class.
+     *
+     * This method converts a t-arc instance into a journey leg instance.
+     * The t-arc class uses some methods and representations peculiar to the
+     * graph-based nature of the algorithms used in the itinerary finder. 
+     *
+     * The JourneyLeg class uses more familiar objects and representations for
+     * the overall itinerary. T-arcs should be converted to JourneyLegs where 
+     * used outside of the itinerary finder.
+     *
+     * @return journey leg representation of t-arc
+     */
+    public JourneyLeg toJourneyLeg() {
+      if (getService() instanceof Walk) {
+        return new JourneyLeg(
+            (Walk) getService(),
+            getTime()
+            );
+      } else {
+        return new JourneyLeg(
+            schedule.nextDepartureRouteTimetable(getTime(), getStartNode(), (Route) getService()),
+            getStartNode(),
+            getEndNode()
+            );
+      }
+    }
+
+    /**
+     * Calculates the pi value for this t-arc.
+     *
+     * The pi value is calculated with reference to the time of arrival of the
+     * next departing vehicle at the ending stop.
+     *
+     * The formula to calculate pi is (in words):-
+     *
+     *  arrival time at endNode using the first departing vehicle on route
+     *  service from startNode, minus initial time time; or
+     *  walking time between nodes, plus the starting time
+     *
+     * @return value of pi for this t-arc
+     */
+    public int pi() {
+      return arrivalTime() - getTime();
+    }
+
+    /**
+     * Calculates the departure time for this t-arc.
+     *
+     * If there is no next departure for this service, this method will return
+     * the value of CostEstimator.UNCONNECTED to signal that this t-arc should
+     * be ignored.
+     *
+     * @return departure time (in minutes since midnight) from startNode for 
+     *         this t-arc
+     */
+    public int departureTime() {
+      try {
+        int nextDepartureTime = schedule.nextDepartureTime(
+            getTime(), 
+            getStartNode(), (Route) getService()
+            );
+        return nextDepartureTime;
+      } catch (UnsupportedOperationException e) {
+        // If this is caught, it means there is no next departure time info
+        // available. This should return a very large value for the purpose
+        // of route planning calculations.
+        return CostEstimator.UNCONNECTED;
+      }
+    }
+
+    /**
+     * Calculates the journey time between nodes for this t-arc.
+     *
+     * @return journey time (in minutes) from startNode to endNode
+     */
+    public int journeyTime() {
+      try {
+        boolean isRushHour = 
+          getService() instanceof Route && 
+          schedule.nextDepartureRouteTimetable(getTime(), getStartNode(), (Route) getService()).isRushHour();
+        return getService().journeyTimeBetweenStops(getStartNode(), getEndNode(), isRushHour);
+      } catch (UnsupportedOperationException e) {
+        // If this is caught, it means there is no next departure time info
+        // available. This should return a very large value for the purpose
+        // of route planning calculations.
+        return CostEstimator.UNCONNECTED;
+      }
+    }
+
+    /**
+     * Calculates the arrival time for this t-arc.
+     *
+     * This will be the time of the next departure of the specified service
+     * from the endNode of this t-arc, or the walking time for this t-arc,
+     * plus the starting time.
+     *
+     * @return arrival time (in minutes since midnight) for this t-arc
+     */
+    public int arrivalTime() {
+      if (getService() instanceof Walk) {
+        return ((Walk) getService()).walkingTime() + getTime();
+      } else {
+        return departureTime() + journeyTime();
+      }
+    }
+
+    /**
+     * Gets startNode.
+     *
+     * @return starting node of t-arc
+     */
+    public Stop getStartNode() {
+      return startNode;
+    }
+
+    /**
+     * Gets endNode.
+     *
+     * @return ending node of t-arc
+     */
+    public Stop getEndNode() {
+      return endNode;
+    }
+
+    /**
+     * Gets service.
+     *
+     * @return t-arc service
+     */
+    public Path getService() {
+      return service;
+    }
+ 
+    /**
+     * Gets time
+     *
+     * @return t-arc starting time
+     */
+    public int getTime() {
+      return time;
+    }
+  }
 }
+

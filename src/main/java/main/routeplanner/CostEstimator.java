@@ -1,9 +1,10 @@
 package main.routeplanner;
 
 import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
 
 import main.Path;
-import main.Route;
 import main.Stop;
 
 /**
@@ -44,19 +45,22 @@ public class CostEstimator {
     /**
      * Create a StopPair instance.
      *
+     * StopPairs are used as keys in the CostEstimator HashMap.
+     *
      * @param s1 first stop in pair
      * @param s2 second stop in pair
      */
     public StopPair(Stop s1, Stop s2) {
       if (s1 == null || s2 == null) {
         String msg = "cannot pass a null stop into StopPair - received null value for ";
+        List<String> nulls = new ArrayList<>();
         if (s1 == null) {
-          msg += "s1";
-        } else if (s2 == null) {
-          msg += "s2";
-        } else {
-          msg += "???";
+          nulls.add("s1");
         }
+        if (s2 == null) {
+          nulls.add("s2");
+        }
+        msg += String.join(" & ", nulls);
         throw new IllegalArgumentException(msg);
       }
       this.s1 = s1;
@@ -77,13 +81,8 @@ public class CostEstimator {
      *
      * @return s2
      */
-
     public Stop getS2() {
       return s2;
-    }
-
-    public String toString() {
-      return "StopPair: " + s1 + ", " + s2;
     }
 
     /**
@@ -103,6 +102,7 @@ public class CostEstimator {
         return false;
       }
     }
+
     /**
      * Override hashCode method to ensure equivalent StopPairs are treated
      * as such as keys in HashMap.

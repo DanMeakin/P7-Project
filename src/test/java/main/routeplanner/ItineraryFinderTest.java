@@ -421,7 +421,7 @@ public class ItineraryFinderTest {
           )
         );
     List<List<JourneyLeg>> expected = Arrays.asList(expected1, expected2, expected3, expected4, expected5);
-    List<List<JourneyLeg>> actual = itineraryFinder.findKBestItineraries(5);
+    List<List<JourneyLeg>> actual = itineraryFinder.findBestItineraries(5);
     for (int i = 0; i < actual.size(); i++) {
       assertEquals(expected.get(i), actual.get(i));
     }
@@ -454,11 +454,32 @@ public class ItineraryFinderTest {
     ItineraryFinder.TArc e = itineraryFinder.new TArc(s2, s1, p1, t2);
     ItineraryFinder.TArc a2 = itineraryFinder.new TArc(s1, s2, p1, t1);
     ItineraryFinder.TArc b2 = itineraryFinder.new TArc(s1, s3, p1, t1);
+    ItineraryFinder.TArc nullTArc = null;
+    Object o = new Object();
     assertTrue(a.equals(a2));
     assertTrue(b.equals(b2));
     assertFalse(a.equals(b));
     assertFalse(a.equals(c));
     assertFalse(a.equals(d));
     assertFalse(a.equals(e));
+    assertFalse(a.equals(o));
+    assertFalse(b.equals(a));
+    assertFalse(b.equals(c));
+    assertFalse(b.equals(d));
+    assertFalse(b.equals(e));
+    assertFalse(c.equals(a));
+    assertFalse(c.equals(b));
+    assertFalse(c.equals(d));
+    assertFalse(c.equals(e));
+    assertFalse(d.equals(a));
+    assertFalse(d.equals(b));
+    assertFalse(d.equals(c));
+    assertFalse(d.equals(e));
+    assertFalse(e.equals(a));
+    assertFalse(e.equals(b));
+    assertFalse(e.equals(c));
+    assertFalse(e.equals(d));
+    assertFalse(a.equals(nullTArc));
+
   }
 }
