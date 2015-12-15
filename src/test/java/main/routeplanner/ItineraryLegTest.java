@@ -16,14 +16,14 @@ import main.RouteTimetable;
 import main.Bus;
 import main.Stop;
 import main.Walk;
-import main.routeplanner.JourneyLeg.JourneyLegType;
+import main.routeplanner.ItineraryLeg.ItineraryLegType;
 
 /**
- * JourneyLegTest class contains a series of unit tests for the JourneyLeg class.
+ * ItineraryLegTest class contains a series of unit tests for the ItineraryLeg class.
  *
- * The JourneyLeg represents one leg of a journey for use elsewhere in the system.
+ * The ItineraryLeg represents one leg of a journey for use elsewhere in the system.
  */
-public class JourneyLegTest {
+public class ItineraryLegTest {
 
   private static Stop origin1;
   private static Stop origin2;
@@ -36,7 +36,7 @@ public class JourneyLegTest {
   private static Walk w1;
   private static Walk w2;
 
-  private static List<JourneyLeg> journeyLegs;
+  private static List<ItineraryLeg> legs;
 
   private static int time1;
   private static int time2;
@@ -78,45 +78,45 @@ public class JourneyLegTest {
     int time1 = 10*60 + 15;
     int time2 = 10*60 + 16;
 
-    journeyLegs = new ArrayList<>();
-    journeyLegs.add(new JourneyLeg(rt1, origin1, destination1));
-    journeyLegs.add(new JourneyLeg(rt1, origin1, destination2));
-    journeyLegs.add(new JourneyLeg(rt1, origin2, destination1));
-    journeyLegs.add(new JourneyLeg(rt1, origin2, destination2));
-    journeyLegs.add(new JourneyLeg(rt2, origin1, destination1));
-    journeyLegs.add(new JourneyLeg(rt2, origin1, destination2));
-    journeyLegs.add(new JourneyLeg(rt2, origin2, destination1));
-    journeyLegs.add(new JourneyLeg(rt2, origin2, destination2));
-    journeyLegs.add(new JourneyLeg(w1, 6*60 + 15));
-    journeyLegs.add(new JourneyLeg(w1, 7*60 + 2));
-    journeyLegs.add(new JourneyLeg(w2, 6*60 + 40));
-    journeyLegs.add(new JourneyLeg(w2, 8*60 + 9));
+    legs = new ArrayList<>();
+    legs.add(new ItineraryLeg(rt1, origin1, destination1));
+    legs.add(new ItineraryLeg(rt1, origin1, destination2));
+    legs.add(new ItineraryLeg(rt1, origin2, destination1));
+    legs.add(new ItineraryLeg(rt1, origin2, destination2));
+    legs.add(new ItineraryLeg(rt2, origin1, destination1));
+    legs.add(new ItineraryLeg(rt2, origin1, destination2));
+    legs.add(new ItineraryLeg(rt2, origin2, destination1));
+    legs.add(new ItineraryLeg(rt2, origin2, destination2));
+    legs.add(new ItineraryLeg(w1, 6*60 + 15));
+    legs.add(new ItineraryLeg(w1, 7*60 + 2));
+    legs.add(new ItineraryLeg(w2, 6*60 + 40));
+    legs.add(new ItineraryLeg(w2, 8*60 + 9));
   }
 
   /**
-   * Test the JourneyLegType enum.
+   * Test the ItineraryLegType enum.
    */
   @Test
-  public void testJourneyLegTypeEnum() {
-    assertEquals(new JourneyLegType[]{JourneyLegType.WALK, JourneyLegType.BUS}, JourneyLegType.values());
-    assertEquals(JourneyLegType.WALK, JourneyLegType.valueOf("WALK"));
-    assertEquals(JourneyLegType.BUS, JourneyLegType.valueOf("BUS"));
+  public void testItineraryLegTypeEnum() {
+    assertEquals(new ItineraryLegType[]{ItineraryLegType.WALK, ItineraryLegType.BUS}, ItineraryLegType.values());
+    assertEquals(ItineraryLegType.WALK, ItineraryLegType.valueOf("WALK"));
+    assertEquals(ItineraryLegType.BUS, ItineraryLegType.valueOf("BUS"));
   }
 
   @Test
   public void testEquals() {
-    JourneyLeg jl1Duplicate = new JourneyLeg(rt1, origin1, destination1);
-    JourneyLeg jl2Duplicate = new JourneyLeg(w1, 7*60 + 2);
+    ItineraryLeg leg1Duplicate = new ItineraryLeg(rt1, origin1, destination1);
+    ItineraryLeg leg2Duplicate = new ItineraryLeg(w1, 7*60 + 2);
     Object o = new Object();
 
-    assertTrue(journeyLegs.get(0).equals(jl1Duplicate));
-    assertTrue(journeyLegs.get(9).equals(jl2Duplicate));
-    for (JourneyLeg jl : journeyLegs) {
-      List<JourneyLeg> otherJourneyLegs = new ArrayList<>(journeyLegs);
-      otherJourneyLegs.remove(jl);
-      for (JourneyLeg otherjl : otherJourneyLegs) {
-        assertFalse(jl.equals(otherjl));
-        assertFalse(jl.equals(o));
+    assertTrue(legs.get(0).equals(leg1Duplicate));
+    assertTrue(legs.get(9).equals(leg2Duplicate));
+    for (ItineraryLeg leg : legs) {
+      List<ItineraryLeg> otherItineraryLegs = new ArrayList<>(legs);
+      otherItineraryLegs.remove(leg);
+      for (ItineraryLeg otherleg : otherItineraryLegs) {
+        assertFalse(leg.equals(otherleg));
+        assertFalse(leg.equals(o));
       }
     }
   }
@@ -124,16 +124,16 @@ public class JourneyLegTest {
   /**
    * Test isBus method.
    *
-   * The first 8 entries in journeyLegs are bus-based journeys, so the method
+   * The first 8 entries in legs are bus-based journeys, so the method
    * should return true for these and these alone.
    */
   @Test
   public void testIsBus() {
-    for (JourneyLeg jl : journeyLegs) {
-      if (journeyLegs.indexOf(jl) < 8) {
-        assertTrue(jl.isBus());
+    for (ItineraryLeg leg : legs) {
+      if (legs.indexOf(leg) < 8) {
+        assertTrue(leg.isBus());
       } else {
-        assertFalse(jl.isBus());
+        assertFalse(leg.isBus());
       }
     }
   } 
@@ -141,16 +141,16 @@ public class JourneyLegTest {
   /**
    * Test isWalk method.
    *
-   * The first 8 entries in journeyLegs are bus-based journeys, so the method
-   * should return false for these and true for the remaining journeyLegs.
+   * The first 8 entries in legs are bus-based journeys, so the method
+   * should return false for these and true for the remaining legs.
    */
   @Test
   public void testIsWalk() {
-    for (JourneyLeg jl : journeyLegs) {
-      if (journeyLegs.indexOf(jl) < 8) {
-        assertFalse(jl.isWalk());
+    for (ItineraryLeg leg : legs) {
+      if (legs.indexOf(leg) < 8) {
+        assertFalse(leg.isWalk());
       } else {
-        assertTrue(jl.isWalk());
+        assertTrue(leg.isWalk());
       }
     }
   } 
@@ -159,16 +159,16 @@ public class JourneyLegTest {
    */
   @Test
   public void testGetRouteTimetable() {
-    for (JourneyLeg jl : journeyLegs) {
+    for (ItineraryLeg leg : legs) {
       RouteTimetable thisRT;
-      if (journeyLegs.indexOf(jl) < 4) {
+      if (legs.indexOf(leg) < 4) {
         thisRT = rt1;
-      } else if (journeyLegs.indexOf(jl) < 8) {
+      } else if (legs.indexOf(leg) < 8) {
         thisRT = rt2;
       } else {
         thisRT = null;
       }
-      assertEquals(thisRT, jl.getRouteTimetable());
+      assertEquals(thisRT, leg.getRouteTimetable());
     }
   }
 
@@ -177,16 +177,16 @@ public class JourneyLegTest {
    */
   @Test
   public void testGetWalk() {
-    for (JourneyLeg jl : journeyLegs) {
+    for (ItineraryLeg leg : legs) {
       Walk thisWalk;
-      if (journeyLegs.indexOf(jl) < 8) {
+      if (legs.indexOf(leg) < 8) {
         thisWalk = null;
-      } else if (journeyLegs.indexOf(jl) < 10) {
+      } else if (legs.indexOf(leg) < 10) {
         thisWalk = w1;
       } else {
         thisWalk = w2;
       }
-      assertEquals(thisWalk, jl.getWalk());
+      assertEquals(thisWalk, leg.getWalk());
     }
   }
 
@@ -195,7 +195,7 @@ public class JourneyLegTest {
    */
   @Test
   public void testGetStartTime() {
-    assertEquals(6*60 + 45, journeyLegs.get(0).getStartTime());
+    assertEquals(6*60 + 45, legs.get(0).getStartTime());
   }
 
   /**
@@ -203,6 +203,6 @@ public class JourneyLegTest {
    */
   @Test
   public void testGetEndTime() {
-    assertEquals(10*60 + 45, journeyLegs.get(0).getEndTime());
+    assertEquals(10*60 + 45, legs.get(0).getEndTime());
   }
 }

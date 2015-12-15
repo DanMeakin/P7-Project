@@ -64,7 +64,7 @@ public class ItineraryFinder {
    *         journey legs each representing a RouteTimetable or a walk from an 
    *         origin to a destination
    */
-  public List<JourneyLeg> findBestItinerary() {
+  public Itinerary findBestItinerary() {
     return findBestItineraries(1).get(0);
   }
 
@@ -79,11 +79,11 @@ public class ItineraryFinder {
    *         list of journey leg lists, each representing a RouteTimetable or
    *         a walk from an origin to a destination
    */ 
-  public List<List<JourneyLeg>> findBestItineraries(int n) {
-    List<List<JourneyLeg>> bestItineraries = new ArrayList<>();
+  public List<Itinerary> findBestItineraries(int n) {
+    List<Itinerary> bestItineraries = new ArrayList<>();
     List<List<TArc>> bestPaths = calculateKLeastTimePaths(n);
     for (List<TArc> path : bestPaths) {
-      bestItineraries.add(convertPathToItinerary(path));
+      bestItineraries.add(convertTArcsToItinerary(path));
     }
     return bestItineraries;
   }
@@ -92,16 +92,17 @@ public class ItineraryFinder {
    * Converts a path to an itinerary.
    *
    * A path consists of a list of TArcs. An itinerary consists of a list of
-   * JourneyLegs. This method converts the former to the latter.
+   * ItineraryLegs. This method converts the former to the latter.
    *
    * @param path a t-arc list representing a path
    * @return a list of journey legs representing an itinerary
    */
-  private List<JourneyLeg> convertPathToItinerary(List<TArc> path) {
-    List<JourneyLeg> itinerary = new ArrayList<>();
-    for (TArc t : path) {
-      itinerary.add(t.toJourneyLeg());
+  private Itinerary convertTArcsToItinerary(List<TArc> path) {
+    List<ItineraryLeg> legs = new ArrayList<>();
+    for (TArc tArc : path) {
+      legs.add(tArc.toItineraryLeg());
     }
+    Itinerary itinerary = new Itinerary(getDate(), legs);
     return itinerary;
   }
 
@@ -614,26 +615,26 @@ public class ItineraryFinder {
     }
 
     /**
-     * Converts t-arc into JourneyLeg class.
+     * Converts t-arc into ItineraryLeg class.
      *
      * This method converts a t-arc instance into a journey leg instance.
      * The t-arc class uses some methods and representations peculiar to the
      * graph-based nature of the algorithms used in the itinerary finder. 
      *
-     * The JourneyLeg class uses more familiar objects and representations for
-     * the overall itinerary. T-arcs should be converted to JourneyLegs where 
+     * The ItineraryLeg class uses more familiar objects and representations for
+     * the overall itinerary. T-arcs should be converted to ItineraryLegs where 
      * used outside of the itinerary finder.
      *
      * @return journey leg representation of t-arc
      */
-    public JourneyLeg toJourneyLeg() {
+    public ItineraryLeg toItineraryLeg() {
       if (getService() instanceof Walk) {
-        return new JourneyLeg(
+        return new ItineraryLeg(
             (Walk) getService(),
             getTime()
             );
       } else {
-        return new JourneyLeg(
+        return new ItineraryLeg(
             schedule.nextDepartureRouteTimetable(getTime(), getStartNode(), (Route) getService()),
             getStartNode(),
             getEndNode()

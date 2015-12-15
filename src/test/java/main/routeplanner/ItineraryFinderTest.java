@@ -298,15 +298,18 @@ public class ItineraryFinderTest {
   public void testFindBestItinerary() {
     assertEquals("expected " + services.size() + ", actual " + Path.getAllPaths().size(), services.size(), Path.getAllPaths().size());
     assertEquals(services, Path.getAllPaths());
-    List<JourneyLeg> expected = Arrays.asList(
-        new JourneyLeg(
-          schedule.nextDepartureRouteTimetable(60 * 6 + 2, nodes[0], routes[0]),
-          nodes[0],
-          nodes[2]
-          ),
-        new JourneyLeg(walks[2], 60 * 6 + 25)
+    Itinerary expected = new Itinerary(
+        LocalDate.of(2015, Month.DECEMBER, 2),
+        Arrays.asList(
+          new ItineraryLeg(
+            schedule.nextDepartureRouteTimetable(60 * 6 + 2, nodes[0], routes[0]),
+            nodes[0],
+            nodes[2]
+            ),
+          new ItineraryLeg(walks[2], 60 * 6 + 25)
+          )
         );
-    List<JourneyLeg> actual = itineraryFinder.findBestItinerary();
+    Itinerary actual = itineraryFinder.findBestItinerary();
     assertEquals(expected, actual);
   }
 
@@ -369,74 +372,90 @@ public class ItineraryFinderTest {
   public void testFindBestItineraries() {
     assertEquals("expected " + services.size() + ", actual " + Path.getAllPaths().size(), services.size(), Path.getAllPaths().size());
     assertEquals(services, Path.getAllPaths());
-    List<JourneyLeg> expected1 = Arrays.asList(
-        new JourneyLeg(
+    List<ItineraryLeg> expected1 = Arrays.asList(
+        new ItineraryLeg(
           schedule.nextDepartureRouteTimetable(60 * 6 + 2, nodes[0], routes[0]),
           nodes[0],
           nodes[2]
           ),
-        new JourneyLeg(walks[2], 60 * 6 + 25)
+        new ItineraryLeg(walks[2], 60 * 6 + 25)
         );
-    List<JourneyLeg> expected2 = Arrays.asList(
-        new JourneyLeg(
+    List<ItineraryLeg> expected2 = Arrays.asList(
+        new ItineraryLeg(
           schedule.nextDepartureRouteTimetable(60 * 6 + 3, nodes[0], routes[4]),
           nodes[0],
           nodes[6]
           ),
-        new JourneyLeg(walks[1], 6 * 60 + 15),
-        new JourneyLeg(
+        new ItineraryLeg(walks[1], 6 * 60 + 15),
+        new ItineraryLeg(
           schedule.nextDepartureRouteTimetable(60 * 6 + 20, nodes[3], routes[2]),
           nodes[3],
           nodes[4]
           )
         );
-    List<JourneyLeg> expected3 = Arrays.asList(
-        new JourneyLeg(
+    List<ItineraryLeg> expected3 = Arrays.asList(
+        new ItineraryLeg(
           schedule.nextDepartureRouteTimetable(60 * 6 + 4, nodes[0], routes[4]),
           nodes[0],
           nodes[6]
           ),
-        new JourneyLeg(walks[1], 6 * 60 + 18),
-        new JourneyLeg(
+        new ItineraryLeg(walks[1], 6 * 60 + 18),
+        new ItineraryLeg(
           schedule.nextDepartureRouteTimetable(60 * 6 + 20, nodes[3], routes[2]),
           nodes[3],
           nodes[4]
           )
         );
-    List<JourneyLeg> expected4 = Arrays.asList(
-        new JourneyLeg(
+    List<ItineraryLeg> expected4 = Arrays.asList(
+        new ItineraryLeg(
           schedule.nextDepartureRouteTimetable(60 * 6 + 7, nodes[0], routes[4]),
           nodes[0],
           nodes[6]
           ),
-        new JourneyLeg(walks[1], 6 * 60 + 21),
-        new JourneyLeg(
+        new ItineraryLeg(walks[1], 6 * 60 + 21),
+        new ItineraryLeg(
           schedule.nextDepartureRouteTimetable(60 * 6 + 23, nodes[3], routes[2]),
           nodes[3],
           nodes[4]
           )
         );
-    List<JourneyLeg> expected5 = Arrays.asList(
-        new JourneyLeg(
+    List<ItineraryLeg> expected5 = Arrays.asList(
+        new ItineraryLeg(
           schedule.nextDepartureRouteTimetable(60 * 6 + 10, nodes[0], routes[4]),
           nodes[0],
           nodes[6]
           ),
-        new JourneyLeg(walks[1], 6 * 60 + 24),
-        new JourneyLeg(
+        new ItineraryLeg(walks[1], 6 * 60 + 24),
+        new ItineraryLeg(
           schedule.nextDepartureRouteTimetable(60 * 6 + 26, nodes[3], routes[2]),
           nodes[3],
           nodes[4]
           )
         );
-    List<List<JourneyLeg>> expected = Arrays.asList(expected1, expected2, expected3, expected4, expected5);
-    List<List<JourneyLeg>> actual = itineraryFinder.findBestItineraries(5);
+     
+    List<Itinerary> expected = Arrays.asList(
+        new Itinerary(LocalDate.of(2015, Month.DECEMBER, 2), expected1), 
+        new Itinerary(LocalDate.of(2015, Month.DECEMBER, 2), expected2),
+        new Itinerary(LocalDate.of(2015, Month.DECEMBER, 2), expected3),
+        new Itinerary(LocalDate.of(2015, Month.DECEMBER, 2), expected4), 
+        new Itinerary(LocalDate.of(2015, Month.DECEMBER, 2), expected5)
+        );
+    List<Itinerary> actual = itineraryFinder.findBestItineraries(5);
     for (int i = 0; i < actual.size(); i++) {
-      for (int j = 0; j < expected.get(i).size(); j++) {
-        assertEquals(expected.get(i).get(j), actual.get(i).get(j));  
-      }
       assertEquals(expected.get(i), actual.get(i));
     }
+  }
+
+  /**
+   * Test the findBestItineraries method with a passed crowdedness filter.
+   *
+   * The findBestItineraries method accepts an optional crowdedness filter
+   * which can be used to select only itineraries which contain journeys
+   * of a certain level of crowdedness.
+   */
+  @Test
+  public void testFindBestItinerariesWithCrowdednessFilter() {
+
   }
 
   /**
