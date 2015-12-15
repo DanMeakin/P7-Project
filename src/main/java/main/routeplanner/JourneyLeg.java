@@ -23,6 +23,8 @@ public class JourneyLeg {
   private int startTime;
   private int endTime;
 
+  public enum JourneyLegType { WALK, BUS };
+
   /**
    * Constructor for JourneyLeg class.
    *
@@ -52,14 +54,32 @@ public class JourneyLeg {
     this.endTime = startTime + walk.walkingTime();
   }
   
-  public String journeyLegType() {
-    if (isWalk()) {
-      return "walk";
-    } else if (isBus()) {
-      return "bus";
+  /**
+   * Gets the type of JourneyLeg.
+   *
+   * @return WALK if the JourneyLeg is a walk, else BUS.
+   */
+  public JourneyLegType journeyLegType() {
+    if (walk != null) {
+      return JourneyLegType.WALK;
     } else {
-      return "unknown";
+      return JourneyLegType.BUS;
     }
+  }
+
+  /**
+   * Equals method to compare JourneyLeg with other Object.
+   *
+   * A JourneyLeg is equal only to another JourneyLeg. As such, where a
+   * JourneyLeg is passed, this will call the #equals(JourneyLeg) method.
+   * Otherwise, return false.
+   *
+   * @param o object with which to compare this
+   * @return true if equal, else false
+   */
+  @Override
+  public boolean equals(Object o) {
+    return (o instanceof JourneyLeg && equals((JourneyLeg) o));
   }
 
   /**
@@ -72,50 +92,92 @@ public class JourneyLeg {
    */
   public boolean equals(JourneyLeg otherJourneyLeg) {
     boolean sameJourneyType = journeyLegType().equals(otherJourneyLeg.journeyLegType());
+    boolean sameJourney = false;
+    if (sameJourneyType) {
+      if (isWalk()) {
+        sameJourney = getWalk().equals(otherJourneyLeg.getWalk());
+      } else {
+        sameJourney = getRouteTimetable().equals(otherJourneyLeg.getRouteTimetable());
+      }
+    }
     boolean sameOrigin = getOrigin().equals(otherJourneyLeg.getOrigin());
     boolean sameDestination = getDestination().equals(otherJourneyLeg.getDestination());
     boolean sameStartTime = getStartTime() == otherJourneyLeg.getStartTime();
-    return (sameJourneyType && sameOrigin && sameDestination && sameStartTime);
+    return (sameJourney && sameOrigin && sameDestination && sameStartTime);
   }
 
   /**
-   * Equals method to compare JourneyLeg instance with other Object.
+   * Gets whether journey leg is a walk or not.
    *
-   * @return true if equal, else false
+   * @return true if journey leg is a walk, else false
    */
-  @Override
-  public boolean equals(Object o) {
-    return (o instanceof JourneyLeg && equals((JourneyLeg) o));
-  }
-
   public boolean isWalk() {
-    return (walk != null);
+    return journeyLegType().equals(JourneyLegType.WALK);
   }
 
+  /**
+   * Gets whether journey leg is a bus journey or not.
+   *
+   * @return true if journey leg is a bus journey, else false
+   */
   public boolean isBus() {
-    return (routeTimetable != null);
+    return journeyLegType().equals(JourneyLegType.BUS);
   }
 
+  /**
+   * Gets origin.
+   *
+   * @return origin stop
+   */
   public Stop getOrigin() {
     return origin;
   }
 
+  /**
+   * Gets destination.
+   *
+   * @return destination stop.
+   */
   public Stop getDestination() {
     return destination;
   }
 
+  /**
+   * Gets RouteTimetable.
+   *
+   * If this is not a bus type JourneyLeg, then this method returns null.
+   *
+   * @return route timetable to which this relates
+   */
   public RouteTimetable getRouteTimetable() {
     return routeTimetable;
   }
 
+  /**
+   * Gets Walk.
+   *
+   * If this is not a walk type JourneyLeg, then this method returns null.
+   *
+   * @return walk to which this relates
+   */
   public Walk getWalk() {
     return walk;
   }
 
+  /**
+   * Gets start time.
+   *
+   * @return start time of journey leg (in minutes from midnight)
+   */
   public int getStartTime() {
     return startTime;
   }
 
+  /**
+   * Gets end time.
+   *
+   * @return end time of journey leg (in minutes from midnight)
+   */
   public int getEndTime() {
     return endTime;
   }

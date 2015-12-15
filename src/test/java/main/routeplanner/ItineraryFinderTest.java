@@ -1,7 +1,6 @@
 package main.routeplanner;
 
 import org.junit.*;
-import org.junit.rules.ExpectedException;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -10,10 +9,8 @@ import java.time.*;
 
 import main.Path;
 import main.Schedule;
-import main.Schedule.DayOptions;
 import main.Route;
 import main.RouteTimetable;
-import main.Bus;
 import main.Stop;
 import main.Walk;
 
@@ -32,7 +29,7 @@ public class ItineraryFinderTest {
   private static Route[] routes;
   private static Walk[] walks;
 
-  private ItineraryFinder itineraryFinder;
+  private static ItineraryFinder itineraryFinder;
 
   /**
    * Set-up before any testing begins.
@@ -238,6 +235,10 @@ public class ItineraryFinderTest {
     rt = new RouteTimetable(r, schedule, 6 * 60 + 6, false);
     rt = new RouteTimetable(r, schedule, 6 * 60 + 9, false);
     rt = new RouteTimetable(r, schedule, 6 * 60 + 12, false);
+    
+    // Create itinerary finder between N1 -> N5,
+    // at 6:02am on Weds 2nd December 2015
+    itineraryFinder = new ItineraryFinder(nodes[0], nodes[4], LocalDateTime.of(2015, Month.DECEMBER, 2, 6, 2, 0));
   }
 
   @AfterClass
@@ -295,9 +296,6 @@ public class ItineraryFinderTest {
    */
   @Test
   public void testFindBestItinerary() {
-    // Create itinerary finder between N1 -> N5,
-    // at 6:02am on Weds 2nd December 2015
-    itineraryFinder = new ItineraryFinder(nodes[0], nodes[4], LocalDateTime.of(2015, Month.DECEMBER, 2, 6, 2, 0));
     assertEquals("expected " + services.size() + ", actual " + Path.getAllPaths().size(), services.size(), Path.getAllPaths().size());
     assertEquals(services, Path.getAllPaths());
     List<JourneyLeg> expected = Arrays.asList(
@@ -313,7 +311,7 @@ public class ItineraryFinderTest {
   }
 
   /**
-   * Test the findKBestItineraries method.
+   * Test the findBestItineraries method.
    *
     *  Option 1
    *  --------
@@ -349,15 +347,26 @@ public class ItineraryFinderTest {
    *  walk from N7 at 6:21am - N4 at 6:22am;
    *  L3 from N4 at 6:23am - N5 at 6:33am
    *
+   *  Option 3c
+   *  ---------
+   *  L5 from N1 at 6:12am - N7 at 6:24am;
+   *  walk from N7 at 6:24am - N4 at 6:26am;
+   *  L3 from N4 at 6:26am - N5 at 6:36am
+   *
    * It can be seen that Option 1 is the best option, being 3 minutes faster
    * than Option 3. It is therefore expected that this method will return an 
-   * itinerary describing Option 1.
+   * itinerary describing Option 1, followed by Option 3, 3a, 3b & 3c.
+   *
+   * It should be noted that Option 1a is superior to Option 3c. However due
+   * to the way in which the findBestItineraries method is implemented, where
+   * two itineraries will arrive at the same time, the shortest route (by
+   * travelling time) will be selected. The next route to be selected will be
+   * the shortest route departing after this route. As a result, any route
+   * departing before the previous route will be disregarded, even if it would
+   * arrive before the route actually returned.
    */ 
   @Test
-  public void testCalculateKLeastTimePaths() {
-    // Create itinerary finder between N1 -> N5
-    // at 6:02am on Weds 2nd December 2015
-    itineraryFinder = new ItineraryFinder(nodes[0], nodes[4], LocalDateTime.of(2015, Month.DECEMBER, 2, 6, 2, 0));
+  public void testFindBestItineraries() {
     assertEquals("expected " + services.size() + ", actual " + Path.getAllPaths().size(), services.size(), Path.getAllPaths().size());
     assertEquals(services, Path.getAllPaths());
     List<JourneyLeg> expected1 = Arrays.asList(
@@ -423,10 +432,20 @@ public class ItineraryFinderTest {
     List<List<JourneyLeg>> expected = Arrays.asList(expected1, expected2, expected3, expected4, expected5);
     List<List<JourneyLeg>> actual = itineraryFinder.findBestItineraries(5);
     for (int i = 0; i < actual.size(); i++) {
+      for (int j = 0; j < expected.get(i).size(); j++) {
+        assertEquals(expected.get(i).get(j), actual.get(i).get(j));  
+      }
       assertEquals(expected.get(i), actual.get(i));
     }
   }
 
+  /**
+   * Test the getDate method.
+   */
+  @Test
+  public void testGetDate() {
+    assertEquals(LocalDate.of(2015, Month.DECEMBER, 2), itineraryFinder.getDate());
+  }
   /**
    * Test the TArc#equals method.
    */
@@ -455,14 +474,12 @@ public class ItineraryFinderTest {
     ItineraryFinder.TArc a2 = itineraryFinder.new TArc(s1, s2, p1, t1);
     ItineraryFinder.TArc b2 = itineraryFinder.new TArc(s1, s3, p1, t1);
     ItineraryFinder.TArc nullTArc = null;
-    Object o = new Object();
     assertTrue(a.equals(a2));
     assertTrue(b.equals(b2));
     assertFalse(a.equals(b));
     assertFalse(a.equals(c));
     assertFalse(a.equals(d));
     assertFalse(a.equals(e));
-    assertFalse(a.equals(o));
     assertFalse(b.equals(a));
     assertFalse(b.equals(c));
     assertFalse(b.equals(d));
@@ -480,6 +497,48 @@ public class ItineraryFinderTest {
     assertFalse(e.equals(c));
     assertFalse(e.equals(d));
     assertFalse(a.equals(nullTArc));
+  }
 
+  /**
+   * Test the TArc#departureTime method.
+   *
+   * This method should return the departure time of the next service leaving
+   * the starting node after time.
+   *
+   * It should return the value of CostEstimator.UNCONNECTED if no further 
+   * departures are available.
+   */
+  @Test
+  public void testDepartureTime() {
+    ItineraryFinder.TArc tArc = itineraryFinder.new TArc(nodes[0], nodes[2], routes[0], 60 * 6);
+    ItineraryFinder.TArc lateTArc = itineraryFinder.new TArc(nodes[0], nodes[2], routes[0], 60 * 20);
+
+    assertEquals(60 * 6 + 2, tArc.departureTime());
+    assertEquals(CostEstimator.UNCONNECTED, lateTArc.departureTime());
+  }
+
+  /**
+   * Test the TArc#journeyTime method.
+   *
+   * This method should return the journey time of the next service leaving
+   * the starting node after time.
+   *
+   * It should return the value of CostEstimator.UNCONNECTED if no further 
+   * departures are available.
+   */
+  @Test
+  public void testJourneyTime() {
+    RouteTimetable rushHourRT = new RouteTimetable(routes[0], schedule, 60 * 10 + 15, true);
+
+    ItineraryFinder.TArc tArc = itineraryFinder.new TArc(nodes[0], nodes[2], routes[0], 60 * 6);
+    ItineraryFinder.TArc lateTArc = itineraryFinder.new TArc(nodes[0], nodes[2], routes[0], 60 * 20);
+    ItineraryFinder.TArc walkTArc = itineraryFinder.new TArc(nodes[3], nodes[6], walks[0], 60 * 10);
+    ItineraryFinder.TArc rushHourTArc = itineraryFinder.new TArc(nodes[0], nodes[2], routes[0], 60 * 10);
+
+
+    assertEquals(23, tArc.journeyTime());
+    assertEquals(CostEstimator.UNCONNECTED, lateTArc.journeyTime());
+    assertEquals(1, walkTArc.journeyTime());
+    assertEquals(23, rushHourTArc.journeyTime());
   }
 }

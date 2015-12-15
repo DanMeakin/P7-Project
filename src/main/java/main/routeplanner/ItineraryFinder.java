@@ -403,6 +403,13 @@ public class ItineraryFinder {
    * This method augments the procedure in the calculateLeastTimePath method
    * by iteratively excluding individual t-arcs from the least time path to
    * obtain a second-, third-, ... k-th least time path.
+   * 
+   * Due to the way in which this method is implemented, where two itineraries 
+   * will arrive at the same time, the shortest route (by travelling time) will
+   * be selected. The next route to be selected will be the shortest route 
+   * departing after this route. As a result, any route departing before the 
+   * previous route is disregarded by this algorithm, even if such a route 
+   * would arrive before the route actually returned as the next best route.
    *
    * @param k number of paths to obtain
    * @return a nested list of a list of nodes each containing legs of the k-th
@@ -588,21 +595,6 @@ public class ItineraryFinder {
     }
     
     /**
-     * Checks for object equality.
-     *
-     * The equals(Object) method is overridden to test for equality with a
-     * TArc instance. A TArc should only be considered equal to another TArc
-     * with the same startNode, endNode, service and time.
-     *
-     * @param o object against which to test equality
-     * @return true if o equals this, else false
-     */
-    @Override
-    public boolean equals(Object o) {
-      return (o instanceof TArc && equals((TArc) o));
-    }
-
-    /**
      * Checks for equality of two t-arcs.
      *
      * Two t-arcs are equal only if they share the same startNode, endNode,
@@ -684,7 +676,7 @@ public class ItineraryFinder {
             getStartNode(), (Route) getService()
             );
         return nextDepartureTime;
-      } catch (UnsupportedOperationException e) {
+      } catch (IllegalArgumentException e) {
         // If this is caught, it means there is no next departure time info
         // available. This should return a very large value for the purpose
         // of route planning calculations.
@@ -703,7 +695,7 @@ public class ItineraryFinder {
           getService() instanceof Route && 
           schedule.nextDepartureRouteTimetable(getTime(), getStartNode(), (Route) getService()).isRushHour();
         return getService().journeyTimeBetweenStops(getStartNode(), getEndNode(), isRushHour);
-      } catch (UnsupportedOperationException e) {
+      } catch (IllegalArgumentException e) {
         // If this is caught, it means there is no next departure time info
         // available. This should return a very large value for the purpose
         // of route planning calculations.
