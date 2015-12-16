@@ -2,6 +2,9 @@ package main.gui;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Enumeration;
 
 /**
  * Created by janusalarsen on 10/12/2015.
@@ -9,6 +12,7 @@ import java.awt.*;
 public class ResultCard extends JPanel {
     private final int CARD_HEIGHT = 150;
     private final int CARD_WIDTH = 430;
+    public static final String PRIMARY_COLOR = "#009688";
     private final String SECONDARY_COLOR = "#FAFAFA";
     private final String TEXT_COLOR = "#616161";
     private final String FIRST_TEXT_COLOR = "#212121";
@@ -22,54 +26,122 @@ public class ResultCard extends JPanel {
 
     public ResultCard(int crowdedness,String busNumber, String date, String departureTime, String busStop, int duration) {
         super();
-        this.setLayout(new FlowLayout(FlowLayout.LEFT));
         this.setPreferredSize(new Dimension(CARD_WIDTH, CARD_HEIGHT));
         this.setBackground(Color.decode(SECONDARY_COLOR));
         setVisible(true);
 
+        // Bus icon container
         JPanel busIcon = new JPanel();
         busIcon.setLayout(new GridLayout(0, 1));
-        busIcon.setPreferredSize(new Dimension (100, 100));
+        busIcon.setPreferredSize(new Dimension (105, 100));
 
+        // Bus Icon Label
         JLabel busIconLabel = new JLabel();
         busIconLabel.setBorder(BorderFactory.createEmptyBorder(0,5,0,5));
-        this.add(busIcon);
 
+        // Results container, which contains all text on the card
         JPanel pResultTextContainer = new JPanel();
-        pResultTextContainer.setLayout(new GridLayout(2,3));
+        pResultTextContainer.setBackground(Color.decode(SECONDARY_COLOR));
+        pResultTextContainer.setPreferredSize(new Dimension(250,100));
+        pResultTextContainer.add(busIcon);
 
+        // Container that contains the bus number label
+        JPanel resultNumberContainer = new JPanel();
+        resultNumberContainer.setBackground(Color.decode(SECONDARY_COLOR));
+        pResultTextContainer.add(resultNumberContainer);
+
+        // Label that contains the bus number
         JLabel pResultNumber = new JLabel(busNumber);
+        pResultNumber.setPreferredSize(new Dimension(30,30));
         pResultNumber.setFont(h1);
         pResultNumber.setForeground(Color.decode(FIRST_TEXT_COLOR));
 
-        pResultTextContainer.add(pResultNumber);
+        resultNumberContainer.add(pResultNumber);
 
-        JLabel dateContainer = new JLabel(date);
-        dateContainer.setFont(h3);
-        dateContainer.setForeground(Color.decode(TEXT_COLOR));
+        // Container that contains the label with date of the search
+        JPanel dateLabelContainer = new JPanel();
+        pResultTextContainer.add(dateLabelContainer);
 
-        pResultTextContainer.add(dateContainer);
+        // Label that contains the date of the search
+        JLabel dateLabel = new JLabel(date);
+        dateLabel.setPreferredSize(new Dimension(150, 30));
+        dateLabel.setFont(h3);
+        dateLabel.setForeground(Color.decode(TEXT_COLOR));
 
+        dateLabelContainer.add(dateLabel);
 
+        // Container that contains the results text area
+        JPanel resultInfoContainer = new JPanel();
+        pResultTextContainer.add(resultInfoContainer);
 
-        JTextArea pResultInfo = new JTextArea("Departure " + departureTime + ", " + busStop+ ", \n" + duration + " min.");
+        // Text area That contains the results: Departure time, start busstop and the travel duration.
+        // TODO: Add how many shifts the user needs to get to the destination
+        JTextArea pResultInfo = new JTextArea("Departure " + departureTime + ", \n"  + busStop+ ", \n" + duration + " min.");
+        pResultInfo.setPreferredSize(new Dimension(300,30));
+        pResultInfo.setEditable(false);
         pResultInfo.setFont(h3);
         pResultInfo.setForeground(Color.decode(FIRST_TEXT_COLOR));
-        pResultTextContainer.setBackground(Color.decode(SECONDARY_COLOR));
-        pResultTextContainer.setPreferredSize(new Dimension(300, 150));
 
-        pResultTextContainer.add(pResultInfo);
-        this.add(pResultTextContainer);
+        resultInfoContainer.add(pResultInfo);
+
+
+        // Container for button that enables the user to go to travel details
+        JPanel extendResultsContainer = new JPanel();
+
+        // Button that enables the user to go to travel details
+        JButton extendResult = new JButton("Details");extendResult.setFont(h2);
+        extendResult.setForeground(Color.decode(PRIMARY_COLOR));
+        extendResult.setBackground(Color.decode("#FAFAFA"));
+        extendResult.setBorder(BorderFactory.createLineBorder(Color.decode("#FAFAFA")));
+        // TODO: add actionlistner that makes it possible to change to ExtendedResult screen
+
+        extendResult.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                changeScreen(getExtendedResult());
+            }
+
+        });
+
+        extendResultsContainer.add(extendResult);
+        pResultTextContainer.add(extendResultsContainer);
 
         busIconLabel.setIcon(crowdedness(crowdedness));
         busIcon.add(busIconLabel);
 
         busIcon.setBackground(Color.decode(SECONDARY_COLOR));
 
+        this.add(busIcon);
+        this.add(pResultTextContainer);
+        this.add(extendResult);
+
+
         JPanel pDivider = new JPanel();
         pDivider.setPreferredSize(new Dimension(CARD_WIDTH, 15));
 
         }
+
+
+    // TODO: Change screen when detail button is pressed
+
+    private JPanel getExtendedResult() {
+        JPanel ExtendedResult = new ExtendedResult();
+        return ExtendedResult;
+    }
+
+
+    private void changeScreen (JPanel panelToChangeTo){
+        JPanel parent = (JPanel)getParent().getParent().getParent().getParent().getParent();
+        parent.removeAll();
+        parent.add(getExtendedResult());
+
+        parent.revalidate();
+        parent.repaint();
+    }
+
+    private void openMenu (){
+
+    }
 
 
     public ImageIcon crowdedness(int crowdedness){
