@@ -54,6 +54,22 @@ public class Route extends Path {
   }
 
   /**
+   * Gets a list if all routes matching number.
+   *
+   * @param number the route number to match against
+   * @return list of all routes matching number
+   */
+  public static List<Route> findRouteByNumber(String number) {
+    List<Route> routes = new ArrayList<>();
+    for (Route r : getAllRoutes()) {
+      if (r.getNumber().equals(number)) {
+        routes.add(r);
+      }
+    }
+    return routes;
+  }
+
+  /**
    * Get list of all routes including a given stop.
    *
    * @param s stop for which to test inclusion within routes
