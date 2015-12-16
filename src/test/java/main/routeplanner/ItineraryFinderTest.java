@@ -112,6 +112,12 @@ public class ItineraryFinderTest {
       new Stop(6, "N6", 0, 0),
       new Stop(7, "N7", 0, 0)
     };
+    // Creating stops creates walks, so remove all walks before
+    // continuing - walks are manually created for testing purposes
+    for (Path p : new ArrayList<>(Path.getAllPaths())) {
+      Path.removePath(p);
+    }
+
     routes = new Route[5];
 
     routes[0] = new Route("L1", "N1 - N3", nodes[0]);

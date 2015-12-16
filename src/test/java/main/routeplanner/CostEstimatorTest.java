@@ -6,6 +6,7 @@ import static org.junit.Assert.*;
 import java.util.*;
 
 import main.Stop;
+import main.StopPair;
 
 /**
  * CostEstimatorTest class contains a series of unit tests for the CostEstimator class.
@@ -42,10 +43,10 @@ public class CostEstimatorTest {
    */
   @Test
   public void testStopPairInstantiation() {
-    new CostEstimator.StopPair(s1, s2);
+    new StopPair(s1, s2);
     // Test that passing null to s2 throws IllegalArgumentException
     try {
-      new CostEstimator.StopPair(s1, nullStop);
+      new StopPair(s1, nullStop);
       // If this line is reached, the test fails
       fail("passing null Stop to StopPair should throw IllegalArgumentException");
     } catch (IllegalArgumentException e) {
@@ -54,7 +55,7 @@ public class CostEstimatorTest {
     }
     // Test that passing null to s1 throws IllegalArgumentException
     try {
-      new CostEstimator.StopPair(nullStop, s2);
+      new StopPair(nullStop, s2);
       // If this line is reached, the test fails
       fail("passing null Stop to StopPair should throw IllegalArgumentException");
     } catch (IllegalArgumentException e) {
@@ -63,7 +64,7 @@ public class CostEstimatorTest {
     }
     // Test that passing null to s1 & s2 throws IllegalArgumentException
     try {
-      new CostEstimator.StopPair(nullStop, nullStop);
+      new StopPair(nullStop, nullStop);
       // If this line is reached, the test fails
       fail("passing null Stop to StopPair should throw IllegalArgumentException");
     } catch (IllegalArgumentException e) {
@@ -80,11 +81,11 @@ public class CostEstimatorTest {
    */
   @Test
   public void testStopPairEquality() {
-    CostEstimator.StopPair sp1 = new CostEstimator.StopPair(s1, s2);
-    CostEstimator.StopPair sp2 = new CostEstimator.StopPair(s2, s1);
-    CostEstimator.StopPair sp3 = new CostEstimator.StopPair(s1, s2);
-    CostEstimator.StopPair sp4 = new CostEstimator.StopPair(s2, s1);
-    CostEstimator.StopPair sp5 = new CostEstimator.StopPair(s1, s1);
+    StopPair sp1 = new StopPair(s1, s2);
+    StopPair sp2 = new StopPair(s2, s1);
+    StopPair sp3 = new StopPair(s1, s2);
+    StopPair sp4 = new StopPair(s2, s1);
+    StopPair sp5 = new StopPair(s1, s1);
     Object o = new Object();
     assertTrue(sp1.equals(sp3));
     assertTrue(sp3.equals(sp1));
