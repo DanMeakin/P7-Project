@@ -59,21 +59,6 @@ public abstract class Path {
   }
 
   /**
-   * Determines whether Path exists within system.
-   *
-   * @param path path to test for existence
-   * @return true if path exists, else false
-   */
-  public static boolean pathExists(Path path) {
-    for (Path p : getAllPaths()) {
-      if (p.equals(path)) { 
-        return true;
-      }
-    }
-    return false;
-  }
-
-  /**
    * Get list of all paths including a given stop.
    *
    * @param s stop for which to test inclusion within paths
