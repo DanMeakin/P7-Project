@@ -12,7 +12,7 @@ import java.util.List;
 public class Walk extends Path {
 
   private static final int WALKING_SPEED = 5_000; // 5km/h walking speed
-  private static final int WALKING_DISTANCE = 500; // 500m walking distance
+  private static final int WALKING_DISTANCE = 100; // 100m walking distance
 
   private final Stop walkStart;
   private final Stop walkEnd;
