@@ -35,6 +35,10 @@ public class StartScreen extends JFrame {
     private TopBar pTop;
     private  ButtonGroup busFilter;
 
+    // Test Data
+    Stop stopOne = new Stop(6,"Boulevarden",1.0,2.0);
+    Stop stopTwo = new Stop(2,"Nytorv",3.0,4.0);
+
     public static void main (String args[]){
         new StartScreen();
 
@@ -122,11 +126,16 @@ public class StartScreen extends JFrame {
         // TODO: Make it possible to press enter so the dropdrown disapreares. Find a way to not show suggestions unless he user has begun typing and limit the amount of suggestions shown.
         // TODO: Set Default button!
         AutoComboBox fromBox = new AutoComboBox();
-        // TODO: Udskiftes med resultatsæt fra rejseplanen. I dette tilfælde sæ
-        /*String[] itemArray = {"Boulevarden","Bornholmsgade", "Nytorv"};*/
-        List<Stop> stopList = Stop.
-        for ()
-        fromBox.setKeyWord(itemArray);
+        // TODO: Udskiftes med resultatsæt fra rejseplanen.
+
+        List<Stop> stopList = Stop.getAllStops();
+        String[] stopArray = new String[Stop.numberOfStops()];
+        for (int i = 0; i< stopArray.length; i++){
+            stopArray[i] = stopList.get(i).getName();
+        }
+
+        //String[] itemArray = {"Boulevarden","Bornholmsgade", "Nytorv"};
+        fromBox.setKeyWord(stopArray);
         fromBox.setPreferredSize(new Dimension(230,30));
         fromBox.setBackground(Color.decode("#FAFAFA"));
         fromContainer.add(fromBox);
@@ -147,8 +156,8 @@ public class StartScreen extends JFrame {
         // TODO: Set Default button Show all Buses!
         AutoComboBox destinationBox = new AutoComboBox();
         // TODO: Udskiftes med resultatsæt fra rejseplanen.
-        // String[] itemArray = {"Sejrøgade","Bornholmsgade", "Nytorv"};
-        destinationBox.setKeyWord(itemArray);
+        //String[] itemArray = {"Sejrøgade","Bornholmsgade", "Nytorv"};
+        destinationBox.setKeyWord(stopArray);
         destinationBox.setPreferredSize(new Dimension(230,30));
         destinationBox.setBackground(Color.decode("#FAFAFA"));
         destinationContainer.add(destinationBox);
@@ -392,29 +401,6 @@ public class StartScreen extends JFrame {
         JPanel page2 = new Page2();
         return page2;
     }
-
-    /*private JPanel getPage2() {
-        JPanel page2 = new JPanel();
-        JButton newSearch = new JButton("New Search");
-
-        //Results page background panel
-        //TODO: Create components from page 2 and add to JPanel
-        page2.setBackground(Color.white);
-        page2.setPreferredSize(new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT));
-
-        //New search button
-        newSearch.setPreferredSize(new Dimension(200,50));
-        newSearch.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                changeScreen(getStartPage());
-            }
-        });
-
-        page2.add(newSearch);
-
-        return page2;
-    }*/
 
     private void changeScreen (JPanel panelToChangeTo){
         pPageContainer.removeAll();

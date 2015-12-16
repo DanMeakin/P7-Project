@@ -30,25 +30,18 @@ public class Page2 extends JPanel{
     private final Font h3 = new Font("Roboto", Font.PLAIN, 14);
 
     public Page2(){
-        //Background
+        // Background
         super();
-        //this.setBackground(Color.decode(SECONDARY_COLOR));
         this.setLayout(new FlowLayout(FlowLayout.LEADING,0,0));
         this.setPreferredSize(new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT));
 
-        //Search Container
+        // Search Container
         JPanel pSearchContainer = new JPanel();
         pSearchContainer.setPreferredSize(new Dimension(SCREEN_WIDTH, 70));
-        //pSearchContainer.setBackground(Color.decode(SECONDARY_COLOR));
-        //pSearchContainer.setLayout(new CardLayout());
 
-        //Search Content
+        // Search Content
         JPanel pSearchContent = new JPanel();
-        //pSearchContent.setLayout(new GridLayout(1, 3));
-
         pSearchContent.setPreferredSize(new Dimension(SCREEN_WIDTH -30, SCREEN_HEIGHT -700));
-        //pSearchContent.setBackground(Color.decode(SECONDARY_COLOR));
-
         DropShadowBorder searchShadow = new DropShadowBorder();
         searchShadow.setShadowSize(5);
         searchShadow.setShadowColor(Color.BLACK);
@@ -64,21 +57,20 @@ public class Page2 extends JPanel{
             pSearchContainer.getComponent(i).setBackground(Color.decode(SECONDARY_COLOR));
         }
 
-
-        //Search Container - From Label
+        // Search Container - From Label
         JLabel fromLabel = new JLabel ("From");
         fromLabel.setFont(h2);
         fromLabel.setForeground(Color.decode(TEXT_COLOR));
 
         pSearchContent.add(fromLabel);
 
+        // JLabel which shows the typed From
         JLabel typeFrom = new JLabel("Bornholmsgade");
         typeFrom.setFont(h2);
         typeFrom.setForeground(Color.decode(FIRST_TEXT_COLOR));
         pSearchContent.add(typeFrom);
 
-
-        //Search Container - Icon
+        // Search Container - Arrow Icon
         JPanel pSearchIcon = new JPanel();
         pSearchIcon.setLayout(new GridLayout(0,1));
         pSearchIcon.add(new JLabel(new ImageIcon(getClass().getResource("/main/gui/assets/icons/arrow.png"))));
@@ -87,48 +79,33 @@ public class Page2 extends JPanel{
 
         pSearchContent.add(pSearchIcon);
 
-        //Search Container - To Textfield
+        // Search Container - To Textfield
         JLabel toLabel = new JLabel ("To");
         toLabel.setForeground(Color.decode(TEXT_COLOR));
         toLabel.setFont(h2);
 
         pSearchContent.add(toLabel);
 
+        // JLabel which shows the typed Destination
         JLabel typeTo = new JLabel("Bornholmsgade");
         typeTo.setFont(h2);
         typeTo.setForeground(Color.decode(FIRST_TEXT_COLOR));
         pSearchContent.add(typeTo);
 
-
-        //Scrollbar
+        // Scrollbar
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         scrollPane.getVerticalScrollBar().setUI(newScrollBarUI());
         scrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(5,getHeight()));
         scrollPane.getVerticalScrollBar().setUnitIncrement(24);
-
         scrollPane.setLayout(new ScrollPaneLayout());
         scrollPane.setPreferredSize(new Dimension(SCREEN_WIDTH - 2, SCREEN_HEIGHT - 130));
 
-        // Content
+        // Container that contain the scrollPane, which contains the result cards
         JPanel pContent = new JPanel();
         pContent.setPreferredSize(new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT + 400));
         scrollPane.setBorder(BorderFactory.createLineBorder(Color.decode(SECONDARY_COLOR), 0));
-
-        DropShadowBorder shadow = new DropShadowBorder();
-        shadow.setShadowSize(5);
-        shadow.setShadowColor(Color.BLACK);
-        shadow.setShowLeftShadow(true);
-        shadow.setShowRightShadow(true);
-        shadow.setShowBottomShadow(true);
-        shadow.setShowTopShadow(true);
-        //pContent.setBorder(shadow);
-        //scrollPane.setBorder(shadow);
-
-
-        // Ønskes fleksibel layout for resultater find Layoutmanager og set layout til automatisk at tilpasse indhold(GridBagLayout)
-        //pContent.setPreferredSize(new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT + 1700));
         scrollPane.setBorder(BorderFactory.createLineBorder(Color.decode(SECONDARY_COLOR), 0));
 
         for (int i = 0; i < pContent.getComponents().length; i++) {
@@ -136,42 +113,11 @@ public class Page2 extends JPanel{
 
         }
 
-        //JPanel allResultsContainer
-
-        //results
-       /* JPanel pResult = new JPanel();
-        pResult.setLayout(new BoxLayout(pResult, BoxLayout.Y_AXIS));
-        pResult.setBackground(Color.decode(SECONDARY_COLOR));
-        pResult.setPreferredSize((new Dimension(SCREEN_WIDTH -40, 150)));
-
-        JPanel busIcon = new JPanel();
-        busIcon.setLayout(new GridLayout(0, 1));
-        busIcon.setPreferredSize(new Dimension (120, 100));
-        busIcon.add(new JLabel(new ImageIcon(getClass().getResource("/main/gui/assets/icons/crowdednessCrowded-100x100.png"))));
-        pResult.add(busIcon);
-        busIcon.setBackground(Color.decode(SECONDARY_COLOR));
-
-        JPanel pResultTextContainer = new JPanel();
-        pResultTextContainer.setLayout(new GridLayout(2, 2));*/
-
-/*        JLabel pResultNumber = new JLabel("2C               Monday, 30.11.2015");
-        pResultNumber.setFont(h2);
-        pResultNumber.setForeground(Color.BLACK);
-        pResultTextContainer.add(pResultNumber);*/
-
-
-        //Last adds
+        // Last adds
         scrollPane.setViewportView(pContent);
         this.add(pSearchContainer);
         this.add(scrollPane);
-
         pContent.add(new ResultCard(80,"2D","monday, 30.11.2015","12:45","Bornholmsdage(Aalborg)",56));
-       /* pContent.add(new ResultCard(35));
-        pContent.add(new ResultCard(80));
-        pContent.add(new ResultCard(30));
-        pContent.add(new ResultCard(10));
-        pContent.add(new ResultCard(80));
-        pContent.add(new ResultCard(60));*/
 
         setVisible(true);
     }
@@ -179,6 +125,7 @@ public class Page2 extends JPanel{
     /**
      * @return The ScrollBarUI to use
      */
+    // Enables editing of the ScrollBar
     private static ScrollBarUI newScrollBarUI() {
 
         return new BasicScrollBarUI() {
