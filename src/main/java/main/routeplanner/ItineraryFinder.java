@@ -27,6 +27,8 @@ public class ItineraryFinder {
   private Schedule schedule;
   private LocalDate date;
   private int time;
+  
+  private boolean walkedLastLeg;
 
   public CostEstimator costEstimator;
 
@@ -331,8 +333,12 @@ public class ItineraryFinder {
    *
    * @return true if immediately previous leg was walked, else false
    */
-  private boolean walkedLastLeg() {
-    return (usedPaths.size() > 0 && usedPaths.get(usedPaths.size()-1) instanceof Walk);
+  private boolean getWalkedLastLeg() {
+    return walkedLastLeg;
+  }
+
+  public void setWalkedLastLeg(boolean walkedLastLeg) {
+    this.walkedLastLeg = walkedLastLeg;
   }
 
   /**
@@ -476,6 +482,7 @@ public class ItineraryFinder {
     // to the value of initial time plus the value of g'(ni)
     if (getPre(ni) != null) {
       setAlreadyTraversed(getPre(ni).getService());
+      setWalkedLastLeg(getPre(ni).getService() instanceof Walk);
     }
     int currentTi = getTime() + gPrime(ni); 
 
@@ -489,6 +496,14 @@ public class ItineraryFinder {
 
     // Get all paths from node ni to all other connected nodes
     for (Path p : Path.findPathsIncludingStop(ni)) {
+      if (p instanceof Walk && getWalkedLastLeg()) {
+        continue;
+      }
+
+      if (pathAlreadyTraversed(p) || pathAlreadyTraversed(p.findInverted())) {
+        continue;
+      }
+
       // Get all ni+ nodes - called ni2 here
       for (Stop ni2 : p.getStops()) {
         // Check that stop ni2 comes after stop ni - if not, this does not
@@ -498,31 +513,24 @@ public class ItineraryFinder {
           continue;
         }
 
-      // Create t-arc and then skip this iteration if the second node is
-      // closed (we don't return to closed nodes), if the route has already
-      // been traversed, or its inverse (a passenger will not go back over
-      // the same route twice), or if this t-arc is excluded from
-      // consideration - this will be the case when trying to determine 
-      // additional itinerary options.
-      TArc tArc = new TArc(ni, ni2, p, currentTi);
-      if (isClosed(ni2)) {
-        continue;
-      }
-      if (p instanceof Walk && walkedLastLeg()) {
-        continue;
-      }
-      if (pathAlreadyTraversed(p) || pathAlreadyTraversed(p.findInverted())) {
-        continue;
-      }
-
-      int pi = tArc.pi(); // Calculate pi value
-      if (gPrime(ni) + pi >= gPrime(ni2)) {
-        continue;
-      } else if (isNew(ni2)) {
-        setOpenNode(ni2);
-      }
-      setGPrime(ni2, gPrime(ni) + pi);
-      setPre(ni2, tArc);
+        // Create t-arc and then skip this iteration if the second node is
+        // closed (we don't return to closed nodes), if the route has already
+        // been traversed, or its inverse (a passenger will not go back over
+        // the same route twice), or if this t-arc is excluded from
+        // consideration - this will be the case when trying to determine 
+        // additional itinerary options.
+        TArc tArc = new TArc(ni, ni2, p, currentTi);
+        if (isClosed(ni2)) {
+          continue;
+        }
+        int pi = tArc.pi(); // Calculate pi value
+        if (gPrime(ni) + pi >= gPrime(ni2)) {
+          continue;
+        } else if (isNew(ni2)) {
+          setOpenNode(ni2);
+        }
+        setGPrime(ni2, gPrime(ni) + pi);
+        setPre(ni2, tArc);
       }
     }
   }
@@ -598,6 +606,10 @@ public class ItineraryFinder {
       this.service = si;
       this.time = time;
     }
+
+    public String toString() {
+      return "t-arc: " + getStartNode() + " -> " + getEndNode() + " (" + getService() + ") at " + getTime();
+    }
     
     /**
      * Checks for equality of two t-arcs.
@@ -658,10 +670,17 @@ public class ItineraryFinder {
      *  service from startNode, minus initial time time; or
      *  walking time between nodes, plus the starting time
      *
+     * If pi is negative, this means that we have moved onto the next day, so
+     * add 24 * 60 minutes to pi.
+     *
      * @return value of pi for this t-arc
      */
     public int pi() {
-      return arrivalTime() - getTime();
+      int pi = arrivalTime() - getTime();
+      if (pi < 0) {
+        pi += 24 * 60;
+      }
+      return pi;
     }
 
     /**

@@ -13,7 +13,7 @@ import main.Walk;
  * specific bus journey on which the passenger is to travel, and the start
  * and end stops of this leg of the itinerary.
  */
-class ItineraryLeg {
+public class ItineraryLeg {
 
   // Only one of these two fields is populated at one time
   private RouteTimetable routeTimetable;
