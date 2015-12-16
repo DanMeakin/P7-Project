@@ -478,6 +478,24 @@ public class BusTest {
   }
 
   /**
+   * Test getTotalOccupationRate method.
+   */
+  @Test
+  public void testGetTotalOccupationRate() {
+    double expected = (double) initialPassengers / ((double) busTypeSeatedCapacity + busTypeStandingCapacity);
+    assertEquals(expected, bus.getTotalOccupationRate(), 0.01);
+  }
+
+  /**
+   * Test getSeatedOccupationRate method.
+   */
+  @Test
+  public void testGetSeatedOccupationRate() {
+    double expected = (double) initialPassengers / ((double) busTypeSeatedCapacity);
+    assertEquals(expected, bus.getSeatedOccupationRate(), 0.01);
+  }
+
+  /**
    * testGetMake() tests that the bus returns its make.
    */
   @Test
