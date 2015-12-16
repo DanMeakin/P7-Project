@@ -77,6 +77,40 @@ public class Stop {
   }
 
   /**
+   * Finds stop by ID.
+   *
+   * @param id ID number of desired stop
+   * @return stop with specified ID
+   * @throws IllegalArgumentException if stop with specified ID does not exist
+   */
+  public static Stop findStop(int id) throws IllegalArgumentException {
+    for (Stop s : getAllStops()) {
+      if (s.getID() == id) {
+        return s;
+      }
+    }
+    String msg = "unable to find stop with ID# " + id;
+    throw new IllegalArgumentException(msg);
+  }
+  
+  /**
+   * Finds stop by name.
+   *
+   * @param name (partial) name of the desired stop
+   * @return stops matching name
+   */
+  public static List<Stop> findStop(String name) {
+    List<Stop> matchingStops = new ArrayList<>();
+    String pattern = "(?i)(.*)" + name + "(.*)";
+    for (Stop s : getAllStops()) {
+      if (s.getName().matches(pattern)) {
+        matchingStops.add(s);
+      }
+    }
+    return matchingStops;
+  }
+
+  /**
    * Gets the distance between two stops.
    *
    * When a Stop is created, the distance from it to every other Stop is
