@@ -17,7 +17,7 @@ import main.Bus;
 import main.Route;
 import main.RouteTimetable;
 import main.Schedule;
-import main.Schedule.DayOptions;
+import main.Schedule.DayOption;
 
 public class ScheduleTest {
 
@@ -87,17 +87,17 @@ public class ScheduleTest {
     weekdaySchedule = new Schedule(
         weekdayScheduleStart,
         weekdayScheduleEnd,
-        DayOptions.WEEKDAYS
+        DayOption.WEEKDAYS
         );
     saturdaySchedule = new Schedule(
         saturdayScheduleStart,
         saturdayScheduleEnd,
-        DayOptions.SATURDAY
+        DayOption.SATURDAY
         );
     sundaySchedule = new Schedule(
         sundayScheduleStart,
         sundayScheduleEnd,
-        DayOptions.SUNDAY
+        DayOption.SUNDAY
         );
   }
 
@@ -129,7 +129,7 @@ public class ScheduleTest {
     new Schedule(
         new GregorianCalendar(2014, GregorianCalendar.JANUARY, 20).getTime(),
         new GregorianCalendar(2015, GregorianCalendar.JANUARY, 19).getTime(),
-        DayOptions.SUNDAY
+        DayOption.SUNDAY
         );
   }
 
@@ -149,7 +149,7 @@ public class ScheduleTest {
     new Schedule(
         new GregorianCalendar(2015, GregorianCalendar.JANUARY, 20).getTime(),
         new GregorianCalendar(2016, GregorianCalendar.JANUARY, 19).getTime(),
-        DayOptions.WEEKDAYS
+        DayOption.WEEKDAYS
         );
   }
 
@@ -169,7 +169,7 @@ public class ScheduleTest {
     new Schedule(
         new GregorianCalendar(2015, GregorianCalendar.MAY, 3).getTime(),
         new GregorianCalendar(2015, GregorianCalendar.JUNE, 30).getTime(),
-        DayOptions.SATURDAY
+        DayOption.SATURDAY
         );
   }
 
@@ -191,7 +191,7 @@ public class ScheduleTest {
     new Schedule(
         new GregorianCalendar(2014, GregorianCalendar.AUGUST, 15).getTime(),
         new GregorianCalendar(2016, GregorianCalendar.FEBRUARY, 27).getTime(),
-        DayOptions.SATURDAY
+        DayOption.SATURDAY
         );
   }
 
@@ -236,12 +236,12 @@ public class ScheduleTest {
       new Schedule(
           new GregorianCalendar(2013, GregorianCalendar.DECEMBER, 1).getTime(),
           new GregorianCalendar(2013, GregorianCalendar.DECEMBER, 31).getTime(),
-          DayOptions.SUNDAY
+          DayOption.SUNDAY
           );
       new Schedule(
           new GregorianCalendar(2015, GregorianCalendar.JANUARY, 1).getTime(),
           new GregorianCalendar(2015, GregorianCalendar.JANUARY, 31).getTime(),
-          DayOptions.SUNDAY
+          DayOption.SUNDAY
           );
     } catch (IllegalArgumentException e) {
       return;
@@ -255,35 +255,35 @@ public class ScheduleTest {
     assertEquals(expected, actual);
   }
   /**
-   * Test values of DayOptions enum.
+   * Test values of DayOption enum.
    *
-   * The DayOptions enum should contain three fixed values: WEEKDAYS, 
+   * The DayOption enum should contain three fixed values: WEEKDAYS, 
    * SATURDAY & SUNDAY. This test ensures these are the only values.
    */
   @Test
-  public void testDayOptionsValues() {
-    DayOptions[] actualOptions = DayOptions.values();
-    DayOptions[] expectedOptions = new DayOptions[] {DayOptions.WEEKDAYS, DayOptions.SATURDAY, DayOptions.SUNDAY};
+  public void testDayOptionValues() {
+    DayOption[] actualOptions = DayOption.values();
+    DayOption[] expectedOptions = new DayOption[] {DayOption.WEEKDAYS, DayOption.SATURDAY, DayOption.SUNDAY};
     for (int i = 0; i < actualOptions.length; i++) {
       if (expectedOptions.length < i) {
-        fail("there are more DayOptions than expected: " + actualOptions);
+        fail("there are more DayOption than expected: " + actualOptions);
       }
       assertEquals(actualOptions[i], expectedOptions[i]);
     }
   }
   
   /**
-   * Test valueOf() DayOptions enum.
+   * Test valueOf() DayOption enum.
    *
-   * The valueOf() method should return appropriate identifiers in DayOptions.
+   * The valueOf() method should return appropriate identifiers in DayOption.
    * This test ensures this is the case.
    */
   @Test
-  public void testDayOptionsValueOf() {
+  public void testDayOptionValueOf() {
     String[] dayOptionsStrings = new String[] {"WEEKDAYS", "SATURDAY", "SUNDAY"};
-    DayOptions[] dayOptionsConsts = new DayOptions[] {DayOptions.WEEKDAYS, DayOptions.SATURDAY, DayOptions.SUNDAY};
+    DayOption[] dayOptionsConsts = new DayOption[] {DayOption.WEEKDAYS, DayOption.SATURDAY, DayOption.SUNDAY};
     for (int i = 0; i < dayOptionsStrings.length; i++) {
-      assertEquals(DayOptions.valueOf(dayOptionsStrings[i]), dayOptionsConsts[i]);
+      assertEquals(DayOption.valueOf(dayOptionsStrings[i]), dayOptionsConsts[i]);
     }
   }
 
@@ -507,9 +507,9 @@ public class ScheduleTest {
    */
   @Test
   public void testGetOperatingDay() {
-    assertEquals(weekdaySchedule.getOperatingDay(), DayOptions.WEEKDAYS);
-    assertEquals(saturdaySchedule.getOperatingDay(), DayOptions.SATURDAY);
-    assertEquals(sundaySchedule.getOperatingDay(), DayOptions.SUNDAY);
+    assertEquals(weekdaySchedule.getOperatingDay(), DayOption.WEEKDAYS);
+    assertEquals(saturdaySchedule.getOperatingDay(), DayOption.SATURDAY);
+    assertEquals(sundaySchedule.getOperatingDay(), DayOption.SUNDAY);
   }
 
   /**

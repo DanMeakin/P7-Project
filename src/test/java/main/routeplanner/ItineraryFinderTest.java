@@ -194,7 +194,7 @@ public class ItineraryFinderTest {
     schedule = new Schedule(
         new GregorianCalendar(2015, GregorianCalendar.JANUARY, 1).getTime(),
         new GregorianCalendar(2015, GregorianCalendar.DECEMBER, 31).getTime(),
-        Schedule.DayOptions.WEEKDAYS
+        Schedule.DayOption.WEEKDAYS
         );
 
     RouteTimetable rt;

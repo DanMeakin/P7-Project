@@ -1,19 +1,12 @@
 package main.routeplanner;
 
 import org.junit.*;
-import org.junit.rules.ExpectedException;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
-import java.time.*;
 
-import main.Path;
-import main.Schedule;
-import main.Schedule.DayOptions;
-import main.Route;
 import main.RouteTimetable;
-import main.Bus;
 import main.Stop;
 import main.Walk;
 import main.routeplanner.ItineraryLeg.ItineraryLegType;
@@ -37,9 +30,6 @@ public class ItineraryLegTest {
   private static Walk w2;
 
   private static List<ItineraryLeg> legs;
-
-  private static int time1;
-  private static int time2;
 
   /**
    * Set-up before testing.
@@ -74,9 +64,6 @@ public class ItineraryLegTest {
     when(w2.getDestination()).thenReturn(destination2);
     when(w1.equals(w1)).thenReturn(true);
     when(w2.equals(w2)).thenReturn(true);
-
-    int time1 = 10*60 + 15;
-    int time2 = 10*60 + 16;
 
     legs = new ArrayList<>();
     legs.add(new ItineraryLeg(rt1, origin1, destination1));

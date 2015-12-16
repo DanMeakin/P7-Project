@@ -1,21 +1,11 @@
 package main.routeplanner;
 
 import org.junit.*;
-import org.junit.rules.ExpectedException;
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
 
 import java.util.*;
-import java.time.*;
 
-import main.Path;
-import main.Schedule;
-import main.Schedule.DayOptions;
-import main.Route;
-import main.RouteTimetable;
-import main.Bus;
 import main.Stop;
-import main.Walk;
 
 /**
  * CostEstimatorTest class contains a series of unit tests for the CostEstimator class.
@@ -52,10 +42,10 @@ public class CostEstimatorTest {
    */
   @Test
   public void testStopPairInstantiation() {
-    CostEstimator.StopPair sp1 = new CostEstimator.StopPair(s1, s2);
+    new CostEstimator.StopPair(s1, s2);
     // Test that passing null to s2 throws IllegalArgumentException
     try {
-      CostEstimator.StopPair sp2 = new CostEstimator.StopPair(s1, nullStop);
+      new CostEstimator.StopPair(s1, nullStop);
       // If this line is reached, the test fails
       fail("passing null Stop to StopPair should throw IllegalArgumentException");
     } catch (IllegalArgumentException e) {
@@ -64,7 +54,7 @@ public class CostEstimatorTest {
     }
     // Test that passing null to s1 throws IllegalArgumentException
     try {
-      CostEstimator.StopPair sp2 = new CostEstimator.StopPair(nullStop, s2);
+      new CostEstimator.StopPair(nullStop, s2);
       // If this line is reached, the test fails
       fail("passing null Stop to StopPair should throw IllegalArgumentException");
     } catch (IllegalArgumentException e) {
@@ -73,7 +63,7 @@ public class CostEstimatorTest {
     }
     // Test that passing null to s1 & s2 throws IllegalArgumentException
     try {
-      CostEstimator.StopPair sp2 = new CostEstimator.StopPair(nullStop, nullStop);
+      new CostEstimator.StopPair(nullStop, nullStop);
       // If this line is reached, the test fails
       fail("passing null Stop to StopPair should throw IllegalArgumentException");
     } catch (IllegalArgumentException e) {
