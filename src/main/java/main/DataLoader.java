@@ -113,7 +113,11 @@ public class DataLoader {
       System.out.println(best);
       System.out.println(best.getLegs().size());
       for (ItineraryLeg leg : best.getLegs()) {
-        System.out.println(leg.getOrigin() + " - " + leg.getDestination() + ", " + leg.getStartTime());
+        String service = "Walk";
+        if (leg.isBus()) {
+          service = "Bus " + leg.getRouteTimetable().getRoute().getNumber() + " " + leg.getRouteTimetable().getRoute().getNumber();
+        }
+        System.out.println(service + ": " + leg.getOrigin() + " -> " + leg.getDestination() + ", " + leg.getStartTime() / 60 + ":" + leg.getStartTime() % 60);
       }
     }
     scan.close();
