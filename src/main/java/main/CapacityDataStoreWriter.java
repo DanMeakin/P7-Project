@@ -8,6 +8,15 @@ import java.text.ParseException;
 
 public class CapacityDataStoreWriter {
 
+    private static Date date = new Date();
+    private static Date currentDate = new Date();
+
+    private static SimpleDateFormat dayMonthYear = new SimpleDateFormat("dd/MM/yyyy");
+    private static String currentYearMonth = dayMonthYear.format(date);
+
+    private static SimpleDateFormat time = new SimpleDateFormat("HH:mm:ss Z");
+    private static String currentTime = time.format(date);
+
     public static File dataStore = new File("data/dataStore.csv");
 
     public static enum ColumnHeaderNames {
@@ -43,8 +52,8 @@ public class CapacityDataStoreWriter {
                 }
                 writer.newLine();
             }
-            writer.write(getCurrentDayMonth() + ",");
-            writer.write(getCurrentTime() + ",");
+            writer.write(getFormattedDayMonth() + ",");
+            writer.write(getFormattedTime() + ",");
             writer.write((bus.getFleetNumber() + ","));
             try {
                 writer.write((bus.getRouteTimetable().getID() + ","));
@@ -56,8 +65,8 @@ public class CapacityDataStoreWriter {
             writer.write((bus.getRouteTimetable().getRoute().getDescription() + ","));
             writer.write((bus.getRouteTimetable().getStartTime() + ","));
             writer.write((bus.getRouteTimetable().getSchedule().getOperatingDay() + ","));
-            writer.write((bus.getStop().getID() + ","));
-            writer.write((bus.getStop().getName() + ","));
+            writer.write((bus.getLastStop().getID() + ","));
+            writer.write((bus.getLastStop().getName() + ","));
             writer.write((bus.getNumPassengersExited() + ","));
             writer.write((bus.getNumPassengersBoarded() + ","));
             writer.write((bus.getNumPassengers() + ","));
@@ -74,14 +83,24 @@ public class CapacityDataStoreWriter {
         }
     }
 
-    public static String getCurrentDayMonth(){
-        Date date = new Date();
+    public static void setDate(Date newDate){
+        date = newDate;
+    }
+
+    public static Date getDate(){
+        return date;
+    }
+
+    public static Date getCurrentDate(){
+        return currentDate;
+    }
+
+    public static String getFormattedDayMonth(){
         SimpleDateFormat dayMonthYear = new SimpleDateFormat("dd/MM/yyyy");
         return dayMonthYear.format(date);
     }
 
-    public static String getCurrentTime(){
-        Date date = new Date();
+    public static String getFormattedTime(){
         SimpleDateFormat time = new SimpleDateFormat("HH:mm:ss Z");
         return time.format(date);
     }

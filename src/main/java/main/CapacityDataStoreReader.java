@@ -29,16 +29,10 @@ public class CapacityDataStoreReader {
 
         for(int i = 0; i < sourceData.size(); i++){
             String[] splitLine = sourceData.get(i).split(",");
-            System.out.println("SourceData: " + sourceData.get(i));
-            //System.out.println("SplitData: " + splitLine[12]);
-            System.out.println(dayMonthYear.format(fromDate) + " " + dayMonthYear.format(toDate));
             if(convertSimpleYearMonth(splitLine[getColumnHeaderPosition(CapacityDataStoreWriter.ColumnHeaderNames.WRITE_DATE)]).after(fromDate)
                     && convertSimpleYearMonth(splitLine[getColumnHeaderPosition(CapacityDataStoreWriter.ColumnHeaderNames.WRITE_DATE)]).before(toDate)) {
                 filteredBusData.add(splitLine[getColumnHeaderPosition(columnHeaderName)]);
             }
-        }
-        for(int i = 0; i < filteredBusData.size(); i ++) {
-            System.out.println(filteredBusData.get(0));
         }
         return filteredBusData;
     }
@@ -47,8 +41,8 @@ public class CapacityDataStoreReader {
 
         List<String> busData = new ArrayList<>();
 
-        //String[] dataToMatch = new String[] { "10000", "0", "WEEKDAYS", "1" };
         String[] dataToMatch = new String[] { Integer.toString(routeTimetable.getID()), Integer.toString(routeTimetable.getStartTime()), routeTimetable.getSchedule().getOperatingDay().toString(), Integer.toString(stop.getID()) };
+
         try {
             if (CapacityDataStoreWriter.getLockStatus()) {
                 throw new IOException("File" + CapacityDataStoreWriter.dataStore.getAbsolutePath() + "is currently in use!");
@@ -76,7 +70,7 @@ public class CapacityDataStoreReader {
         return busData;
     }
 
-    public static int getColumnHeaderPosition(CapacityDataStoreWriter.ColumnHeaderNames columnHeaderName) {
+    private static int getColumnHeaderPosition(CapacityDataStoreWriter.ColumnHeaderNames columnHeaderName) {
         int indexPos = 0;
         try {
             if(CapacityDataStoreWriter.getLockStatus()){
@@ -101,7 +95,7 @@ public class CapacityDataStoreReader {
         return indexPos;
     }
 
-    public static Date convertSimpleYearMonth(String simpleDate) {
+    private static Date convertSimpleYearMonth(String simpleDate) {
         String expectedPattern = "dd/MM/yyyy";
         SimpleDateFormat formatter = new SimpleDateFormat(expectedPattern);
         Date dayMonthYear = null;
@@ -113,7 +107,7 @@ public class CapacityDataStoreReader {
         return dayMonthYear;
     }
 
-    public static Date convertSimpleTime(String simpleDate) {
+    private static Date convertSimpleTime(String simpleDate) {
         String expectedPattern = "HH:mm:ss Z";
         SimpleDateFormat formatter = new SimpleDateFormat(expectedPattern);
         Date time = null;
@@ -125,7 +119,7 @@ public class CapacityDataStoreReader {
         return time;
     }
 
-    private static Date getToDate(){
+    public static Date getToDate(){
         return calendar.getTime();
     }
 
