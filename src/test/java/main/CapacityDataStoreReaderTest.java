@@ -1,12 +1,11 @@
 package main;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.internal.matchers.GreaterOrEqual;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 
 import static org.junit.Assert.*;
@@ -17,18 +16,14 @@ import static org.mockito.Mockito.mock;
  */
 public class CapacityDataStoreReaderTest {
 
-    /*
-    //private static File dataStore = new File("data/dataStore.csv");
-    private static File test = new File("data/test.csv");
-
-    private static Random randomInt;
+    private static File dataStore = new File("data/dataStore.csv");
 
     private static Schedule schedule;
     private static Date scheduleStart;
     private static Date scheduleEnd;
     private static Date fromDate;
-    private static Date toDate = new Date();
-
+    private static Date toDate;
+    private static Date testDate = new Date();
 
     private static List<BusType> busTypes;
     private static List<String> busMakes;
@@ -56,18 +51,9 @@ public class CapacityDataStoreReaderTest {
     private static double stopLongitudes;
 
     private static List<Route> busRoutes;
-    private static List<String> routeNumbers;
-    private static List<String> routeDescriptions;
 
     private static List<RouteTimetable> routeTimetables;
     private static List<Route> routeTimetableRoutes;
-
-    private static Bus mockedBus0;
-    private static Bus mockedBus1;
-    private static Bus mockedBus2;
-
-    private static List<RouteTimetable> busRouteTimetables;
-    private static RouteTimetable mockedRouteTimetable;
 
     List<Bus> mockedBuses = new ArrayList<>();
 
@@ -93,7 +79,7 @@ public class CapacityDataStoreReaderTest {
             );
         }
 
-        busFleetNumbers = Arrays.asList(100, 101, 102);
+        busFleetNumbers = Arrays.asList(150, 151, 152);
         buses = new ArrayList<Bus>();
         for (int i = 0; i < busFleetNumbers.size(); i++) {
             buses.add(
@@ -206,39 +192,79 @@ public class CapacityDataStoreReaderTest {
         }
 
 
-        for (int i = 0; i < buses.size(); i++) {
-            mockedBuses.add(mock(Bus.class));
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                if (i < 1) {
+                    Date testDate = new Date();
+                    GregorianCalendar gc = new GregorianCalendar(2015, GregorianCalendar.APRIL, 04);
+                    testDate = gc.getTime();
+                    CapacityDataStoreWriter.setDate(testDate);
+                    buses.get(j).arrivesAtStop(buses.get(0).getRouteTimetable().getRoute().getStops().get(0));
+                    buses.get(j).passengersBoard(21 + i * 2);
+                    buses.get(j).passengersExit(8 + i * 2);
+                    CapacityDataStoreWriter.writeBusStateChange(buses.get(j));
+                    buses.get(j).leavesStop();
+                    CapacityDataStoreWriter.setDate(CapacityDataStoreWriter.getCurrentDate());
+                }
+                if (i >= 1) {
+                    buses.get(j).arrivesAtStop(buses.get(0).getRouteTimetable().getRoute().getStops().get(0));
+                    buses.get(j).passengersBoard(21 + i * 2);
+                    buses.get(j).passengersExit(8 + i * 2);
+                    CapacityDataStoreWriter.writeBusStateChange(buses.get(j));
+                    buses.get(j).leavesStop();
+                }
+            }
         }
     }
+
 
     @Test
     public void testFilterHistoricData() {
-        CapacityDataStoreReader.filterHistoricData(routeTimetables.get(0), stopsRoute0.get(0), CapacityDataStoreWriter.ColumnHeaderNames.SEATED_OCCUPATION_RATE).get(0);
-        for(int i = 0; i < CapacityDataStoreReader.filterHistoricData(routeTimetables.get(0), stopsRoute0.get(0)
-    , CapacityDataStoreWriter.ColumnHeaderNames.SEATED_OCCUPATION_RATE).size(); i++){
-            System.out.println(CapacityDataStoreReader.filterHistoricData(routeTimetables.get(0), stopsRoute0.get(0)
-                    , CapacityDataStoreWriter.ColumnHeaderNames.SEATED_OCCUPATION_RATE).get(0));
-        }
+        List<String> expectedData = new ArrayList<>();
+        expectedData.add("0.41");
+        expectedData.add("0.61");
+        assertEquals(expectedData, CapacityDataStoreReader.filterHistoricData(routeTimetables.get(0), stopsRoute0.get(0), CapacityDataStoreWriter.ColumnHeaderNames.SEATED_OCCUPATION_RATE));
     }
 
     @Test
-    public void testGetColumnHeaderData(){
-        System.out.println("Position is: " + CapacityDataStoreReader.getColumnHeaderPosition(CapacityDataStoreWriter.ColumnHeaderNames.SEATED_OCCUPATION_RATE));
+    public void testReadHistoricStopCrowdedness(){
+        List<String> expectedData = new ArrayList<>();
+        expectedData.add("16/12/2015,16:13:50 +0100,150,10000,4,Ritavej-Somewhere,0,WEEKDAYS,1,Ritavej,10,23,26,0.41,0.3,");
+        expectedData.add("16/12/2015,16:13:50 +0100,150,10000,4,Ritavej-Somewhere,0,WEEKDAYS,1,Ritavej,12,25,39,0.61,0.44,");
+        assertEquals(expectedData, CapacityDataStoreReader.readHistoricStopCrowdedness(routeTimetables.get(0), stopsRoute0.get(0)));
     }
 
     @Test
-    public void testReadHistoricStopCrowdedness() {
-    //   System.out.println((Integer.toString(routeTimetables.get(0).getID()) + " " + Integer.toString(routeTimetables.get(0).getStartTime()) + " " + Integer.toString(stopsRoute0.get(0).getID()) + " " + routeTimetables.get(0).getSchedule().getOperatingDay().toString()));
-        CapacityDataStoreReader.readHistoricStopCrowdedness(routeTimetables.get(0), stopsRoute0.get(0));
-    }
-
-    public void testgetNumOfDayBeforeCurrentForFromDate(){
+    public void testGetNumOfDayBeforeCurrentForFromDate () {
         assertEquals(CapacityDataStoreReader.getNumOfDayBeforeCurrentForFromDate(), -90);
     }
 
-    public void testSetNumOfDayBeforeCurrentForFromDate(){
+    @Test
+    public void testSetNumOfDayBeforeCurrentForFromDate () {
         CapacityDataStoreReader.setNumOfDayBeforeCurrentForFromDate(-60);
         assertEquals(CapacityDataStoreReader.getNumOfDayBeforeCurrentForFromDate(), -60);
     }
-    */
+
+    @Test
+    public void testGetToDate(){
+        assertEquals(testDate, CapacityDataStoreReader.getToDate());
+    }
+
+    @Test
+    public void testGetFromDate(){
+        GregorianCalendar gc = new GregorianCalendar();
+        gc.add(Calendar.DATE, CapacityDataStoreReader.getNumOfDayBeforeCurrentForFromDate());
+        assertEquals(gc.getTime(), CapacityDataStoreReader.getFromDate());
+    }
+
+    @After
+    public void clearFile () {
+        try {
+            PrintWriter pw = new PrintWriter("data/dataStore.csv");
+            pw.close();
+        } catch (IOException ex) {
+            System.out.println("Failed to clear file" + dataStore.getAbsolutePath());
+            ex.printStackTrace();
+        }
+    }
 }
