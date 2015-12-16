@@ -16,7 +16,7 @@ import main.Stop;
  * methods provided within the class are not useable until after completion
  * of the generation of the table.
  */
-public class CostEstimator {
+class CostEstimator {
 
   private final Stop endNode;
 
