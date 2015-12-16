@@ -1,7 +1,6 @@
 package main.routeplanner;
 
 import org.junit.*;
-import org.junit.rules.ExpectedException;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -10,10 +9,8 @@ import java.time.*;
 
 import main.Path;
 import main.Schedule;
-import main.Schedule.DayOptions;
 import main.Route;
 import main.RouteTimetable;
-import main.Bus;
 import main.Stop;
 import main.Walk;
 
@@ -32,7 +29,7 @@ public class ItineraryFinderTest {
   private static Route[] routes;
   private static Walk[] walks;
 
-  private ItineraryFinder itineraryFinder;
+  private static ItineraryFinder itineraryFinder;
 
   /**
    * Set-up before any testing begins.
@@ -115,6 +112,12 @@ public class ItineraryFinderTest {
       new Stop(6, "N6", 0, 0),
       new Stop(7, "N7", 0, 0)
     };
+    // Creating stops creates walks, so remove all walks before
+    // continuing - walks are manually created for testing purposes
+    for (Path p : new ArrayList<>(Path.getAllPaths())) {
+      Path.removePath(p);
+    }
+
     routes = new Route[5];
 
     routes[0] = new Route("L1", "N1 - N3", nodes[0]);
@@ -197,7 +200,7 @@ public class ItineraryFinderTest {
     schedule = new Schedule(
         new GregorianCalendar(2015, GregorianCalendar.JANUARY, 1).getTime(),
         new GregorianCalendar(2015, GregorianCalendar.DECEMBER, 31).getTime(),
-        Schedule.DayOptions.WEEKDAYS
+        Schedule.DayOption.WEEKDAYS
         );
 
     RouteTimetable rt;
@@ -238,6 +241,10 @@ public class ItineraryFinderTest {
     rt = new RouteTimetable(r, schedule, 6 * 60 + 6, false);
     rt = new RouteTimetable(r, schedule, 6 * 60 + 9, false);
     rt = new RouteTimetable(r, schedule, 6 * 60 + 12, false);
+    
+    // Create itinerary finder between N1 -> N5,
+    // at 6:02am on Weds 2nd December 2015
+    itineraryFinder = new ItineraryFinder(nodes[0], nodes[4], LocalDateTime.of(2015, Month.DECEMBER, 2, 6, 2, 0));
   }
 
   @AfterClass
@@ -295,25 +302,25 @@ public class ItineraryFinderTest {
    */
   @Test
   public void testFindBestItinerary() {
-    // Create itinerary finder between N1 -> N5,
-    // at 6:02am on Weds 2nd December 2015
-    itineraryFinder = new ItineraryFinder(nodes[0], nodes[4], LocalDateTime.of(2015, Month.DECEMBER, 2, 6, 2, 0));
     assertEquals("expected " + services.size() + ", actual " + Path.getAllPaths().size(), services.size(), Path.getAllPaths().size());
     assertEquals(services, Path.getAllPaths());
-    List<JourneyLeg> expected = Arrays.asList(
-        new JourneyLeg(
-          schedule.nextDepartureRouteTimetable(60 * 6 + 2, nodes[0], routes[0]),
-          nodes[0],
-          nodes[2]
-          ),
-        new JourneyLeg(walks[2], 60 * 6 + 25)
+    Itinerary expected = new Itinerary(
+        LocalDate.of(2015, Month.DECEMBER, 2),
+        Arrays.asList(
+          new ItineraryLeg(
+            schedule.nextDepartureRouteTimetable(60 * 6 + 2, nodes[0], routes[0]),
+            nodes[0],
+            nodes[2]
+            ),
+          new ItineraryLeg(walks[2], 60 * 6 + 25)
+          )
         );
-    List<JourneyLeg> actual = itineraryFinder.findBestItinerary();
+    Itinerary actual = itineraryFinder.findBestItinerary();
     assertEquals(expected, actual);
   }
 
   /**
-   * Test the findKBestItineraries method.
+   * Test the findBestItineraries method.
    *
     *  Option 1
    *  --------
@@ -349,84 +356,121 @@ public class ItineraryFinderTest {
    *  walk from N7 at 6:21am - N4 at 6:22am;
    *  L3 from N4 at 6:23am - N5 at 6:33am
    *
+   *  Option 3c
+   *  ---------
+   *  L5 from N1 at 6:12am - N7 at 6:24am;
+   *  walk from N7 at 6:24am - N4 at 6:26am;
+   *  L3 from N4 at 6:26am - N5 at 6:36am
+   *
    * It can be seen that Option 1 is the best option, being 3 minutes faster
    * than Option 3. It is therefore expected that this method will return an 
-   * itinerary describing Option 1.
+   * itinerary describing Option 1, followed by Option 3, 3a, 3b & 3c.
+   *
+   * It should be noted that Option 1a is superior to Option 3c. However due
+   * to the way in which the findBestItineraries method is implemented, where
+   * two itineraries will arrive at the same time, the shortest route (by
+   * travelling time) will be selected. The next route to be selected will be
+   * the shortest route departing after this route. As a result, any route
+   * departing before the previous route will be disregarded, even if it would
+   * arrive before the route actually returned.
    */ 
   @Test
-  public void testCalculateKLeastTimePaths() {
-    // Create itinerary finder between N1 -> N5
-    // at 6:02am on Weds 2nd December 2015
-    itineraryFinder = new ItineraryFinder(nodes[0], nodes[4], LocalDateTime.of(2015, Month.DECEMBER, 2, 6, 2, 0));
+  public void testFindBestItineraries() {
     assertEquals("expected " + services.size() + ", actual " + Path.getAllPaths().size(), services.size(), Path.getAllPaths().size());
     assertEquals(services, Path.getAllPaths());
-    List<JourneyLeg> expected1 = Arrays.asList(
-        new JourneyLeg(
+    List<ItineraryLeg> expected1 = Arrays.asList(
+        new ItineraryLeg(
           schedule.nextDepartureRouteTimetable(60 * 6 + 2, nodes[0], routes[0]),
           nodes[0],
           nodes[2]
           ),
-        new JourneyLeg(walks[2], 60 * 6 + 25)
+        new ItineraryLeg(walks[2], 60 * 6 + 25)
         );
-    List<JourneyLeg> expected2 = Arrays.asList(
-        new JourneyLeg(
+    List<ItineraryLeg> expected2 = Arrays.asList(
+        new ItineraryLeg(
           schedule.nextDepartureRouteTimetable(60 * 6 + 3, nodes[0], routes[4]),
           nodes[0],
           nodes[6]
           ),
-        new JourneyLeg(walks[1], 6 * 60 + 15),
-        new JourneyLeg(
+        new ItineraryLeg(walks[1], 6 * 60 + 15),
+        new ItineraryLeg(
           schedule.nextDepartureRouteTimetable(60 * 6 + 20, nodes[3], routes[2]),
           nodes[3],
           nodes[4]
           )
         );
-    List<JourneyLeg> expected3 = Arrays.asList(
-        new JourneyLeg(
+    List<ItineraryLeg> expected3 = Arrays.asList(
+        new ItineraryLeg(
           schedule.nextDepartureRouteTimetable(60 * 6 + 4, nodes[0], routes[4]),
           nodes[0],
           nodes[6]
           ),
-        new JourneyLeg(walks[1], 6 * 60 + 18),
-        new JourneyLeg(
+        new ItineraryLeg(walks[1], 6 * 60 + 18),
+        new ItineraryLeg(
           schedule.nextDepartureRouteTimetable(60 * 6 + 20, nodes[3], routes[2]),
           nodes[3],
           nodes[4]
           )
         );
-    List<JourneyLeg> expected4 = Arrays.asList(
-        new JourneyLeg(
+    List<ItineraryLeg> expected4 = Arrays.asList(
+        new ItineraryLeg(
           schedule.nextDepartureRouteTimetable(60 * 6 + 7, nodes[0], routes[4]),
           nodes[0],
           nodes[6]
           ),
-        new JourneyLeg(walks[1], 6 * 60 + 21),
-        new JourneyLeg(
+        new ItineraryLeg(walks[1], 6 * 60 + 21),
+        new ItineraryLeg(
           schedule.nextDepartureRouteTimetable(60 * 6 + 23, nodes[3], routes[2]),
           nodes[3],
           nodes[4]
           )
         );
-    List<JourneyLeg> expected5 = Arrays.asList(
-        new JourneyLeg(
+    List<ItineraryLeg> expected5 = Arrays.asList(
+        new ItineraryLeg(
           schedule.nextDepartureRouteTimetable(60 * 6 + 10, nodes[0], routes[4]),
           nodes[0],
           nodes[6]
           ),
-        new JourneyLeg(walks[1], 6 * 60 + 24),
-        new JourneyLeg(
+        new ItineraryLeg(walks[1], 6 * 60 + 24),
+        new ItineraryLeg(
           schedule.nextDepartureRouteTimetable(60 * 6 + 26, nodes[3], routes[2]),
           nodes[3],
           nodes[4]
           )
         );
-    List<List<JourneyLeg>> expected = Arrays.asList(expected1, expected2, expected3, expected4, expected5);
-    List<List<JourneyLeg>> actual = itineraryFinder.findKBestItineraries(5);
+     
+    List<Itinerary> expected = Arrays.asList(
+        new Itinerary(LocalDate.of(2015, Month.DECEMBER, 2), expected1), 
+        new Itinerary(LocalDate.of(2015, Month.DECEMBER, 2), expected2),
+        new Itinerary(LocalDate.of(2015, Month.DECEMBER, 2), expected3),
+        new Itinerary(LocalDate.of(2015, Month.DECEMBER, 2), expected4), 
+        new Itinerary(LocalDate.of(2015, Month.DECEMBER, 2), expected5)
+        );
+    List<Itinerary> actual = itineraryFinder.findBestItineraries(5);
     for (int i = 0; i < actual.size(); i++) {
       assertEquals(expected.get(i), actual.get(i));
     }
   }
 
+  /**
+   * Test the findBestItineraries method with a passed crowdedness filter.
+   *
+   * The findBestItineraries method accepts an optional crowdedness filter
+   * which can be used to select only itineraries which contain journeys
+   * of a certain level of crowdedness.
+   */
+  @Test
+  public void testFindBestItinerariesWithCrowdednessFilter() {
+
+  }
+
+  /**
+   * Test the getDate method.
+   */
+  @Test
+  public void testGetDate() {
+    assertEquals(LocalDate.of(2015, Month.DECEMBER, 2), itineraryFinder.getDate());
+  }
   /**
    * Test the TArc#equals method.
    */
@@ -454,11 +498,72 @@ public class ItineraryFinderTest {
     ItineraryFinder.TArc e = itineraryFinder.new TArc(s2, s1, p1, t2);
     ItineraryFinder.TArc a2 = itineraryFinder.new TArc(s1, s2, p1, t1);
     ItineraryFinder.TArc b2 = itineraryFinder.new TArc(s1, s3, p1, t1);
+    ItineraryFinder.TArc nullTArc = null;
     assertTrue(a.equals(a2));
     assertTrue(b.equals(b2));
     assertFalse(a.equals(b));
     assertFalse(a.equals(c));
     assertFalse(a.equals(d));
     assertFalse(a.equals(e));
+    assertFalse(b.equals(a));
+    assertFalse(b.equals(c));
+    assertFalse(b.equals(d));
+    assertFalse(b.equals(e));
+    assertFalse(c.equals(a));
+    assertFalse(c.equals(b));
+    assertFalse(c.equals(d));
+    assertFalse(c.equals(e));
+    assertFalse(d.equals(a));
+    assertFalse(d.equals(b));
+    assertFalse(d.equals(c));
+    assertFalse(d.equals(e));
+    assertFalse(e.equals(a));
+    assertFalse(e.equals(b));
+    assertFalse(e.equals(c));
+    assertFalse(e.equals(d));
+    assertFalse(a.equals(nullTArc));
+  }
+
+  /**
+   * Test the TArc#departureTime method.
+   *
+   * This method should return the departure time of the next service leaving
+   * the starting node after time.
+   *
+   * It should return the value of CostEstimator.UNCONNECTED if no further 
+   * departures are available.
+   */
+  @Test
+  public void testDepartureTime() {
+    ItineraryFinder.TArc tArc = itineraryFinder.new TArc(nodes[0], nodes[2], routes[0], 60 * 6);
+    ItineraryFinder.TArc lateTArc = itineraryFinder.new TArc(nodes[0], nodes[2], routes[0], 60 * 20);
+
+    assertEquals(60 * 6 + 2, tArc.departureTime());
+    assertEquals(CostEstimator.UNCONNECTED, lateTArc.departureTime());
+  }
+
+  /**
+   * Test the TArc#journeyTime method.
+   *
+   * This method should return the journey time of the next service leaving
+   * the starting node after time.
+   *
+   * It should return the value of CostEstimator.UNCONNECTED if no further 
+   * departures are available.
+   */
+  @Test
+  public void testJourneyTime() {
+    RouteTimetable rushHourRT = new RouteTimetable(routes[0], schedule, 60 * 10 + 15, true);
+
+    ItineraryFinder.TArc tArc = itineraryFinder.new TArc(nodes[0], nodes[2], routes[0], 60 * 6);
+    ItineraryFinder.TArc lateTArc = itineraryFinder.new TArc(nodes[0], nodes[2], routes[0], 60 * 20);
+    ItineraryFinder.TArc walkTArc = itineraryFinder.new TArc(nodes[3], nodes[6], walks[0], 60 * 10);
+    ItineraryFinder.TArc rushHourTArc = itineraryFinder.new TArc(nodes[0], nodes[2], routes[0], 60 * 10);
+
+
+    assertEquals(23, tArc.journeyTime());
+    assertEquals(CostEstimator.UNCONNECTED, lateTArc.journeyTime());
+    assertEquals(1, walkTArc.journeyTime());
+    assertEquals(23, rushHourTArc.journeyTime());
   }
 }

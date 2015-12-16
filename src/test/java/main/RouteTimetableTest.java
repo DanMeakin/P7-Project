@@ -75,7 +75,7 @@ public class RouteTimetableTest {
     mockedSchedule = mock(Schedule.class);
     validFrom = new GregorianCalendar(2015, GregorianCalendar.JANUARY, 1).getTime();
     validTo = new GregorianCalendar(2015, GregorianCalendar.DECEMBER, 31).getTime();
-    when(mockedSchedule.getOperatingDay()).thenReturn(Schedule.DayOptions.WEEKDAYS);
+    when(mockedSchedule.getOperatingDay()).thenReturn(Schedule.DayOption.WEEKDAYS);
     when(mockedSchedule.getValidFromDate()).thenReturn(validFrom);
     when(mockedSchedule.getValidToDate()).thenReturn(validTo);
 

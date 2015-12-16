@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Observer;
+import java.util.ArrayList;
 
 import main.Bus;
 import main.BusType;
@@ -52,6 +53,9 @@ public class BusTest {
 
   @BeforeClass
   public static void setUpClass() {
+    for (Bus b : new ArrayList<Bus>(Bus.getAllBuses())) {
+      Bus.removeBus(b);
+    }
     fleetNumber = 100;
     acquisitionDate = new GregorianCalendar(2015, Calendar.JANUARY, 1).getTime();
     initialPassengers = 10;
@@ -163,13 +167,16 @@ public class BusTest {
    *
    * The arrivesAtStop method ensures that the state and location of a Bus is
    * properly noted throughout the journey. A stopping event will involve 
-   * passengers getting on and off the bus.
+   * passengers getting on and off the bus. The value of lastStop is also set
+   * to null.
    */
   @Test
   public void testArrivesAtStop() {
+    Stop lastStop = bus.getLastStop();
     bus.arrivesAtStop(mockedStop);
     assertTrue(bus.isAtStop());
-    assertEquals(bus.getStop(), mockedStop);
+    assertEquals(mockedStop, bus.getStop());
+    assertEquals(lastStop, bus.getLastStop());
   }
 
   /**
@@ -319,9 +326,11 @@ public class BusTest {
    */
   @Test
   public void testLeavesStop() {
+    Stop currentStop = stoppedBus.getStop();
     stoppedBus.leavesStop();
     assertFalse(stoppedBus.isAtStop());
     assertNull(stoppedBus.getStop());
+    assertEquals(stoppedBus.getLastStop(), currentStop);
   }
 
   /**
@@ -466,6 +475,24 @@ public class BusTest {
   public void testGetTotalCapacity() {
     int totalCapacity = bus.getTotalCapacity();
     assertEquals(totalCapacity, busTypeSeatedCapacity + busTypeStandingCapacity);
+  }
+
+  /**
+   * Test getTotalOccupationRate method.
+   */
+  @Test
+  public void testGetTotalOccupationRate() {
+    double expected = (double) initialPassengers / ((double) busTypeSeatedCapacity + busTypeStandingCapacity);
+    assertEquals(expected, bus.getTotalOccupationRate(), 0.01);
+  }
+
+  /**
+   * Test getSeatedOccupationRate method.
+   */
+  @Test
+  public void testGetSeatedOccupationRate() {
+    double expected = (double) initialPassengers / ((double) busTypeSeatedCapacity);
+    assertEquals(expected, bus.getSeatedOccupationRate(), 0.01);
   }
 
   /**

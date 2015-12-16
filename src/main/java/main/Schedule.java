@@ -15,7 +15,7 @@ public class Schedule {
    * a holiday (the last being a special case). This enum provides these values
    * for use within a schedule instance.
    */
-  public static enum DayOptions {
+  public static enum DayOption {
     WEEKDAYS, SATURDAY, SUNDAY
   }
 
@@ -27,7 +27,7 @@ public class Schedule {
   // the date to which this schedule is valid
   private Date validToDate;
   // the days for which this schedule is valid
-  private DayOptions operatingDay;
+  private DayOption operatingDay;
   // a data structure which holds all routeTimetables associated with this schedule
   private List<RouteTimetable> routeTimetableList = new ArrayList<>();
   // a data structure which holds all buses associated with this schedule
@@ -40,7 +40,7 @@ public class Schedule {
    * @param validToDate   the date to which this scedule is valid.
    * @param operatingDay  the days for which this schedule is valid.
    */
-  public Schedule (Date validFromDate, Date validToDate, DayOptions operatingDay) {
+  public Schedule (Date validFromDate, Date validToDate, DayOption operatingDay) {
     this.validFromDate = validFromDate;
     this.validToDate = validToDate;
     this.operatingDay = operatingDay;
@@ -155,12 +155,13 @@ public class Schedule {
    * @throws UnsupportedOperationException if there is no departure information
    *                                       available for this date
    */
-  public int nextDepartureTime(int time, Stop stop, Route route) throws UnsupportedOperationException {
-    RouteTimetable rt = nextDepartureRouteTimetable(time, stop, route);
-    if (rt == null) {
-      throw new UnsupportedOperationException("no next departures available today");
+  public int nextDepartureTime(int time, Stop stop, Route route) throws IllegalArgumentException {
+    try {
+      RouteTimetable rt = nextDepartureRouteTimetable(time, stop, route);
+      return rt.timeAtStop(stop);
+    } catch (IllegalArgumentException e) {
+      throw new IllegalArgumentException(e);
     }
-    return rt.timeAtStop(stop);
   }
 
   /**
@@ -179,7 +180,7 @@ public class Schedule {
    * @throws UnsupportedOperationException if there is no departure information
    *                                       available for this date 
    */
-  public RouteTimetable nextDepartureRouteTimetable(int time, Stop stop, Route route) throws UnsupportedOperationException {
+  public RouteTimetable nextDepartureRouteTimetable(int time, Stop stop, Route route) throws IllegalArgumentException {
     int nextDepartureTime = 1_000_000; // Set time to initial high value
     RouteTimetable nextDepartureRT = null;
     List<RouteTimetable> rts = getAllocatedRouteTimetables(route);
@@ -190,7 +191,7 @@ public class Schedule {
       }
     }
     if (nextDepartureRT == null) {
-      throw new UnsupportedOperationException("no next departures available today");
+      throw new IllegalArgumentException("no next departures available today");
     }
     return nextDepartureRT;
   }
@@ -303,7 +304,7 @@ public class Schedule {
     return false;
   }
 
-  public DayOptions getOperatingDay() {
+  public DayOption getOperatingDay() {
     return this.operatingDay;
   }
 
@@ -324,14 +325,14 @@ public class Schedule {
     List<Date> dates = new ArrayList<>();
     Date currentDate = getValidFromDate();
     while (!currentDate.after(getValidToDate())) {
-      if (operatingDay == DayOptions.WEEKDAYS && 
+      if (operatingDay == DayOption.WEEKDAYS && 
           dayOfWeek(currentDate) >= 2 && 
           dayOfWeek(currentDate) <= 6) {
         dates.add(currentDate);
-      } else if (operatingDay == DayOptions.SATURDAY &&
+      } else if (operatingDay == DayOption.SATURDAY &&
           dayOfWeek(currentDate) == 7) {
         dates.add(currentDate);
-      } else if (operatingDay == DayOptions.SUNDAY &&
+      } else if (operatingDay == DayOption.SUNDAY &&
           dayOfWeek(currentDate) == 1) {
         dates.add(currentDate);
       }
@@ -354,13 +355,13 @@ public class Schedule {
       return c.get(Calendar.DAY_OF_WEEK);
   }
 
-  private static DayOptions operatingDayForDate(Date d) {
+  private static DayOption operatingDayForDate(Date d) {
     if (dayOfWeek(d) == 1) {
-      return DayOptions.SUNDAY;
+      return DayOption.SUNDAY;
     } else if (dayOfWeek(d) <= 6) {
-      return DayOptions.WEEKDAYS;
+      return DayOption.WEEKDAYS;
     } else {
-      return DayOptions.SATURDAY;
+      return DayOption.SATURDAY;
     }
   }
 

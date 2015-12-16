@@ -3,8 +3,8 @@ package main.routeplanner;
 import java.util.HashMap;
 
 import main.Path;
-import main.Route;
 import main.Stop;
+import main.StopPair;
 
 /**
  * The CostEstimator class is used to generate and query a static costs table
@@ -15,7 +15,7 @@ import main.Stop;
  * methods provided within the class are not useable until after completion
  * of the generation of the table.
  */
-public class CostEstimator {
+class CostEstimator {
 
   private final Stop endNode;
 
@@ -30,90 +30,6 @@ public class CostEstimator {
   // fully populated.
   private static boolean costsTableInitialized = false; 
   private static boolean costsTablePopulated = false;
-
-  /**
-   * The StopPair class defines a 2-tuple of Stops.
-   *
-   * This is solely used as a key in costsTable.
-   */
-  static class StopPair {
-    
-    private Stop s1;
-    private Stop s2;
-
-    /**
-     * Create a StopPair instance.
-     *
-     * @param s1 first stop in pair
-     * @param s2 second stop in pair
-     */
-    public StopPair(Stop s1, Stop s2) {
-      if (s1 == null || s2 == null) {
-        String msg = "cannot pass a null stop into StopPair - received null value for ";
-        if (s1 == null) {
-          msg += "s1";
-        } else if (s2 == null) {
-          msg += "s2";
-        } else {
-          msg += "???";
-        }
-        throw new IllegalArgumentException(msg);
-      }
-      this.s1 = s1;
-      this.s2 = s2;
-    }
-
-    /**
-     * Get value of s1.
-     *
-     * @return s1
-     */
-    public Stop getS1() {
-      return s1;
-    }
-
-    /**
-     * Get value of s2.
-     *
-     * @return s2
-     */
-
-    public Stop getS2() {
-      return s2;
-    }
-
-    public String toString() {
-      return "StopPair: " + s1 + ", " + s2;
-    }
-
-    /**
-     * Determine StopPair equality.
-     *
-     * @return true if S1 equals otherS1 and S2 equals otherS2, else false
-     */
-    public boolean equals(StopPair otherStopPair) {
-      return (getS1().equals(otherStopPair.getS1()) &&
-              getS2().equals(otherStopPair.getS2()));
-    }
-
-    public boolean equals(Object o) {
-      if (o instanceof StopPair) {
-        return equals((StopPair) o);
-      } else {
-        return false;
-      }
-    }
-    /**
-     * Override hashCode method to ensure equivalent StopPairs are treated
-     * as such as keys in HashMap.
-     *
-     * @return hash value of this StopPair
-     */
-    @Override
-    public int hashCode() {
-      return getS1().getID() * 10_000 + getS2().getID();
-    }
-  }
 
   /**
    * Create a new CostEstimator instance.
@@ -138,6 +54,7 @@ public class CostEstimator {
    * The h'(ni) value is used in calculating an optimal itinerary. This method
    * returns the value of h'(ni) for the passed endNode.
    *
+   * @param ni the node for which to get h' value
    * @return value of h'(ni)
    */
   public int hPrime(Stop ni) throws UnsupportedOperationException {

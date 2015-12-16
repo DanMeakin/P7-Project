@@ -75,7 +75,7 @@ public class Route extends Path {
    * This method will determine whether there is another route which has the
    * same number and route description but in the opposite order.
    *
-   * This assumes that a route description is named <start> - <end>.
+   * This assumes that a route description is named "start - end"
    *
    * @return inverted route (if it exists), or null if it does not
    */
@@ -117,7 +117,7 @@ public class Route extends Path {
   /**
    * Get destination stop.
    *
-   * @retunr the stop at the end of the route
+   * @return the stop at the end of the route
    */
   public Stop getDestination() {
     return getStops().get(getStops().size()-1);

@@ -12,6 +12,7 @@ import java.util.List;
 public class Walk extends Path {
 
   private static final int WALKING_SPEED = 5_000; // 5km/h walking speed
+  private static final int WALKING_DISTANCE = 500; // 500m walking distance
 
   private final Stop walkStart;
   private final Stop walkEnd;
@@ -25,10 +26,48 @@ public class Walk extends Path {
     return WALKING_SPEED;
   }
 
+  /**
+   * Get WALKING_DISTANCE value.
+   *
+   * The WALKING_DISTANCE value is used in determining whether to create a new
+   * Walk when a new Stop is created. New Walks between Stops within walking
+   * distance of one another will be generated upon creation of the new Stop.
+   *
+   * @return value of WALKING_DISTANCE constant in metres
+   */
+  public static int getWalkingDistance() {
+    return WALKING_DISTANCE;
+  }
+
+  /**
+   * Creates a Walk instance.
+   *
+   * @param walkStart the stop from which this walk begins
+   * @param walkEnd   the stop at which this walk ends
+   */
   public Walk(Stop walkStart, Stop walkEnd) {
     this.walkStart = walkStart;
     this.walkEnd = walkEnd;
     addPath(this); // Must complete by storing Walk in list of all Paths
+  }
+
+  /**
+   * Signals to the Walk class that a new stop has been created, and creates
+   * new Walks if appropriate.
+   *
+   * Walk instances should be created when a new Stop is created if this stop
+   * is within walking distance of another stop. This method carries out
+   * the creation of these Walks if required.
+   *
+   * @param newStop the newly created Stop
+   */
+  public static void stopAdded(Stop newStop) {
+    for (Stop s : Stop.getAllStops()) {
+      if (!newStop.equals(s) && newStop.distanceTo(s) <= getWalkingDistance()) {
+        new Walk(newStop, s);
+        new Walk(s, newStop);
+      }
+    }
   }
 
   /**
@@ -49,6 +88,14 @@ public class Walk extends Path {
     return walkEnd;
   }
 
+  /**
+   * Gets list of all Stops on walk.
+   *
+   * As a walk consists only of an origin stop and a destination stop, this
+   * list will always contain exactly two entries.
+   *
+   * @return list of all stops on walk
+   */
   public List<Stop> getStops() {
     return Arrays.asList(getOrigin(), getDestination());
   }
