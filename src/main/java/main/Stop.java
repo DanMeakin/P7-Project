@@ -16,6 +16,11 @@ public class Stop {
     private final double longitude;
     /** a data structure containing all objects of type stop*/
     private static List<Stop> allStops = new ArrayList<>();
+    
+    /**
+     * Caches as-the-crow-flies distances between Stops.
+     */
+    private static HashMap<StopPair, Integer> stopDistances = new HashMap<>();
 
   /**
    * Creates a stop and add it to the stops list.
@@ -53,6 +58,8 @@ public class Stop {
       throw new IllegalArgumentException(msg);
     }
 		allStops.add(stop);
+    updateDistances(stop);
+    Walk.stopAdded(stop);
 	}
 
   /**
@@ -62,6 +69,44 @@ public class Stop {
    */
   public static void removeStop(Stop stop) {
     allStops.remove(stop);
+    // Clear all entries including stop from stopDistances HashMap
+    for (Stop s : getAllStops()) {
+      stopDistances.remove(new StopPair(s, stop));
+      stopDistances.remove(new StopPair(stop, s));
+    }
+  }
+
+  /**
+   * Gets the distance between two stops.
+   *
+   * When a Stop is created, the distance from it to every other Stop is
+   * calculated and stored in a HashMap. This method simply undertakes a
+   * lookup of the HashMap and returns the stored distance.
+   *
+   * @param s1 the origin stop
+   * @param s2 the destination stop
+   * @return the distance between stops in metres
+   */
+  public static int getDistanceBetweenStops(Stop s1, Stop s2) {
+    return stopDistances.get(new StopPair(s1, s2));
+  }
+
+  /**
+   * Updates the distances HashMap upon creation of new stop, s.
+   *
+   * @param newStop new stop for which to update distances HashMap
+   */
+  private static void updateDistances(Stop newStop) {
+    stopDistances.put(new StopPair(newStop, newStop), 0);
+    for (Stop s : getAllStops()) {
+      // Calculate distance both directions, as implementation of
+      // calculateDistancesBetweenStops may change and provide non-mirroring
+      // results.
+      int distanceA = calculateDistanceBetweenStops(s, newStop);
+      int distanceB = calculateDistanceBetweenStops(newStop, s);
+      stopDistances.put(new StopPair(s, newStop), distanceA);
+      stopDistances.put(new StopPair(newStop, s), distanceB);
+    }
   }
 
   /**
@@ -90,7 +135,7 @@ public class Stop {
    * @param s2 the second stop to which to calculate distance
    * @return the distance between both stops to the nearest metre
    */
-  public static int distanceBetweenStops(Stop s1, Stop s2) {
+  private static int calculateDistanceBetweenStops(Stop s1, Stop s2) {
     int r = 6_371_000;
     double phi1 = s1.getLatitudeInRadians();
     double phi2 = s2.getLatitudeInRadians();
@@ -109,16 +154,16 @@ public class Stop {
   /** 
    * Calculate as-the-crow-flies distance to another stop.
    *
-   * This method uses the .distanceBetweenStops method to calculate the
+   * This method uses the .distanceBetweenStops method to find the
    * distance to another stop from the receiver of the call.
    *
-   * See {@link #distanceBetweenStops(Stop, Stop) distanceBetweenStops}.
+   * See {@link #getDistanceBetweenStops(Stop, Stop) getDistanceBetweenStops}.
    *
    * @param otherStop the stop to calculate the distance to
    * @return the distance to the other stop in metres
    */
   public int distanceTo(Stop otherStop) {
-    return distanceBetweenStops(this, otherStop);
+    return getDistanceBetweenStops(this, otherStop);
   }
 
   /**

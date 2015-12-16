@@ -12,13 +12,16 @@ import java.util.Arrays;
 
 public class StopTest {
 
-  private static List<Stop> stops;
+  private List<Stop> stops;
   private static List<Integer> stopIDs;
   private static List<String> stopNames;
   private static List<Double> stopLatitudes;
   private static List<Double> stopLongitudes;
   private static List<List<Integer>> stopDistances;
 
+  /**
+   * Sets-up fixtures and test data before any testing begins.
+   */
   @BeforeClass
   public static void setUpClass() {
     stopIDs = Arrays.asList(1, 2, 3);
@@ -32,6 +35,13 @@ public class StopTest {
         Arrays.asList(2279, 0, 5505), // Stop 1 -> 0, 1 -> 1, 1 -> 2
         Arrays.asList(3242, 5505, 0)  // Stop 2 -> 0, 2 -> 1, 2 -> 2
         );
+  }
+
+  /**
+   * Executes set-up before each test.
+   */
+  @Before
+  public void setUp() {
     stops = new ArrayList<Stop>();
     for (int i = 0; i < stopIDs.size(); i++) {
       stops.add(
@@ -44,11 +54,20 @@ public class StopTest {
           );
     }
   }
-
-  @Before
-  public void setUp() {
+  
+  /**
+   * Executes tear-down after each test.
+   */
+  @After
+  public void tearDown() {
+    for (Stop s : new ArrayList<>(Stop.getAllStops())) {
+      Stop.removeStop(s);
+    }
   }
 
+  /**
+   * Test getID method.
+   */
   @Test
   public void testGetId() {
     for (int i = 0; i < stops.size(); i++) {
@@ -56,6 +75,9 @@ public class StopTest {
     }
   }
 
+  /**
+   * Test getName method.
+   */
   @Test
   public void testGetName() {
     for (int i = 0; i < stops.size(); i++) {
@@ -63,6 +85,9 @@ public class StopTest {
     }
   }
 
+  /**
+   * Test getLocation method.
+   */
   @Test
   public void testGetLocation() {
     for (int i = 0; i < stops.size(); i++) {
@@ -151,7 +176,7 @@ public class StopTest {
   public void testDistanceBetweenStops() {
     for (int i = 0; i < 3; i++) {
       for (int j = 0; j < 3; j++) {
-        assertEquals(Stop.distanceBetweenStops(stops.get(i), stops.get(j)), (int) stopDistances.get(i).get(j));
+        assertEquals(Stop.getDistanceBetweenStops(stops.get(i), stops.get(j)), (int) stopDistances.get(i).get(j));
       }
     }
   }
@@ -163,6 +188,7 @@ public class StopTest {
   public void testDistanceTo() {
     for (int i = 0; i < 3; i++) {
       for (int j = 0; j < 3; j++) {
+        System.out.println(stops.get(i).distanceTo(stops.get(j)));
         assertEquals(stops.get(i).distanceTo(stops.get(j)), (int) stopDistances.get(i).get(j));
       }
     }
