@@ -14,8 +14,6 @@ public class CapacityDataStoreReader {
     Stop stop;
     CapacityDataStoreWriter.ColumnHeaderNames columnHeaderName;
 
-    private static Calendar calendarFrom;
-    private static Calendar calendarTo;
     private static int numOfDaysBeforeCurrentForFromDate = -90;
 
     public CapacityDataStoreReader(RouteTimetable routeTimetable, Stop stop, CapacityDataStoreWriter.ColumnHeaderNames columnHeaderName){
@@ -26,6 +24,8 @@ public class CapacityDataStoreReader {
 
     public List<String> filterHistoricData(){
 
+        Calendar calendarFrom;
+        Calendar calendarTo;
         calendarFrom = Calendar.getInstance();
         calendarTo = Calendar.getInstance();
         calendarTo.add(Calendar.DATE, numOfDaysBeforeCurrentForFromDate);
@@ -129,14 +129,6 @@ public class CapacityDataStoreReader {
             ex.printStackTrace();
         }
         return time;
-    }
-
-    public static Date getFromDate(){
-        return calendarFrom.getTime();
-    }
-
-    public static Date getToDate(){
-        return calendarTo.getTime();
     }
 
     public static void setNumOfDayBeforeCurrentForFromDate(int days){

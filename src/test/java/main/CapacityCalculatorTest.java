@@ -226,14 +226,7 @@ public class CapacityCalculatorTest {
 
     @Test
     public void testCrowdednessIndicator(){
-        System.out.println(routeTimetables.get(0).getAllocatedBus());
-        System.out.println(routeTimetables.get(0).getID());
-        System.out.println(routeTimetables.get(0).getStartTime());
-        System.out.println(routeTimetables.get(0).getSchedule().getOperatingDay());
-        System.out.println(stopsRoute0.get(0).getID());
-        System.out.println(buses.get(0).getLastStop());
-        System.out.println(schedule.getAllocatedBus(routeTimetables.get(0)));
         CapacityCalculator cc = new CapacityCalculator(routeTimetables.get(0), stopsRoute0.get(0));
-        cc.calculateCrowdedness(true, routeTimetables.get(0), stopsRoute0.get(0));
+        cc.getCrowdednessIndicator();
     }
 }
