@@ -55,6 +55,7 @@ public class ScheduleTest {
 
     mockedRouteTimetable = mock(RouteTimetable.class);
     when(mockedRouteTimetable.getRoute()).thenReturn(mockedRoute1);
+    when(mockedRouteTimetable.equals(mockedRouteTimetable)).thenReturn(true);
 
     // Create 6 mocked routeTimetables, with the first three on route1 and
     // the second three on route 2.
@@ -73,6 +74,7 @@ public class ScheduleTest {
 
     anotherMockedRouteTimetable = mock(RouteTimetable.class);
     when(anotherMockedRouteTimetable.getRoute()).thenReturn(mockedRoute2);
+    when(anotherMockedRouteTimetable.equals(anotherMockedRouteTimetable)).thenReturn(true);
 
     anotherMockedBus = mock(Bus.class);
     when(anotherMockedBus.equals(anotherMockedBus)).thenReturn(true);

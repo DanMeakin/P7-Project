@@ -47,6 +47,8 @@ public class ItineraryLegTest {
 
     rt1 = mock(RouteTimetable.class);
     rt2 = mock(RouteTimetable.class);
+    when(rt1.equals(rt1)).thenReturn(true);
+    when(rt2.equals(rt2)).thenReturn(true);
     when(rt1.timeAtStop(origin1)).thenReturn(6*60 + 45);
     when(rt1.timeAtStop(origin2)).thenReturn(7*60);
     when(rt1.timeAtStop(destination1)).thenReturn(10*60 + 45);

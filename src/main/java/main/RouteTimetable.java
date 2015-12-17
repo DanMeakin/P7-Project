@@ -38,6 +38,18 @@ public class RouteTimetable {
     }
 
     /**
+     * Overrides equals(Object) method.
+     *
+     * @param o object to test against this
+     * @return true if o is a RouteTimetable and is equal to this, else false
+     * @see RouteTimetable#equals(RouteTimetable)
+     */
+    @Override
+    public boolean equals(Object o) {
+      return (o instanceof RouteTimetable && equals((RouteTimetable) o));
+    }
+
+    /**
      * Checks whether two RouteTimetables are equal.
      *
      * Two RouteTimetables are equal if, and only if, they share the ID#.
