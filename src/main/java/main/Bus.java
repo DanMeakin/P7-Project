@@ -371,41 +371,8 @@ public class Bus extends Observable {
    *
    * @return occupancy level as a decimal
    */
-  public double getTotalOccupancyLevel(){
+  public double getOccupancyLevel(){
     return (double) getNumPassengers() / (double) getTotalCapacity();
-  }
-
-  /**
-   * Get the percentage of seating capacity currently in use.
-   *
-   * This method calculates the percentage of seated capacity currently
-   * in use by dividing the number of passengers by the total seated capacity
-   * of the bus.
-   *
-   * If the value is more than 1, this indicates that all seated capacity
-   * is filled, so seated occupancy is returned as 1.
-   *
-   * @return seated occupancy level as a decimal
-   */
-  public double getSeatedOccupancyLevel() {
-    return Math.min(1, (double) getNumPassengers() / (double) getSeatedCapacity());
-  }
-
-  /**
-   * Get the percentage of standing capacity currently in use.
-   *
-   * This method calculates the percentage of standing capacity currently
-   * in use by disregarding the number of passengers (likely) sitting down,
-   * and then dividing the remaining number by the total standing capacity
-   * of the bus.
-   *
-   * If the value is less than 0, this indicates that not all seated capacity
-   * is filled, so standing occupancy is returned as 0.
-   *
-   * @return standing occupancy level as a decimal
-   */
-  public double getStandingOccupancyLevel() {
-    return Math.max(0, (double) getNumPassengers() - getSeatedCapacity() / (double) getStandingCapacity());
   }
 
   /**
