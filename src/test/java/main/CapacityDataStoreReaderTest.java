@@ -198,13 +198,13 @@ public class CapacityDataStoreReaderTest {
                     Date testDate = new Date();
                     GregorianCalendar gc = new GregorianCalendar(2015, GregorianCalendar.APRIL, 04);
                     testDate = gc.getTime();
-                    CapacityDataStoreWriter.setDate(testDate);
+                    CapacityDataStoreWriter.setCurrentDate(testDate);
                     buses.get(j).arrivesAtStop(buses.get(0).getRouteTimetable().getRoute().getStops().get(0));
                     buses.get(j).passengersBoard(21 + i * 2);
                     buses.get(j).passengersExit(8 + i * 2);
                     CapacityDataStoreWriter.writeBusStateChange(buses.get(j));
                     buses.get(j).leavesStop();
-                    CapacityDataStoreWriter.setDate(CapacityDataStoreWriter.getCurrentDate());
+                    CapacityDataStoreWriter.setCurrentDate(CapacityDataStoreWriter.getCurrentDate());
                 }
                 if (i >= 1) {
                     buses.get(j).arrivesAtStop(buses.get(0).getRouteTimetable().getRoute().getStops().get(0));

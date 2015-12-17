@@ -147,7 +147,7 @@ public class CapacityCalculatorTest {
         schedule = new Schedule(
                 scheduleStart,
                 scheduleEnd,
-                Schedule.DayOptions.WEEKDAYS
+                Schedule.DayOption.WEEKDAYS
         );
 
         for (int i = 0; i < stopsRoute0.size() - 1; i++) {
@@ -193,17 +193,17 @@ public class CapacityCalculatorTest {
         }
 
         gc.add(Calendar.DATE, -31);
-        CapacityDataStoreWriter.setDate(gc.getTime());
+        CapacityDataStoreWriter.setCurrentDate(gc.getTime());
         for(int h = 0; h < 3; h++) {
             gc.add(Calendar.DATE, 7);
-            CapacityDataStoreWriter.setDate(gc.getTime());
+            CapacityDataStoreWriter.setCurrentDate(gc.getTime());
             for (int i = 0; i < 3; i++) {
                 gc.add(Calendar.DATE, 1);
-                CapacityDataStoreWriter.setDate(gc.getTime());
+                CapacityDataStoreWriter.setCurrentDate(gc.getTime());
                 for (int j = 0; j < 3; j++) {
                     if (i < 1) {
                         testDate = gc.getTime();
-                        CapacityDataStoreWriter.setDate(testDate);
+                        CapacityDataStoreWriter.setCurrentDate(testDate);
                         buses.get(0).arrivesAtStop(buses.get(0).getRouteTimetable().getRoute().getStops().get(j));
                         buses.get(0).passengersBoard(21 + i * 2);
                         buses.get(0).passengersExit(8 + i * 2);
