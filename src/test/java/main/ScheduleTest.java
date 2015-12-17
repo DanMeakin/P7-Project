@@ -44,7 +44,7 @@ public class ScheduleTest {
 
   @BeforeClass
   public static void setUpClass() {
-    for (Schedule s : Schedule.getAllSchedules()) {
+    for (Schedule s : new ArrayList<>(Schedule.getAllSchedules())) {
       Schedule.removeSchedule(s);
     }
   }
