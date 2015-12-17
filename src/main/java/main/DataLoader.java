@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Scanner;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
@@ -45,7 +46,6 @@ public class DataLoader {
     loadStops();
     loadRoutes();
     createRouteTimetables();
-
   }
   
   /**
@@ -108,16 +108,17 @@ public class DataLoader {
         continue;
       }
       System.out.println("Got " + end);
-      itf = new ItineraryFinder(start, end, LocalDateTime.now());
-      Itinerary best = itf.findBestItinerary();
-      System.out.println(best);
-      System.out.println(best.getLegs().size());
-      for (ItineraryLeg leg : best.getLegs()) {
-        String service = "Walk";
-        if (leg.isBus()) {
-          service = "Bus " + leg.getRouteTimetable().getRoute().getNumber() + " " + leg.getRouteTimetable().getRoute().getNumber();
+      itf = new ItineraryFinder(start, end, LocalDateTime.of(2015, Calendar.DECEMBER, 1, 10, 0, 0));
+      List<Itinerary> best = itf.findBestItineraries(3);
+      for (int i = 0; i < best.size(); i++) {
+        System.out.println("==== BEST ITINERARY #" + (i+1) + " ====");
+        for (ItineraryLeg leg : best.get(i).getLegs()) {
+          String service = "Walk";
+          if (leg.isBus()) {
+            service = "Bus " + leg.getRouteTimetable().getRoute().getNumber() + " " + leg.getRouteTimetable().getRoute().getNumber();
+          }
+          System.out.println(service + ": " + leg.getOrigin() + " -> " + leg.getDestination() + ", " + leg.getStartTime() / 60 + ":" + leg.getStartTime() % 60);
         }
-        System.out.println(service + ": " + leg.getOrigin() + " -> " + leg.getDestination() + ", " + leg.getStartTime() / 60 + ":" + leg.getStartTime() % 60);
       }
     }
     scan.close();
