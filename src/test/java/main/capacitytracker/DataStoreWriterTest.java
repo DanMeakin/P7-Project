@@ -9,10 +9,13 @@ import java.lang.reflect.Method;
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import main.Bus;
+import main.Route;
 import main.RouteTimetable;
+import main.Schedule;
 import main.Stop;
 
 public class DataStoreWriterTest {
@@ -34,41 +37,41 @@ public class DataStoreWriterTest {
   private static List<String> seatedCapacities = new ArrayList<>();
   private static List<String> standingCapacities = new ArrayList<>();
   private static List<String> totalCapacities = new ArrayList<>();
-  private static List<String> seatedOccupancyLevels = new ArrayList<>();
-  private static List<String> standingOccupancyLevels = new ArrayList<>();
-  private static List<String> totalOccupancyLevels = new ArrayList<>();
+  private static List<String> occupancyLevels = new ArrayList<>();
 
   @BeforeClass
   public static void setUpClass() {
     dataStoreWriter = new DataStoreWriter("data/mock");
 
     for (int i = 0; i < 10; i++) {
-      int passengersBoarded = (int) Math.random() * 20;
-      int passengersExited = (int) Math.random() * 20;
-      int passengersOnArrival = (int) Math.random() * 30;
+      int passengersBoarded = (int) (Math.random() * 20);
+      int passengersExited = (int) (Math.random() * 20);
+      int passengersOnArrival = (int) (Math.random() * 30);
       int passengersOnDeparture = passengersOnArrival + passengersBoarded - passengersExited;
-      int seatedCapacity = (int) Math.random() * 60;
-      int standingCapacity = (int) Math.random() * 40; 
+      int seatedCapacity = (int) (Math.random() * 60);
+      int standingCapacity = (int) (Math.random() * 40); 
       int totalCapacity = seatedCapacity + standingCapacity;
-      double seatedOccupancyLevel = Math.random();
-      double standingOccupancyLevel = Math.random();
-      double totalOccupancyLevel = Math.random();
+      double occupancyLevel = Math.random();
 
-      int fleetNumber = (int) Math.random() * 1_000;
-      int rtID = (int) Math.random() * 10_000;
+      int fleetNumber = (int) (Math.random() * 1_000);
+      int rtID = (int) (Math.random() * 10_000);
       String routeNumber = Integer.toString((i + 1) * 5);
       String routeDescription = "Test Description";
       int startingTime = (int) (Math.random() * 24 * 60 + Math.random() * 60);
       String operatingDay = "WEEKDAYS";
-      int stopID = (int) Math.random() * 10_000_000;
+      int stopID = (int) (Math.random() * 10_000_000);
 
       Bus bus = mock(Bus.class);
       when(bus.getFleetNumber()).thenReturn(fleetNumber);
+      when(bus.getRouteTimetable()).thenReturn(mock(RouteTimetable.class));
       when(bus.getRouteTimetable().getID()).thenReturn(rtID);
+      when(bus.getRouteTimetable().getRoute()).thenReturn(mock(Route.class));
       when(bus.getRouteTimetable().getRoute().getNumber()).thenReturn(routeNumber);
       when(bus.getRouteTimetable().getRoute().getDescription()).thenReturn(routeDescription);
       when(bus.getRouteTimetable().getStartTime()).thenReturn(startingTime);
-      when(bus.getRouteTimetable().getSchedule().getOperatingDay().toString()).thenReturn(operatingDay);
+      when(bus.getRouteTimetable().getSchedule()).thenReturn(mock(Schedule.class));
+      when(bus.getRouteTimetable().getSchedule().getOperatingDay()).thenReturn(Schedule.DayOption.WEEKDAYS);
+      when(bus.getStop()).thenReturn(mock(Stop.class));
       when(bus.getStop().getID()).thenReturn(stopID);
       when(bus.getNumPassengersBoarded()).thenReturn(passengersBoarded);
       when(bus.getNumPassengersExited()).thenReturn(passengersExited);
@@ -76,9 +79,7 @@ public class DataStoreWriterTest {
       when(bus.getSeatedCapacity()).thenReturn(seatedCapacity);
       when(bus.getStandingCapacity()).thenReturn(standingCapacity);
       when(bus.getTotalCapacity()).thenReturn(totalCapacity);
-      when(bus.getSeatedOccupancyLevel()).thenReturn(seatedOccupancyLevel);
-      when(bus.getStandingOccupancyLevel()).thenReturn(standingOccupancyLevel);
-      when(bus.getTotalOccupancyLevel()).thenReturn(totalOccupancyLevel);
+      when(bus.getOccupancyLevel()).thenReturn(occupancyLevel);
 
       DataStoreWriterTest.buses.add(bus);
       DataStoreWriterTest.fleetNumbers.add(Integer.toString(fleetNumber));
@@ -95,9 +96,7 @@ public class DataStoreWriterTest {
       DataStoreWriterTest.seatedCapacities.add(Integer.toString(seatedCapacity));
       DataStoreWriterTest.standingCapacities.add(Integer.toString(standingCapacity));
       DataStoreWriterTest.totalCapacities.add(Integer.toString(totalCapacity));
-      DataStoreWriterTest.seatedOccupancyLevels.add(Double.toString(seatedOccupancyLevel));
-      DataStoreWriterTest.standingOccupancyLevels.add(Double.toString(standingOccupancyLevel));
-      DataStoreWriterTest.totalOccupancyLevels.add(Double.toString(totalOccupancyLevel));
+      DataStoreWriterTest.occupancyLevels.add(Double.toString(occupancyLevel));
     }
   }
 
@@ -114,7 +113,7 @@ public class DataStoreWriterTest {
     }
     for (int i = 0; i < buses.size(); i++) {
       List<String> expectedRecord = Arrays.asList(
-          LocalDateTime.now().toString(),
+          LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")),
           fleetNumbers.get(i),
           rtIDs.get(i),
           routeNumbers.get(i),
@@ -129,19 +128,9 @@ public class DataStoreWriterTest {
           seatedCapacities.get(i),
           standingCapacities.get(i),
           totalCapacities.get(i),
-          seatedOccupancyLevels.get(i),
-          standingOccupancyLevels.get(i),
-          totalOccupancyLevels.get(i)
+          occupancyLevels.get(i)
           );
-      List<String> actualRecord = null;
-      try {
-        Object bs = method.invoke(buses.get(i));
-        if (bs instanceof List<?>) {
-          actualRecord = (List<String>) bs;
-        }
-      } catch (Exception e) {
-        fail("unable to access method");
-      }
+      List<String> actualRecord = dataStoreWriter.generateRecord(buses.get(i));
       assertEquals(expectedRecord, actualRecord);
     }
   }

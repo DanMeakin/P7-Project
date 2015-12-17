@@ -12,8 +12,9 @@ import static org.mockito.Mockito.mock;
 /**
  * @author Ivo on 14-12-2015.
  */
-public class CapacityDataStoreReaderTest {
+public class DataStoreReaderTest {
 
+  /*
     private static File dataStore = new File("data/dataStore.csv");
 
     private static Schedule schedule;
@@ -252,4 +253,5 @@ public class CapacityDataStoreReaderTest {
             ex.printStackTrace();
         }
     }
+    */
 }

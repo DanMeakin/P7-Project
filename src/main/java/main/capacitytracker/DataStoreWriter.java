@@ -2,13 +2,13 @@ package main.capacitytracker;
 
 import java.io.*;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.csv.*;
 
 import main.Bus;
 import main.RouteTimetable;
@@ -99,7 +99,7 @@ public class DataStoreWriter implements Observer {
    * @param bus the bus for which to data is to be generated
    * @return a list of strings containing data to be written to datastore
    */
-  private List<String> generateRecord(Bus bus) {
+  List<String> generateRecord(Bus bus) {
     // Get Stop and RouteTimetable
     RouteTimetable rt = bus.getRouteTimetable();
     Stop stop = bus.getStop();
@@ -110,26 +110,27 @@ public class DataStoreWriter implements Observer {
     int passengersOnDeparture = bus.getNumPassengers();
     int passengersOnArrival = passengersOnDeparture + passengersExited - passengersBoarded;
 
+    // Set dateformat
+    DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+
     // Create record for datastore
     List<String> record = Arrays.asList(
-        LocalDateTime.now().toString(),           // Timestamp
-        Integer.toString(bus.getFleetNumber()),   // Fleet number
-        Integer.toString(rt.getID()),             // Routetimetable ID#
-        rt.getRoute().getNumber(),                // Route number
-        rt.getRoute().getDescription(),           // Route description
+        LocalDateTime.now().format(dateFormatter),                                // Timestamp
+        Integer.toString(bus.getFleetNumber()),                                   // Fleet number
+        Integer.toString(rt.getID()),                                             // Routetimetable ID#
+        rt.getRoute().getNumber(),                                                // Route number
+        rt.getRoute().getDescription(),                                           // Route description
         String.format("%2d:%2d", rt.getStartTime() / 60, rt.getStartTime() % 60), // Starting time
-        rt.getSchedule().getOperatingDay().toString(), // Operating day (WEEKDAY, SATURDAY, SUNDAY)
-        Integer.toString(stop.getID()),           // Stop ID#
-        Integer.toString(passengersOnArrival),    // Passengers on bus at arrival at stop
-        Integer.toString(passengersExited),       // Passengers exiting at stop 
-        Integer.toString(passengersBoarded),      // Passengers boarding at stop
-        Integer.toString(passengersOnDeparture),  // Passengers on bus at departure from stop
-        Double.toString(bus.getSeatedCapacity()), // Total seated capacity
-        Double.toString(bus.getStandingCapacity()), // Total standing capacity
-        Double.toString(bus.getTotalCapacity()),  // Total capacity
-        Double.toString(bus.getSeatedOccupancyLevel()), // Seated occupancy
-        Double.toString(bus.getStandingOccupancyLevel()), // Standing occupancy
-        Double.toString(bus.getTotalOccupancyLevel()) // Total occupancy
+        rt.getSchedule().getOperatingDay().toString(),                            // Operating day (WEEKDAY, SATURDAY, SUNDAY)
+        Integer.toString(stop.getID()),                                           // Stop ID#
+        Integer.toString(passengersOnArrival),                                    // Passengers on bus at arrival at stop
+        Integer.toString(passengersExited),                                       // Passengers exiting at stop 
+        Integer.toString(passengersBoarded),                                      // Passengers boarding at stop
+        Integer.toString(passengersOnDeparture),                                  // Passengers on bus at departure from stop
+        Integer.toString(bus.getSeatedCapacity()),                                // Total seated capacity
+        Integer.toString(bus.getStandingCapacity()),                              // Total standing capacity
+        Integer.toString(bus.getTotalCapacity()),                                 // Total capacity
+        Double.toString(bus.getOccupancyLevel())                                  // Total occupancy
         );
 
     return record;
@@ -160,9 +161,7 @@ public class DataStoreWriter implements Observer {
         "maxSeatedPassengers",
         "maxStandingPassengers",
         "maxTotalPassengers",
-        "seatedOccupancyLevel",
-        "standingOccupancyLevel",
-        "totalOccupancyLevel"
+        "occupancyLevel"
         );
     dataStore.printRecords(columns);
   }

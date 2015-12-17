@@ -12,147 +12,143 @@ import org.apache.commons.math3.stat.regression.SimpleRegression;
  */
 public class CapacityCalculator {
 
-    private RouteTimetable routeTimetable;
-    private Stop requestedStop;
-    private Stop currentStop;
+  private final RouteTimetable routeTimetable;
+  private final Stop stop;
+  private final DataStoreReader dataStore;
 
-    //should be the same through runtime, breaks comparison otherwise.
-    private static double seatedCrowdednessFactor = 1;
-    private static double totalCrowdednessFactor = 1;
+  public static enum CrowdednessIndicator {
 
+    GREEN, ORANGE, RED;
 
-    public static enum crowdednessIndicator {
-        GREEN, ORANGE, RED
+    public boolean moreCrowdedThan(CrowdednessIndicator otherCI) {
+      if (this.equals(RED)) {
+        return false;
+      } else if (this.equals(ORANGE)) {
+        return (otherCI.equals(RED));
+      } else {
+        return (otherCI.equals(RED) || otherCI.equals(ORANGE));
+      }
     }
 
-    public CapacityCalculator(RouteTimetable routeTimetable, Stop requestedStop) {
-        this.routeTimetable = routeTimetable;
-        this.requestedStop = requestedStop;
+  }
+
+  /**
+   * Initializes a CapacityCalculator instance.
+   *
+   * @param routeTimetable the route timetable for which to calculate likely
+   *                       capacity/crowdedness
+   * @param stop           the stop for which to calculate likely crowdedness
+   */
+  public CapacityCalculator(RouteTimetable routeTimetable, Stop stop) {
+    this.routeTimetable = routeTimetable;
+    this.stop = stop;
+    this.dataStore = new DataStoreReader("data", stop, routeTimetable);
+  }
+
+  /**
+   * Gets an indicator of likely crowdedness of this RouteTimetable at this
+   * Stop.
+   *
+   * @return GREEN if there is likely seating available; ORANGE if there is 
+   *         likely standing room available but no seating available; and
+   *         RED if there is likely no room available
+   */
+  public CrowdednessIndicator getCrowdednessIndicator() {
+    return pastCrowdednessIndicator();
+  }
+
+  /**
+   * Returns an indicator of likely crowdedness of this RouteTimetable at this
+   * Stop based on historic data.
+   *
+   * @return GREEN if there is likely seating available; ORANGE if there is 
+   *         likely standing room available but no seating available; and
+   *         RED if there is likely no room available
+   */
+  private CrowdednessIndicator pastCrowdednessIndicator() {
+    Map<String, Double> crowdedness = pastAverageCrowdedness();
+    if (crowdedness.get("maxSeatedPassengers") - crowdedness.get("numberPassengersOnDeparture") > 0) {
+      return CrowdednessIndicator.GREEN;
+    } else if (crowdedness.get("maxTotalPassengers") - crowdedness.get("numberPassengersOnDeparture") > 0) {
+      return CrowdednessIndicator.ORANGE;
+    } else {
+      return CrowdednessIndicator.RED;
+    }
+  }
+
+  /**
+   * Calculates the average past crowdedness of the specified RouteTimetable at
+   * the specified stop.
+   *
+   * This method uses a linear regression over all existing crowdedness data
+   * for the specified RouteTimetable and Stop.
+   *
+   * @return average past crowdedness for seating and standing room
+   */
+  private Map<String, Double> pastAverageCrowdedness() {
+    Map<String, Double> crowdedness = new HashMap<>();
+    List<Map<String, Integer>> data = getDataStore().getPassengerData();
+
+    List<Number> arrival = new ArrayList<>();
+    List<Number> departure = new ArrayList<>();
+    List<Number> boarding = new ArrayList<>();
+    List<Number> exiting = new ArrayList<>();
+
+    List<Number> standingOccupancy = new ArrayList<>();
+    List<Number> seatedOccupancy = new ArrayList<>();
+    List<Number> totalOccupancy = new ArrayList<>();
+
+    for (int i = 0; i < data.size(); i++) {
+      double standingOcc = (data.get(i).get("numberPassengersOnDeparture") - 
+                            data.get(i).get("maxSeatedPassengers")) / data.get(i).get("maxTotalPassengers");
+      double seatedOcc = (data.get(i).get("numberPassengersOnDeparture") / data.get(i).get("maxSeatedPassengers"));
+      double totalOcc = (data.get(i).get("numberPassengersOnDeparture")) / data.get(i).get("maxTotalPassengers");
+      arrival.add(data.get(i).get("numberPassengersOnArrival"));
+      departure.add(data.get(i).get("numberPassengersOnDeparture"));
+      boarding.add(data.get(i).get("numberPassengersBoarded"));
+      exiting.add(data.get(i).get("numberPassengersExited"));
+      standingOccupancy.add(standingOcc);
+      seatedOccupancy.add(seatedOcc);
+      totalOccupancy.add(totalOcc);
     }
 
-    public crowdednessIndicator getCrowdednessIndicator() {
-            if(pickCalculator().get(0) <= 0) {
-                return crowdednessIndicator.GREEN;
-            }
-            if(pickCalculator().get(1) <= 0) {
-                return crowdednessIndicator.ORANGE;
-            }
-        return crowdednessIndicator.RED;
+    crowdedness.put("numberPassengersOnArrival", average(arrival));
+    crowdedness.put("numberPassengersOnDeparture", average(departure));
+    crowdedness.put("numberPassengersBoarded", average(boarding));
+    crowdedness.put("numberPassengersExited", average(exiting));
+
+    crowdedness.put("standingOccupancy", average(standingOccupancy));
+    crowdedness.put("seatedOccupancy", average(seatedOccupancy));
+    crowdedness.put("totalOccupancy", average(totalOccupancy));
+
+    crowdedness.put("maxSeatedPassengers", (double) data.get(0).get("maxSeatedPassengers"));
+    crowdedness.put("maxStandingPassengers", (double) data.get(0).get("maxStandingPassengers"));
+    crowdedness.put("maxTotalPassengers", (double) data.get(0).get("maxTotalPassengers"));
+
+    return crowdedness;
+  }
+
+  /**
+   * Calculates the average (mean) of all entries in list.
+   *
+   * @param list a list of numerical values
+   * @return average (mean) of all values
+   */
+  private double average(List<Number> list) {
+    double accumulator = 0;
+    for (Number o : list) {
+      accumulator += (double) o;
     }
+    return accumulator / list.size();
+  }
 
-    private List<Double> pickCalculator(){
-        List<Double> crowdednessPrediction = new ArrayList<>();
-        if(routeTimetable.getAllocatedBus().getStop() != null && routeTimetable.getAllocatedBus().getStop() != requestedStop){
-            currentStop = routeTimetable.getAllocatedBus().getStop();
-            crowdednessPrediction.add(calculateCrowdedness(true, routeTimetable, currentStop, requestedStop));
-            crowdednessPrediction.add(calculateCrowdedness(false, routeTimetable, currentStop, requestedStop));
-            return crowdednessPrediction;
-        }
-        if(routeTimetable.getAllocatedBus().getLastStop() != null && routeTimetable.getAllocatedBus().getLastStop() != requestedStop){
-            currentStop = routeTimetable.getAllocatedBus().getLastStop();
-            crowdednessPrediction.add(calculateCrowdedness(true, routeTimetable, currentStop, requestedStop));
-            crowdednessPrediction.add(calculateCrowdedness(false, routeTimetable, currentStop, requestedStop));
-            return crowdednessPrediction;
-        }
-        crowdednessPrediction.add(calculateCrowdedness(true, routeTimetable, requestedStop));
-        crowdednessPrediction.add(calculateCrowdedness(false, routeTimetable, requestedStop));
-        return crowdednessPrediction;
-    }
-
-    /*
-    * Relies on org.apache.commons.math3
-    */
-    private Double calculateCrowdedness(boolean occupationSeated, RouteTimetable routeTimetable, Stop currentStop, Stop requestedStop) throws IllegalArgumentException {
-
-        double currentSeatedOccupation = this.routeTimetable.getAllocatedBus().getSeatedOccupationRate();
-        double currentTotalOccupation = this.routeTimetable.getAllocatedBus().getTotalOccupationRate();
-
-        CapacityDataStoreReader cdswRequestedSeated = new CapacityDataStoreReader(routeTimetable, requestedStop, CapacityDataStoreWriter.ColumnHeaderNames.SEATED_OCCUPATION_RATE);
-        CapacityDataStoreReader cdswRequestedTotal = new CapacityDataStoreReader(routeTimetable, requestedStop, CapacityDataStoreWriter.ColumnHeaderNames.TOTAL_OCCUPATION_RATE);
-
-        CapacityDataStoreReader cdswCurrentSeated = new CapacityDataStoreReader(routeTimetable, currentStop, CapacityDataStoreWriter.ColumnHeaderNames.SEATED_OCCUPATION_RATE);
-        CapacityDataStoreReader cdswCurrentTotal = new CapacityDataStoreReader(routeTimetable, currentStop, CapacityDataStoreWriter.ColumnHeaderNames.TOTAL_OCCUPATION_RATE);
-
-        SimpleRegression simpleRegression = new SimpleRegression();
-
-        List<Double> historicRequestedStopOccupationDouble = new ArrayList<>();
-        List<Double> historicCurrentStopOccupationDouble = new ArrayList<>();
-
-        if (occupationSeated) {
-            compareListSize(cdswCurrentSeated.filterHistoricData());
-            for (int i = 0; i < cdswRequestedSeated.filterHistoricData().size(); i++) {
-                historicRequestedStopOccupationDouble.add(Double.parseDouble(cdswRequestedSeated.filterHistoricData().get(i)));
-                historicCurrentStopOccupationDouble.add(Double.parseDouble(cdswCurrentSeated.filterHistoricData().get(i)));
-            }
-            for (int i = 0; i < historicRequestedStopOccupationDouble.size(); i++) {
-                simpleRegression.addData(historicRequestedStopOccupationDouble.get(i), historicCurrentStopOccupationDouble.get(i));
-            }
-            return (Math.round((simpleRegression.predict(currentSeatedOccupation)) * seatedCrowdednessFactor) * 100) / 100d;
-        }
-        compareListSize(cdswCurrentTotal.filterHistoricData());
-        for (int i = 0; i < cdswRequestedTotal.filterHistoricData().size(); i++) {
-            historicRequestedStopOccupationDouble.add(Double.parseDouble(cdswRequestedTotal.filterHistoricData().get(i)));
-            historicCurrentStopOccupationDouble.add(Double.parseDouble(cdswCurrentTotal.filterHistoricData().get(i)));
-        }
-
-        for (int i = 0; i < historicRequestedStopOccupationDouble.size(); i++) {
-            simpleRegression.addData(historicRequestedStopOccupationDouble.get(i), historicCurrentStopOccupationDouble.get(i));
-        }
-        return (Math.round((simpleRegression.predict(currentTotalOccupation)) * totalCrowdednessFactor) * 100) / 100d;
-    }
-
-    private Double calculateCrowdedness(boolean occupationSeated, RouteTimetable routeTimetable, Stop RequestedStop) {
-
-        CapacityDataStoreReader cdswRequestedSeated = new CapacityDataStoreReader(routeTimetable, requestedStop, CapacityDataStoreWriter.ColumnHeaderNames.SEATED_OCCUPATION_RATE);
-        CapacityDataStoreReader cdswRequestedTotal = new CapacityDataStoreReader(routeTimetable, requestedStop, CapacityDataStoreWriter.ColumnHeaderNames.TOTAL_OCCUPATION_RATE);
-
-        List<Double> historicRequestedStopOccupationDouble = new ArrayList<>();
-        double averageCrowdedness = 0;
-
-        if (occupationSeated && !cdswRequestedSeated.filterHistoricData().isEmpty()) {
-            for (int i = 0; i < cdswRequestedSeated.filterHistoricData().size(); i++) {
-                historicRequestedStopOccupationDouble.add(Double.parseDouble(cdswRequestedSeated.filterHistoricData().get(i)));
-            }
-            for (Double dataPoint : historicRequestedStopOccupationDouble) {
-                averageCrowdedness += dataPoint;
-            }
-            return (Math.round(averageCrowdedness / historicRequestedStopOccupationDouble.size() * seatedCrowdednessFactor) * 100) / 100d;
-        }
-        for (int i = 0; i < cdswRequestedTotal.filterHistoricData().size(); i++) {
-            historicRequestedStopOccupationDouble.add(Double.parseDouble(cdswRequestedTotal.filterHistoricData().get(i)));
-        }
-        for (Double dataPoint : historicRequestedStopOccupationDouble) {
-            averageCrowdedness += dataPoint;
-        }
-        return (Math.round(averageCrowdedness / historicRequestedStopOccupationDouble.size() * totalCrowdednessFactor) * 100) / 100d;
-    }
-
-    private void compareListSize(List<String> currentStopList) {
-
-        CapacityDataStoreReader cdswReqDate = new CapacityDataStoreReader(routeTimetable, requestedStop, CapacityDataStoreWriter.ColumnHeaderNames.WRITE_DATE);
-        CapacityDataStoreReader cdswCurrDate = new CapacityDataStoreReader(routeTimetable, currentStop, CapacityDataStoreWriter.ColumnHeaderNames.WRITE_DATE);
-
-        for (int i = 0; i < currentStopList.size(); i++) {
-            if (!cdswReqDate.filterHistoricData().get(i).equals(cdswCurrDate.filterHistoricData().get(i))) {
-                currentStopList.remove(i);
-            }
-        }
-    }
-
-    public void setSeatedCrowdednessFactor(double cf){
-        cf = seatedCrowdednessFactor;
-    }
-
-    public double getSeatedCrowdednessFactor(){
-        return seatedCrowdednessFactor;
-    }
-
-    public void setTotalCrowdednessFactor(double cf){
-        cf = totalCrowdednessFactor;
-    }
-
-    public double getTotalCrowdednessFactor(){
-        return totalCrowdednessFactor;
-    }
+  /**
+   * Gets dataStore field.
+   *
+   * @return dataStore instance
+   */
+  public DataStoreReader getDataStore() {
+    return dataStore;
+  }
 
 }
