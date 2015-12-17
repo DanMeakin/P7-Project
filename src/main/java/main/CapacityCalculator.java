@@ -14,7 +14,9 @@ public class CapacityCalculator {
     private Stop currentStop;
 
     //should be the same through runtime, breaks comparison otherwise.
-    private static double crowdednessFactor = 1;
+    private static double seatedCrowdednessFactor = 1;
+    private static double totalCrowdednessFactor = 1;
+
 
     public static enum crowdednessIndicator {
         GREEN, ORANGE, RED
@@ -82,7 +84,7 @@ public class CapacityCalculator {
             for (int i = 0; i < historicRequestedStopOccupationDouble.size(); i++) {
                 simpleRegression.addData(historicRequestedStopOccupationDouble.get(i), historicCurrentStopOccupationDouble.get(i));
             }
-            return (Math.round((simpleRegression.predict(currentSeatedOccupation)) * crowdednessFactor) * 100) / 100d;
+            return (Math.round((simpleRegression.predict(currentSeatedOccupation)) * seatedCrowdednessFactor) * 100) / 100d;
         }
         compareListSize(cdswCurrentTotal.filterHistoricData());
         for (int i = 0; i < cdswRequestedTotal.filterHistoricData().size(); i++) {
@@ -93,7 +95,7 @@ public class CapacityCalculator {
         for (int i = 0; i < historicRequestedStopOccupationDouble.size(); i++) {
             simpleRegression.addData(historicRequestedStopOccupationDouble.get(i), historicCurrentStopOccupationDouble.get(i));
         }
-        return (Math.round((simpleRegression.predict(currentTotalOccupation)) * crowdednessFactor) * 100) / 100d;
+        return (Math.round((simpleRegression.predict(currentTotalOccupation)) * totalCrowdednessFactor) * 100) / 100d;
     }
 
     private Double calculateCrowdedness(boolean occupationSeated, RouteTimetable routeTimetable, Stop RequestedStop) {
@@ -111,7 +113,7 @@ public class CapacityCalculator {
             for (Double dataPoint : historicRequestedStopOccupationDouble) {
                 averageCrowdedness += dataPoint;
             }
-            return (Math.round(averageCrowdedness / historicRequestedStopOccupationDouble.size() * crowdednessFactor) * 100) / 100d;
+            return (Math.round(averageCrowdedness / historicRequestedStopOccupationDouble.size() * seatedCrowdednessFactor) * 100) / 100d;
         }
         for (int i = 0; i < cdswRequestedTotal.filterHistoricData().size(); i++) {
             historicRequestedStopOccupationDouble.add(Double.parseDouble(cdswRequestedTotal.filterHistoricData().get(i)));
@@ -119,7 +121,7 @@ public class CapacityCalculator {
         for (Double dataPoint : historicRequestedStopOccupationDouble) {
             averageCrowdedness += dataPoint;
         }
-        return (Math.round(averageCrowdedness / historicRequestedStopOccupationDouble.size() * crowdednessFactor) * 100) / 100d;
+        return (Math.round(averageCrowdedness / historicRequestedStopOccupationDouble.size() * totalCrowdednessFactor) * 100) / 100d;
     }
 
     private void compareListSize(List<String> currentStopList) {
@@ -134,12 +136,20 @@ public class CapacityCalculator {
         }
     }
 
-    public void setCrowdednessFactor(double cf){
-        cf = crowdednessFactor;
+    public void setSeatedCrowdednessFactor(double cf){
+        cf = seatedCrowdednessFactor;
     }
 
-    public double getCrowdednessFactor(){
-        return crowdednessFactor;
+    public double getSeatedCrowdednessFactor(){
+        return seatedCrowdednessFactor;
+    }
+
+    public void setTotalCrowdednessFactor(double cf){
+        cf = totalCrowdednessFactor;
+    }
+
+    public double getTotalCrowdednessFactor(){
+        return totalCrowdednessFactor;
     }
 
 }
