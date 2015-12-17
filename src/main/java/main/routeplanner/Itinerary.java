@@ -15,7 +15,7 @@ import java.time.LocalDate;
  *
  * @see ItineraryFinder
  */
-class Itinerary {
+public class Itinerary {
 
   private final LocalDate date;
   private final List<ItineraryLeg> legs;
@@ -30,6 +30,19 @@ class Itinerary {
   public Itinerary(LocalDate date, List<ItineraryLeg> legs) {
     this.date = date;
     this.legs = legs;
+  }
+
+  /**
+   * Returns a string representation of Itinerary.
+   *
+   * @return string representation of this itinerary
+   */
+  public String toString() {
+    String str = "Itinerary: " + getDate();
+    for (ItineraryLeg leg : getLegs()) {
+      str += ", " + leg.getOrigin() + " -> " + leg.getDestination();
+    }
+    return str;
   }
 
   /**
