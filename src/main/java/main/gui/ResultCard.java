@@ -10,7 +10,9 @@ import java.util.Enumeration;
  * Created by janusalarsen on 10/12/2015.
  */
 public class ResultCard extends JPanel {
+
     private final int CARD_HEIGHT = 175;
+
     private final int CARD_WIDTH = 430;
     public static final String PRIMARY_COLOR = "#009688";
     private final String SECONDARY_COLOR = "#FAFAFA";
@@ -26,7 +28,6 @@ public class ResultCard extends JPanel {
 
     public ResultCard(int crowdedness,String busNumber, String date, String departureTime, String busStop, int duration) {
         super();
-
         this.setPreferredSize(new Dimension(CARD_WIDTH, CARD_HEIGHT));
         this.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
         this.setBackground(Color.decode(SECONDARY_COLOR));
@@ -75,6 +76,7 @@ public class ResultCard extends JPanel {
         JPanel dateLabelContainer = new JPanel();
         dateLabelContainer.setBackground(Color.decode(SECONDARY_COLOR));
 
+
         pResultTextContainer.add(dateLabelContainer);
 
         // Label that contains the date of the search
@@ -119,6 +121,22 @@ public class ResultCard extends JPanel {
         // TODO: add actionlistner that makes it possible to change to ExtendedResult screen
 
         extendResultButton.addActionListener(new ActionListener() {
+/*
+
+
+        // Container for button that enables the user to go to travel details
+        JPanel extendResultsContainer = new JPanel();
+
+        // Button that enables the user to go to travel details
+        JButton extendResult = new JButton("Details");extendResult.setFont(h2);
+        extendResult.setForeground(Color.decode(PRIMARY_COLOR));
+        extendResult.setBackground(Color.decode("#FAFAFA"));
+        extendResult.setBorder(BorderFactory.createLineBorder(Color.decode("#FAFAFA")));
+        // TODO: add actionlistner that makes it possible to change to ExtendedResult screen
+
+        extendResult.addActionListener(new ActionListener() {
+>>>>>>> 4b6ef1527a8b17fa6df4a3bbaa9988db06178acb
+*/
             @Override
             public void actionPerformed(ActionEvent e) {
                 changeScreen(getExtendedResult());

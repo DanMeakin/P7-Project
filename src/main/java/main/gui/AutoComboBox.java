@@ -25,7 +25,6 @@ public class AutoComboBox extends JComboBox<Object> {
         text.addKeyListener(new ComboListener(this, myVector));
         setMyVector();
 
-        
     }
 
     /**

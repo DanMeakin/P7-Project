@@ -39,6 +39,7 @@ public class StartScreen extends JFrame {
     Stop stopOne = new Stop(6,"Boulevarden",1.0,2.0);
     Stop stopTwo = new Stop(2,"Nytorv",3.0,4.0);
 
+
     // Variabler til formular
     private AutoComboBox fromBox;
     private AutoComboBox destinationBox;
@@ -132,6 +133,7 @@ public class StartScreen extends JFrame {
         // From Container - From autocompletionbox
         // TODO: Make it possible to press enter so the dropdrown disapreares. Find a way to not show suggestions unless he user has begun typing and limit the amount of suggestions shown.
         // TODO: Set Default button!
+
         fromBox = new AutoComboBox();
         // TODO: Udskiftes med resultatsæt fra rejseplanen.
 
@@ -161,7 +163,9 @@ public class StartScreen extends JFrame {
         // Destination Container - Destination autocompletionbox
         // TODO: Make it possible to press enter so the dropdrown disapreares. Find a way to not show suggestions unless he user has begun typing and limit the amount of suggestions shown.
         // TODO: Set Default button Show all Buses!
+
         destinationBox = new AutoComboBox();
+
         // TODO: Udskiftes med resultatsæt fra rejseplanen.
         //String[] itemArray = {"Sejrøgade","Bornholmsgade", "Nytorv"};
         destinationBox.setKeyWord(stopArray);
@@ -184,6 +188,7 @@ public class StartScreen extends JFrame {
         dateContainer.add(dateLabel);
 
         // Date picker
+
         datePicker = new JXDatePicker();
 
         // edit the Button
@@ -236,7 +241,9 @@ public class StartScreen extends JFrame {
         timeContainer.add(timeLabel);
 
         // Time Container - time Textfield
+
         timeTextField = new JTextField("   :   ");
+
         timeContainer.add(timeTextField);
 
         // Space Container time and Arriving
@@ -368,6 +375,7 @@ public class StartScreen extends JFrame {
                 // 3 Er knappen valgt
                 boolean isSelected = firstElement.isSelected();
 
+
                 String fromBoxSelection = fromBox.getSelectedItem().toString();
                 String toBoxSelection = destinationBox.getSelectedItem().toString();
                 Date date = datePicker.getDate();
@@ -377,6 +385,9 @@ public class StartScreen extends JFrame {
 
                 // Teksten nedenunder fjerner alt indhold og tilføjer nyt
                 changeScreen(getPage2(fromBoxSelection, toBoxSelection));
+
+                System.out.println(isSelected);
+
             }
         });
         searchContainer.add(findBusButton);
@@ -409,8 +420,10 @@ public class StartScreen extends JFrame {
         return pBackground;
     }
 
+
     private JPanel getPage2(String from, String to) {
         JPanel page2 = new Page2(from, to);
+
         return page2;
     }
 
