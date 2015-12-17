@@ -1,8 +1,6 @@
 package main;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.mockito.internal.matchers.GreaterOrEqual;
 
 import java.io.*;
@@ -57,8 +55,8 @@ public class CapacityDataStoreReaderTest {
 
     List<Bus> mockedBuses = new ArrayList<>();
 
-    @Before
-    public void setUp() {
+    @BeforeClass
+    public static void setUp() {
 
         fromDate = new GregorianCalendar(2015, GregorianCalendar.JANUARY, 1).getTime();
         toDate = new GregorianCalendar(2015, GregorianCalendar.DECEMBER, 31).getTime();
@@ -196,6 +194,7 @@ public class CapacityDataStoreReaderTest {
             for (int j = 0; j < 3; j++) {
                 if (i < 1) {
                     Date testDate = new Date();
+                    Date currentDate = new Date();
                     GregorianCalendar gc = new GregorianCalendar(2015, GregorianCalendar.APRIL, 04);
                     testDate = gc.getTime();
                     CapacityDataStoreWriter.setCurrentDate(testDate);
@@ -204,7 +203,7 @@ public class CapacityDataStoreReaderTest {
                     buses.get(j).passengersExit(8 + i * 2);
                     CapacityDataStoreWriter.writeBusStateChange(buses.get(j));
                     buses.get(j).leavesStop();
-                    CapacityDataStoreWriter.setCurrentDate(CapacityDataStoreWriter.getCurrentDate());
+                    CapacityDataStoreWriter.setCurrentDate(currentDate);
                 }
                 if (i >= 1) {
                     buses.get(j).arrivesAtStop(buses.get(0).getRouteTimetable().getRoute().getStops().get(0));
@@ -220,18 +219,11 @@ public class CapacityDataStoreReaderTest {
 
     @Test
     public void testFilterHistoricData() {
+        CapacityDataStoreReader cr = new CapacityDataStoreReader(routeTimetables.get(0), stopsRoute0.get(0), CapacityDataStoreWriter.ColumnHeaderNames.SEATED_OCCUPATION_RATE);
         List<String> expectedData = new ArrayList<>();
         expectedData.add("0.41");
         expectedData.add("0.61");
-        assertEquals(expectedData, CapacityDataStoreReader.filterHistoricData(routeTimetables.get(0), stopsRoute0.get(0), CapacityDataStoreWriter.ColumnHeaderNames.SEATED_OCCUPATION_RATE));
-    }
-
-    @Test
-    public void testReadHistoricStopCrowdedness(){
-        List<String> expectedData = new ArrayList<>();
-        expectedData.add("16/12/2015,16:13:50 +0100,150,10000,4,Ritavej-Somewhere,0,WEEKDAYS,1,Ritavej,10,23,26,0.41,0.3,");
-        expectedData.add("16/12/2015,16:13:50 +0100,150,10000,4,Ritavej-Somewhere,0,WEEKDAYS,1,Ritavej,12,25,39,0.61,0.44,");
-        assertEquals(expectedData, CapacityDataStoreReader.readHistoricStopCrowdedness(routeTimetables.get(0), stopsRoute0.get(0)));
+        assertEquals(expectedData, cr.filterHistoricData());
     }
 
     @Test
@@ -241,24 +233,17 @@ public class CapacityDataStoreReaderTest {
 
     @Test
     public void testSetNumOfDayBeforeCurrentForFromDate () {
-        CapacityDataStoreReader.setNumOfDayBeforeCurrentForFromDate(-60);
+        CapacityDataStoreReader.setNumOfDayBeforeCurrentForFromDate(60);
         assertEquals(CapacityDataStoreReader.getNumOfDayBeforeCurrentForFromDate(), -60);
     }
 
-    @Test
-    public void testGetToDate(){
-        assertEquals(testDate, CapacityDataStoreReader.getToDate());
-    }
-
-    @Test
-    public void testGetFromDate(){
-        GregorianCalendar gc = new GregorianCalendar();
-        gc.add(Calendar.DATE, CapacityDataStoreReader.getNumOfDayBeforeCurrentForFromDate());
-        assertEquals(gc.getTime(), CapacityDataStoreReader.getFromDate());
-    }
-
     @After
-    public void clearFile () {
+    public void resetGetNumOfDayBeforeCurrentForFromDate(){
+        CapacityDataStoreReader.setNumOfDayBeforeCurrentForFromDate(90);
+    }
+
+    @AfterClass
+    public static void clearFile () {
         try {
             PrintWriter pw = new PrintWriter("data/dataStore.csv");
             pw.close();

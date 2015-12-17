@@ -194,6 +194,8 @@ public class CapacityDataStoreWriterTest {
 
     @Test
     public void testWriteBusStateChange() {
+        SimpleDateFormat time = new SimpleDateFormat("HH:mm:ss Z");
+        SimpleDateFormat dayMonthYear = new SimpleDateFormat("dd/MM/yyyy");
         String[] expectedBusData = new String[buses.size()];
         for (int i = 0; i < buses.size(); i++) {
             buses.get(i).arrivesAtStop(buses.get(i).getRouteTimetable().getRoute().getStops().get(0));
@@ -201,8 +203,8 @@ public class CapacityDataStoreWriterTest {
             buses.get(i).passengersExit(8 + i * 2);
             CapacityDataStoreWriter.writeBusStateChange(buses.get(i));
             expectedBusData[i] = (
-                CapacityDataStoreWriter.getFormattedDayMonth() + "," + 
-                CapacityDataStoreWriter.getFormattedTime() + "," + 
+                dayMonthYear.format(testDate) + "," +
+                time.format(testDate) + "," +
                 buses.get(i).getFleetNumber() + "," +
                 buses.get(i).getRouteTimetable().getID() + "," + 
                 buses.get(i).getRouteTimetable().getRoute().getNumber() + "," + 
@@ -238,20 +240,6 @@ public class CapacityDataStoreWriterTest {
     }
 
     @Test
-    public void testGetFormattedDayMonth(){
-        Date date = new Date();
-        SimpleDateFormat dayMonthYear = new SimpleDateFormat("dd/MM/yyyy");
-        assertEquals(dayMonthYear.format(date), CapacityDataStoreWriter.getFormattedDayMonth());
-    }
-
-    @Test
-    public void testGetFormattedTime(){
-        Date date = new Date();
-        SimpleDateFormat time = new SimpleDateFormat("HH:mm:ss Z");
-        assertEquals(time.format(date), CapacityDataStoreWriter.getFormattedTime());
-    }
-
-    @Test
     public void testSetCurrentDate(){
         GregorianCalendar gc = new GregorianCalendar(2015, GregorianCalendar.APRIL, 04);
         testDate = gc.getTime();
@@ -268,18 +256,6 @@ public class CapacityDataStoreWriterTest {
         assertEquals(testDate.getHours(), actual.getHours());
         assertEquals(testDate.getMinutes(), actual.getMinutes());
         assertEquals(testDate.getSeconds(), actual.getSeconds());
-    }
-
-    @Test
-    public void testSetLock(){
-        CapacityDataStoreWriter.setLock();
-        assertEquals(true, CapacityDataStoreWriter.getLockStatus());
-    }
-
-    @Test
-    public void testRemoveLock(){
-        CapacityDataStoreWriter.removeLock();
-        assertEquals(false, CapacityDataStoreWriter.getLockStatus());
     }
 
     @Test
