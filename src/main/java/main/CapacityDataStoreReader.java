@@ -10,21 +10,33 @@ import java.util.*;
  */
 public class CapacityDataStoreReader {
 
-    private static Calendar calendar = GregorianCalendar.getInstance();
+    RouteTimetable routeTimetable;
+    Stop stop;
+    CapacityDataStoreWriter.ColumnHeaderNames columnHeaderName;
+
+    private static Calendar calendarFrom;
+    private static Calendar calendarTo;
     private static int numOfDaysBeforeCurrentForFromDate = -90;
 
-    private CapacityDataStoreReader(){
+    public CapacityDataStoreReader(RouteTimetable routeTimetable, Stop stop, CapacityDataStoreWriter.ColumnHeaderNames columnHeaderName){
+        this.routeTimetable = routeTimetable;
+        this.stop = stop;
+        this.columnHeaderName = columnHeaderName;
     }
 
-    public static List<String> filterHistoricData(RouteTimetable routeTimetable, Stop stop, CapacityDataStoreWriter.ColumnHeaderNames columnHeaderName){
+    public List<String> filterHistoricData(){
 
-        Date toDate = getToDate();
-        Date fromDate = getFromDate();
+        calendarFrom = Calendar.getInstance();
+        calendarTo = Calendar.getInstance();
+        calendarTo.add(Calendar.DATE, numOfDaysBeforeCurrentForFromDate);
+
+        Date fromDate = calendarFrom.getTime();
+        Date toDate = calendarTo.getTime();
 
         SimpleDateFormat dayMonthYear = new SimpleDateFormat("dd/MM/yyyy");
         SimpleDateFormat time = new SimpleDateFormat("HH:mm:ss Z");
 
-        List<String> sourceData = readHistoricStopCrowdedness(routeTimetable, stop);
+        List<String> sourceData = readHistoricStopCrowdedness();
         List<String> filteredBusData = new ArrayList<>();
 
         for(int i = 0; i < sourceData.size(); i++){
@@ -37,7 +49,7 @@ public class CapacityDataStoreReader {
         return filteredBusData;
     }
 
-    public static List<String> readHistoricStopCrowdedness(RouteTimetable routeTimetable, Stop stop) {
+    private List<String> readHistoricStopCrowdedness() {
 
         List<String> busData = new ArrayList<>();
 
@@ -119,13 +131,12 @@ public class CapacityDataStoreReader {
         return time;
     }
 
-    public static Date getToDate(){
-        return calendar.getTime();
+    public static Date getFromDate(){
+        return calendarFrom.getTime();
     }
 
-    public static Date getFromDate(){
-        calendar.add(Calendar.DATE, numOfDaysBeforeCurrentForFromDate);
-        return calendar.getTime();
+    public static Date getToDate(){
+        return calendarTo.getTime();
     }
 
     public static void setNumOfDayBeforeCurrentForFromDate(int days){
