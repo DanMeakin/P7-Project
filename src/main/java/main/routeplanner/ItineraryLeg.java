@@ -40,7 +40,7 @@ public class ItineraryLeg {
     this.destination = destination;
     this.startTime = rt.timeAtStop(origin);
     this.endTime = rt.timeAtStop(destination);
-    this.capacityCalculator = new CapacityCalculator(123.123, rt, origin);
+    this.capacityCalculator = new CapacityCalculator(rt, origin);
   }
 
   /**
