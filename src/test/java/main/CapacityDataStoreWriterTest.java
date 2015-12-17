@@ -200,11 +200,23 @@ public class CapacityDataStoreWriterTest {
             buses.get(i).passengersBoard(21 + i * 2);
             buses.get(i).passengersExit(8 + i * 2);
             CapacityDataStoreWriter.writeBusStateChange(buses.get(i));
-            expectedBusData[i] = (CapacityDataStoreWriter.getFormattedDayMonth() + "," + CapacityDataStoreWriter.getFormattedTime() + "," + buses.get(i).getFleetNumber() + "," +
-                    buses.get(i).getRouteTimetable().getID() + "," + buses.get(i).getRouteTimetable().getRoute().getNumber() + "," + buses.get(i).getRouteTimetable().getRoute().getDescription() + "," +
-                    buses.get(i).getRouteTimetable().getStartTime() + "," + buses.get(i).getRouteTimetable().getSchedule().getOperatingDay() + "," + buses.get(i).getLastStop().getID() + "," + buses.get(i).getLastStop().getName() + "," +
-                    buses.get(i).getNumPassengersExited() + "," + buses.get(i).getNumPassengersBoarded() + "," + buses.get(i).getNumPassengers() + "," +
-                    buses.get(i).getSeatedOccupationRate() + "," + buses.get(i).getTotalOccupationRate() + ",");
+            expectedBusData[i] = (
+                CapacityDataStoreWriter.getFormattedDayMonth() + "," + 
+                CapacityDataStoreWriter.getFormattedTime() + "," + 
+                buses.get(i).getFleetNumber() + "," +
+                buses.get(i).getRouteTimetable().getID() + "," + 
+                buses.get(i).getRouteTimetable().getRoute().getNumber() + "," + 
+                buses.get(i).getRouteTimetable().getRoute().getDescription() + "," +
+                buses.get(i).getRouteTimetable().getStartTime() + "," + 
+                buses.get(i).getRouteTimetable().getSchedule().getOperatingDay() + "," +
+                buses.get(i).getStop().getID() + "," + 
+                buses.get(i).getStop().getName() + "," +
+                buses.get(i).getNumPassengersExited() + "," + 
+                buses.get(i).getNumPassengersBoarded() + "," + 
+                buses.get(i).getNumPassengers() + "," +
+                buses.get(i).getSeatedOccupationRate() + "," +
+                buses.get(i).getTotalOccupationRate() + ","
+                );
 
             buses.get(i).leavesStop();
         }
@@ -240,16 +252,16 @@ public class CapacityDataStoreWriterTest {
     }
 
     @Test
-    public void testSetDate(){
+    public void testSetCurrentDate(){
         GregorianCalendar gc = new GregorianCalendar(2015, GregorianCalendar.APRIL, 04);
         testDate = gc.getTime();
-        CapacityDataStoreWriter.setDate(testDate);
-        assertEquals(testDate, CapacityDataStoreWriter.getDate());
+        CapacityDataStoreWriter.setCurrentDate(testDate);
+        assertEquals(testDate, CapacityDataStoreWriter.getCurrentDate());
     }
 
     @Test
     public void testGetDate(){
-        Date actual = CapacityDataStoreWriter.getDate();
+        Date actual = CapacityDataStoreWriter.getCurrentDate();
         assertEquals(testDate.getYear(), actual.getYear());
         assertEquals(testDate.getMonth(), actual.getMonth());
         assertEquals(testDate.getDay(), actual.getDay());
