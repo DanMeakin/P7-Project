@@ -96,7 +96,7 @@ public class CapacityCalculator {
         return (Math.round((simpleRegression.predict(currentTotalOccupation)) * crowdednessFactor) * 100) / 100d;
     }
 
-    public Double calculateCrowdedness(boolean occupationSeated, RouteTimetable routeTimetable, Stop RequestedStop) {
+    private Double calculateCrowdedness(boolean occupationSeated, RouteTimetable routeTimetable, Stop RequestedStop) {
 
         CapacityDataStoreReader cdswReqSeated = new CapacityDataStoreReader(routeTimetable, requestedStop, CapacityDataStoreWriter.ColumnHeaderNames.SEATED_OCCUPATION_RATE);
         CapacityDataStoreReader cdswReqTotal = new CapacityDataStoreReader(routeTimetable, requestedStop, CapacityDataStoreWriter.ColumnHeaderNames.TOTAL_OCCUPATION_RATE);
@@ -122,7 +122,7 @@ public class CapacityCalculator {
         return (Math.round(averageCrowdedness / historicRequestedStopOccupationDouble.size() * crowdednessFactor) * 100) / 100d;
     }
 
-    public void compareListSize(List<String> currentStopList) {
+    private void compareListSize(List<String> currentStopList) {
 
         CapacityDataStoreReader cdswReqDate = new CapacityDataStoreReader(routeTimetable, requestedStop, CapacityDataStoreWriter.ColumnHeaderNames.WRITE_DATE);
         CapacityDataStoreReader cdswCurrDate = new CapacityDataStoreReader(routeTimetable, currentStop, CapacityDataStoreWriter.ColumnHeaderNames.WRITE_DATE);

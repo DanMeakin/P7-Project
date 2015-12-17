@@ -84,21 +84,21 @@ public class CapacityDataStoreWriter {
         return currentDate;
     }
     
-    public static String getFormattedDayMonth(){
+    private static String getFormattedDayMonth(){
         SimpleDateFormat dayMonthYear = new SimpleDateFormat("dd/MM/yyyy");
         return dayMonthYear.format(currentDate);
     }
 
-    public static String getFormattedTime(){
+    private static String getFormattedTime(){
         SimpleDateFormat time = new SimpleDateFormat("HH:mm:ss Z");
         return time.format(currentDate);
     }
 
-    public static void setLock(){
+    private static void setLock(){
         fileLocked = true;
     }
 
-    public static void removeLock(){
+    private static void removeLock(){
         fileLocked = false;
     }
 

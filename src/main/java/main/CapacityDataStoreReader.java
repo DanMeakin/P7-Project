@@ -140,7 +140,7 @@ public class CapacityDataStoreReader {
     }
 
     public static void setNumOfDayBeforeCurrentForFromDate(int days){
-        numOfDaysBeforeCurrentForFromDate = days;
+        numOfDaysBeforeCurrentForFromDate = -days;
     }
 
     public static int getNumOfDayBeforeCurrentForFromDate(){
