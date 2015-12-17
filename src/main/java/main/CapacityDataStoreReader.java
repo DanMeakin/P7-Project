@@ -18,7 +18,7 @@ public class CapacityDataStoreReader {
     private static Calendar calendarTo;
     private static int numOfDaysBeforeCurrentForFromDate = -90;
 
-    private CapacityDataStoreReader(RouteTimetable routeTimetable, Stop stop, CapacityDataStoreWriter.ColumnHeaderNames columnHeaderName){
+    public CapacityDataStoreReader(RouteTimetable routeTimetable, Stop stop, CapacityDataStoreWriter.ColumnHeaderNames columnHeaderName){
         this.routeTimetable = routeTimetable;
         this.stop = stop;
         this.columnHeaderName = columnHeaderName;
