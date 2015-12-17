@@ -50,10 +50,10 @@ public class CapacityDataStoreWriterTest {
     private static List<RouteTimetable> routeTimetables;
     private static List<Route> routeTimetableRoutes;
 
-    List<Bus> mockedBuses = new ArrayList<>();
+    private static List<Bus> mockedBuses = new ArrayList<>();
 
-    @Before
-    public void setUp() {
+    @BeforeClass
+    public static void setUpClass() {
 
         fromDate = new GregorianCalendar(2015, GregorianCalendar.JANUARY, 1).getTime();
         toDate = new GregorianCalendar(2015, GregorianCalendar.DECEMBER, 31).getTime();
@@ -141,7 +141,7 @@ public class CapacityDataStoreWriterTest {
         schedule = new Schedule(
                 scheduleStart,
                 scheduleEnd,
-                Schedule.DayOptions.WEEKDAYS
+                Schedule.DayOption.WEEKDAYS
         );
 
         for (int i = 0; i < stopsRoute0.size() - 1; i++) {
@@ -249,13 +249,13 @@ public class CapacityDataStoreWriterTest {
 
     @Test
     public void testGetDate(){
-        assertEquals(testDate, CapacityDataStoreWriter.getDate());
-    }
-
-    @Test
-    public void testGetCurrentDate(){
-        Date testDate = new Date();
-        assertEquals(testDate, CapacityDataStoreWriter.getCurrentDate());
+        Date actual = CapacityDataStoreWriter.getDate();
+        assertEquals(testDate.getYear(), actual.getYear());
+        assertEquals(testDate.getMonth(), actual.getMonth());
+        assertEquals(testDate.getDay(), actual.getDay());
+        assertEquals(testDate.getHours(), actual.getHours());
+        assertEquals(testDate.getMinutes(), actual.getMinutes());
+        assertEquals(testDate.getSeconds(), actual.getSeconds());
     }
 
     @Test
