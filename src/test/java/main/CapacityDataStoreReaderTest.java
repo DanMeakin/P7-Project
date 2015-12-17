@@ -146,7 +146,7 @@ public class CapacityDataStoreReaderTest {
         schedule = new Schedule(
                 scheduleStart,
                 scheduleEnd,
-                Schedule.DayOptions.WEEKDAYS
+                Schedule.DayOption.WEEKDAYS
         );
 
         for (int i = 0; i < stopsRoute0.size() - 1; i++) {
