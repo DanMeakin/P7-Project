@@ -29,7 +29,7 @@ public class Page2 extends JPanel{
     private final Font h2 = new Font("Roboto", Font.PLAIN, 18);
     private final Font h3 = new Font("Roboto", Font.PLAIN, 14);
 
-    public Page2(){
+    public Page2(String from, String to){
         // Background
         super();
         this.setLayout(new FlowLayout(FlowLayout.LEADING,0,0));
@@ -65,7 +65,7 @@ public class Page2 extends JPanel{
         pSearchContent.add(fromLabel);
 
         // JLabel which shows the typed From
-        JLabel typeFrom = new JLabel("Bornholmsgade");
+        JLabel typeFrom = new JLabel(from);
         typeFrom.setFont(h2);
         typeFrom.setForeground(Color.decode(FIRST_TEXT_COLOR));
         pSearchContent.add(typeFrom);
@@ -87,7 +87,7 @@ public class Page2 extends JPanel{
         pSearchContent.add(toLabel);
 
         // JLabel which shows the typed Destination
-        JLabel typeTo = new JLabel("Bornholmsgade");
+        JLabel typeTo = new JLabel(to);
         typeTo.setFont(h2);
         typeTo.setForeground(Color.decode(FIRST_TEXT_COLOR));
         pSearchContent.add(typeTo);
@@ -118,6 +118,10 @@ public class Page2 extends JPanel{
         this.add(pSearchContainer);
         this.add(scrollPane);
         pContent.add(new ResultCard(80,"2D","monday, 30.11.2015","12:45","Bornholmsdage(Aalborg)",56));
+        // loop for generation of cards (Hardcoded to 4 results)
+        for (int i = 0; i < 4; i++){
+            System.out.println(i);
+        }
 
         setVisible(true);
     }

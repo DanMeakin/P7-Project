@@ -3,6 +3,7 @@ package main.gui;
 import org.jdesktop.swingx.border.DropShadowBorder;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -50,11 +51,32 @@ public class ExtendedResult extends JPanel{
         shadow.setShowTopShadow(true);
         pContent.setBorder(shadow);
 
+        // Travel Label container
+        JPanel travelLabelContainer = new JPanel();
+        travelLabelContainer.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+        travelLabelContainer.setBackground(Color.decode(SECONDARY_COLOR));
+
+        pContent.add(travelLabelContainer);
+
+        // Travel Label
+        JLabel travelDetails = new JLabel("Travel Details");
+        travelDetails.setForeground(Color.decode(TEXT_COLOR));
+        travelDetails.setFont(h2);
+
+        travelLabelContainer.add(travelDetails);
+
+        pContent.add(getDivider());
         pContentContainer.add(pContent);
         this.add(pContentContainer);
 
     }
 
-
+    private JSeparator getDivider(){
+        //Content divider
+        JSeparator dividerContent = new JSeparator();
+        dividerContent.setForeground(Color.decode("#BDBDBD"));
+        dividerContent.setPreferredSize(new Dimension(430,1));
+        return dividerContent;
+    }
 
 }
