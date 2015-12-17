@@ -42,6 +42,13 @@ public class ScheduleTest {
   private static Bus anotherMockedBus;
   private static RouteTimetable anotherMockedRouteTimetable;
 
+  @BeforeClass
+  public static void setUpClass() {
+    for (Schedule s : Schedule.getAllSchedules()) {
+      Schedule.removeSchedule(s);
+    }
+  }
+
   @Before
   public void setUp() {
     mockedBus = mock(Bus.class);
