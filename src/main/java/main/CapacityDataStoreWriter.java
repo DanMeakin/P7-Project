@@ -4,7 +4,6 @@ package main;
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.text.ParseException;
 
 public class CapacityDataStoreWriter {
 
@@ -24,13 +23,6 @@ public class CapacityDataStoreWriter {
     }
 
     public static void writeBusStateChange(Bus bus){
-
-        SimpleDateFormat dayMonthYear = new SimpleDateFormat("dd/MM/yyyy");
-        String currentYearMonth = dayMonthYear.format(currentDate);
-
-        SimpleDateFormat time = new SimpleDateFormat("HH:mm:ss Z");
-        String currentTime = time.format(currentDate);
-
 
         try {
             if (!dataStore.exists()) {

@@ -96,7 +96,6 @@ public class CapacityCalculator {
         return (Math.round((simpleRegression.predict(currentTotalOccupation)) * crowdednessFactor) * 100) / 100d;
     }
 
-
     public Double calculateCrowdedness(boolean occupationSeated, RouteTimetable routeTimetable, Stop RequestedStop) {
 
         CapacityDataStoreReader cdswReqSeated = new CapacityDataStoreReader(routeTimetable, requestedStop, CapacityDataStoreWriter.ColumnHeaderNames.SEATED_OCCUPATION_RATE);
