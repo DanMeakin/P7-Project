@@ -1,5 +1,6 @@
 package main.routeplanner;
 
+import main.CapacityCalculator;
 import main.Path;
 import main.Route;
 import main.Schedule;
@@ -31,6 +32,7 @@ public class ItineraryFinder {
   private boolean walkedLastLeg;
 
   public CostEstimator costEstimator;
+  private CapacityCalculator.crowdednessIndicator filter;
 
   // Fields for the calculation of least time itinerary
   private List<Stop> openNodes;
@@ -58,6 +60,34 @@ public class ItineraryFinder {
     setTime(searchTime);
     setSchedule(); 
     costEstimator = new CostEstimator(endingStop);
+  }
+
+  /**
+   * Sets a filter for acceptable itineraries.
+   *
+   * This method is used to set a filter on itineraries which are returned by 
+   * an ItineraryFinder instance. A filter will restrict itineraries to only
+   * those of the same or "better" crowdedness.
+   *
+   * GREEN will only return green itineraries;
+   * ORANGE will only return green and orange; and
+   * RED will return all itineraries.
+   *
+   * @param filter the best acceptable crowdedness level to return
+   */
+  public void setFilter(CapacityCalculator.crowdednessIndicator filter) {
+    this.filter = filter;
+  }
+
+  /**
+   * Gets current filter set on this.
+   *
+   * @see setFilter
+   *
+   * @return current best acceptable crowdedness level filter
+   */
+  public CapacityCalculator.crowdednessIndicator getFilter() {
+    return filter;
   }
 
   /**
@@ -565,7 +595,13 @@ public class ItineraryFinder {
     int min = 1_000_000_000; // Set initial min to high value
     Stop minNode = null;
     for (Stop s : getOpenNodes()) {
-      if (fPrime(s) < min) {
+      int weighting = 0;
+      // If one service can go direct to endNode, then create a weighting
+      // in favour of selecting this node.
+      if (s.equals(getEndingStop())) {
+        weighting = 2;
+      } 
+      if (fPrime(s) - weighting < min) {
         minNode = s;
         min = fPrime(s);
       }
