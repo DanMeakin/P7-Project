@@ -2,7 +2,7 @@ package main.routeplanner;
 
 import java.util.List;
 
-import main.CapacityCalculator;
+import main.capacitytracker.CapacityCalculator;
 
 import java.time.LocalDate;
 
@@ -108,21 +108,21 @@ public class Itinerary {
    *
    * @return crowdedness level of this itinerary
    */
-  public CapacityCalculator.crowdednessIndicator determineCrowdedness() {
-    CapacityCalculator.crowdednessIndicator crowdedness = 
-      CapacityCalculator.crowdednessIndicator.GREEN;
+  public CapacityCalculator.CrowdednessIndicator determineCrowdedness() {
+    CapacityCalculator.CrowdednessIndicator crowdedness = 
+      CapacityCalculator.CrowdednessIndicator.GREEN;
     for (ItineraryLeg leg : getLegs()) {
       if (leg.isBus()) {
-        CapacityCalculator.crowdednessIndicator legCrowdedness = leg.calculateCrowdedness();
+        CapacityCalculator.CrowdednessIndicator legCrowdedness = leg.calculateCrowdedness();
         // Unless legCrowdedness is GREEN, set crowdedness to this value. If it
         // is GREEN then this will not change the value of crowdedness. If it
         // is ORANGE or RED then it must be changed to this value. If it turns
         // to RED then this terminates the loop.
-        if (!legCrowdedness.equals(CapacityCalculator.crowdednessIndicator.GREEN)) {
+        if (!legCrowdedness.equals(CapacityCalculator.CrowdednessIndicator.GREEN)) {
           crowdedness = legCrowdedness;
         }
       }
-      if (crowdedness.equals(CapacityCalculator.crowdednessIndicator.RED)) {
+      if (crowdedness.equals(CapacityCalculator.CrowdednessIndicator.RED)) {
         break;
       }
     }

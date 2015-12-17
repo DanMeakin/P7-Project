@@ -1,6 +1,6 @@
 package main.routeplanner;
 
-import main.CapacityCalculator;
+import main.capacitytracker.CapacityCalculator;
 import main.RouteTimetable;
 import main.Stop;
 import main.Walk;
@@ -197,7 +197,7 @@ public class ItineraryLeg {
    *                                  of a walk (only applies to buses)
    * @see CapacityCalculator
    */
-  public CapacityCalculator.crowdednessIndicator calculateCrowdedness() {
+  public CapacityCalculator.CrowdednessIndicator calculateCrowdedness() {
     if (isBus()) {
       return capacityCalculator.getCrowdednessIndicator();
     }

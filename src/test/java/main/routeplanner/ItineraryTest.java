@@ -2,7 +2,7 @@ package main.routeplanner;
 
 import org.junit.*;
 
-import main.CapacityCalculator;
+import main.capacitytracker.CapacityCalculator;
 import main.Stop;
 
 import static org.junit.Assert.*;
@@ -104,29 +104,29 @@ public class ItineraryTest {
   public void testDetermineCrowdedness() {
     // Each itinerary has 10 legs, so we must mock crowdedness results for
     // each leg of each itinerary.
-    CapacityCalculator.crowdednessIndicator[] crowdedness1 = new CapacityCalculator.crowdednessIndicator[] { 
-      CapacityCalculator.crowdednessIndicator.GREEN, 
-      CapacityCalculator.crowdednessIndicator.GREEN, 
-      CapacityCalculator.crowdednessIndicator.GREEN, 
-      CapacityCalculator.crowdednessIndicator.ORANGE, 
-      CapacityCalculator.crowdednessIndicator.RED, 
-      CapacityCalculator.crowdednessIndicator.GREEN, 
-      CapacityCalculator.crowdednessIndicator.GREEN, 
-      CapacityCalculator.crowdednessIndicator.ORANGE, 
-      CapacityCalculator.crowdednessIndicator.GREEN,
-      CapacityCalculator.crowdednessIndicator.GREEN 
+    CapacityCalculator.CrowdednessIndicator[] crowdedness1 = new CapacityCalculator.CrowdednessIndicator[] { 
+      CapacityCalculator.CrowdednessIndicator.GREEN, 
+      CapacityCalculator.CrowdednessIndicator.GREEN, 
+      CapacityCalculator.CrowdednessIndicator.GREEN, 
+      CapacityCalculator.CrowdednessIndicator.ORANGE, 
+      CapacityCalculator.CrowdednessIndicator.RED, 
+      CapacityCalculator.CrowdednessIndicator.GREEN, 
+      CapacityCalculator.CrowdednessIndicator.GREEN, 
+      CapacityCalculator.CrowdednessIndicator.ORANGE, 
+      CapacityCalculator.CrowdednessIndicator.GREEN,
+      CapacityCalculator.CrowdednessIndicator.GREEN 
     };
-    CapacityCalculator.crowdednessIndicator[] crowdedness2 = new CapacityCalculator.crowdednessIndicator[] { 
-      CapacityCalculator.crowdednessIndicator.ORANGE,
-      CapacityCalculator.crowdednessIndicator.ORANGE, 
-      CapacityCalculator.crowdednessIndicator.ORANGE, 
-      CapacityCalculator.crowdednessIndicator.GREEN, 
-      CapacityCalculator.crowdednessIndicator.GREEN, 
-      CapacityCalculator.crowdednessIndicator.ORANGE, 
-      CapacityCalculator.crowdednessIndicator.ORANGE, 
-      CapacityCalculator.crowdednessIndicator.GREEN,
-      CapacityCalculator.crowdednessIndicator.GREEN, 
-      CapacityCalculator.crowdednessIndicator.RED
+    CapacityCalculator.CrowdednessIndicator[] crowdedness2 = new CapacityCalculator.CrowdednessIndicator[] { 
+      CapacityCalculator.CrowdednessIndicator.ORANGE,
+      CapacityCalculator.CrowdednessIndicator.ORANGE, 
+      CapacityCalculator.CrowdednessIndicator.ORANGE, 
+      CapacityCalculator.CrowdednessIndicator.GREEN, 
+      CapacityCalculator.CrowdednessIndicator.GREEN, 
+      CapacityCalculator.CrowdednessIndicator.ORANGE, 
+      CapacityCalculator.CrowdednessIndicator.ORANGE, 
+      CapacityCalculator.CrowdednessIndicator.GREEN,
+      CapacityCalculator.CrowdednessIndicator.GREEN, 
+      CapacityCalculator.CrowdednessIndicator.RED
     };
     for (int i = 0; i < 10; i++) {
       when(legs1.get(i).calculateCrowdedness()).thenReturn(crowdedness1[i]);
@@ -138,7 +138,7 @@ public class ItineraryTest {
         when(legs2.get(i).isBus()).thenReturn(true);
       }
     }
-    assertEquals(CapacityCalculator.crowdednessIndicator.RED, itinerary1.determineCrowdedness());
-    assertEquals(CapacityCalculator.crowdednessIndicator.ORANGE, itinerary2.determineCrowdedness());
+    assertEquals(CapacityCalculator.CrowdednessIndicator.RED, itinerary1.determineCrowdedness());
+    assertEquals(CapacityCalculator.CrowdednessIndicator.ORANGE, itinerary2.determineCrowdedness());
   }
 }

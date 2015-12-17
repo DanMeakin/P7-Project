@@ -172,11 +172,9 @@ public class BusTest {
    */
   @Test
   public void testArrivesAtStop() {
-    Stop lastStop = bus.getLastStop();
     bus.arrivesAtStop(mockedStop);
     assertTrue(bus.isAtStop());
     assertEquals(mockedStop, bus.getStop());
-    assertEquals(lastStop, bus.getLastStop());
   }
 
   /**
@@ -330,7 +328,6 @@ public class BusTest {
     stoppedBus.leavesStop();
     assertFalse(stoppedBus.isAtStop());
     assertNull(stoppedBus.getStop());
-    assertEquals(stoppedBus.getLastStop(), currentStop);
   }
 
   /**
@@ -475,24 +472,6 @@ public class BusTest {
   public void testGetTotalCapacity() {
     int totalCapacity = bus.getTotalCapacity();
     assertEquals(totalCapacity, busTypeSeatedCapacity + busTypeStandingCapacity);
-  }
-
-  /**
-   * Test getTotalOccupationRate method.
-   */
-  @Test
-  public void testGetTotalOccupationRate() {
-    double expected = (double) initialPassengers / ((double) busTypeSeatedCapacity + busTypeStandingCapacity);
-    assertEquals(expected, bus.getTotalOccupationRate(), 0.01);
-  }
-
-  /**
-   * Test getSeatedOccupationRate method.
-   */
-  @Test
-  public void testGetSeatedOccupationRate() {
-    double expected = (double) initialPassengers / ((double) busTypeSeatedCapacity);
-    assertEquals(expected, bus.getSeatedOccupationRate(), 0.01);
   }
 
   /**

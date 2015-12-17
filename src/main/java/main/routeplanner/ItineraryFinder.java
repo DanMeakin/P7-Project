@@ -1,6 +1,6 @@
 package main.routeplanner;
 
-import main.CapacityCalculator;
+import main.capacitytracker.CapacityCalculator;
 import main.Path;
 import main.Route;
 import main.Schedule;
@@ -32,7 +32,7 @@ public class ItineraryFinder {
   private boolean walkedLastLeg;
 
   public CostEstimator costEstimator;
-  private CapacityCalculator.crowdednessIndicator filter;
+  private CapacityCalculator.CrowdednessIndicator filter;
 
   // Fields for the calculation of least time itinerary
   private List<Stop> openNodes;
@@ -75,7 +75,7 @@ public class ItineraryFinder {
    *
    * @param filter the best acceptable crowdedness level to return
    */
-  public void setFilter(CapacityCalculator.crowdednessIndicator filter) {
+  public void setFilter(CapacityCalculator.CrowdednessIndicator filter) {
     this.filter = filter;
   }
 
@@ -86,7 +86,7 @@ public class ItineraryFinder {
    *
    * @return current best acceptable crowdedness level filter
    */
-  public CapacityCalculator.crowdednessIndicator getFilter() {
+  public CapacityCalculator.CrowdednessIndicator getFilter() {
     return filter;
   }
 
