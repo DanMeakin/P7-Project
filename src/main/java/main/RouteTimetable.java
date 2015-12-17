@@ -38,6 +38,18 @@ public class RouteTimetable {
     }
 
     /**
+     * Checks whether two RouteTimetables are equal.
+     *
+     * Two RouteTimetables are equal if, and only if, they share the ID#.
+     *
+     * @param rt the RouteTimetable to compare against
+     * @return true if equal, else false
+     */
+    public boolean equals(RouteTimetable rt) {
+      return getID() == rt.getID();
+    }
+
+    /**
      * Gets the current value of the counter tracking the number of
      * RouteTimetables created.
      *

@@ -311,6 +311,7 @@ public class ScheduleTest {
     saturdaySchedule.addRouteTimetable(mockedRouteTimetable, mockedBus);
     assertTrue(saturdaySchedule.hasRouteTimetable(mockedRouteTimetable));
     assertTrue(saturdaySchedule.hasBus(mockedBus));
+    assertEquals(saturdaySchedule.getAllocatedBus(mockedRouteTimetable), mockedBus);
   }
 
   /**
