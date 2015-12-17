@@ -1,18 +1,21 @@
-package main;
+package main.capacitytracker;
 
 import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import main.RouteTimetable;
+import main.Stop;
+
 /**
  * @author Ivo on 14-12-2015.
  */
 public class CapacityDataStoreReader {
 
-    RouteTimetable routeTimetable;
-    Stop stop;
-    CapacityDataStoreWriter.ColumnHeaderNames columnHeaderName;
+    private RouteTimetable routeTimetable;
+    private Stop stop;
+    private CapacityDataStoreWriter.ColumnHeaderNames columnHeaderName;
 
     private static int numOfDaysBeforeCurrentForFromDate = -90;
 

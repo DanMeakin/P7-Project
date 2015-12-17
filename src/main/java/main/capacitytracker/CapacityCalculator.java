@@ -1,6 +1,9 @@
-package main;
+package main.capacitytracker;
 
 import java.util.*;
+
+import main.RouteTimetable;
+import main.Stop;
 
 import org.apache.commons.math3.stat.regression.SimpleRegression;
 

@@ -29,7 +29,6 @@ public class Bus extends Observable {
   private RouteTimetable route;
   /** the stop associated with this bus */
   private Stop stop;
-  private Stop lastStop;
   /** a data structure containing all busses */
   private static List<Bus> allBuses = new ArrayList<>();
 
@@ -119,9 +118,8 @@ public class Bus extends Observable {
       String msg = "bus is not at a stop";
       throw new UnsupportedOperationException(msg);
     }
-    setLastStop(getStop());
-    setStop(null);
     notifyObservers(); // Notify observers after leaving stop
+    setStop(null);
   }
   
   /**
@@ -338,32 +336,12 @@ public class Bus extends Observable {
   }
 
   /**
-   * Get the last stop a bus is at.
-   *
-   * @return lastStop the last stop the bus was at
-   */
-  public Stop getLastStop(){
-    return this.lastStop;
-  }
-
-
-  /**
    * Set a bus to be at a Stop.
    *
    * @param stop the Stop the bus is set to be at.
    */
   private void setStop(Stop stop) {
     this.stop = stop;
-  }
-
-
-  /**
-   * Set the last stop a bus was at.
-   *
-   * @param stop the Stop the bus was last at.
-   */
-  private void setLastStop(Stop stop){
-    this.lastStop = stop;
   }
 
   /**
@@ -385,25 +363,49 @@ public class Bus extends Observable {
   }
 
   /**
-   * Get the number of passengers divided by the capacity of a bus.
+   * Get the percentage of bus capacity currently in use.
    *
-   * @return totalOccupationRate the occupation rate of the bus.
+   * This method calculates the percentage of bus capacity currently
+   * in use by dividing the number of passengers by the total capacity
+   * of the bus.
+   *
+   * @return occupancy level as a decimal
    */
-  public double getTotalOccupationRate(){
-    DecimalFormat rateFormat = new DecimalFormat("#.00");
-    double totalOccupationRate = (Math.round( (double) this.getNumPassengers() / (double) this.getTotalCapacity()*100)/100d);
-    return totalOccupationRate;
+  public double getTotalOccupancyLevel(){
+    return (double) getNumPassengers() / (double) getTotalCapacity();
   }
 
   /**
-   * Get the number of passengers divided by the number of seats on a bus.
+   * Get the percentage of seating capacity currently in use.
    *
-   * @return seatedOccupationRate the occupation rate of the bus.
+   * This method calculates the percentage of seated capacity currently
+   * in use by dividing the number of passengers by the total seated capacity
+   * of the bus.
+   *
+   * If the value is more than 1, this indicates that all seated capacity
+   * is filled, so seated occupancy is returned as 1.
+   *
+   * @return seated occupancy level as a decimal
    */
-  public double getSeatedOccupationRate(){
-    DecimalFormat rateFormat = new DecimalFormat("#.00");
-    double seatedOccupationRate = (Math.round( (double) this.getNumPassengers() / (double) this.getSeatedCapacity()*100)/100d);
-    return seatedOccupationRate;
+  public double getSeatedOccupancyLevel() {
+    return Math.min(1, (double) getNumPassengers() / (double) getSeatedCapacity());
+  }
+
+  /**
+   * Get the percentage of standing capacity currently in use.
+   *
+   * This method calculates the percentage of standing capacity currently
+   * in use by disregarding the number of passengers (likely) sitting down,
+   * and then dividing the remaining number by the total standing capacity
+   * of the bus.
+   *
+   * If the value is less than 0, this indicates that not all seated capacity
+   * is filled, so standing occupancy is returned as 0.
+   *
+   * @return standing occupancy level as a decimal
+   */
+  public double getStandingOccupancyLevel() {
+    return Math.max(0, (double) getNumPassengers() - getSeatedCapacity() / (double) getStandingCapacity());
   }
 
   /**
