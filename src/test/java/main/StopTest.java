@@ -170,15 +170,27 @@ public class StopTest {
   }
 
   /**
-   * Test distanceBetweenStops method.
+   * Test findStop(int) method.
    */
   @Test
-  public void testDistanceBetweenStops() {
-    for (int i = 0; i < 3; i++) {
-      for (int j = 0; j < 3; j++) {
-        assertEquals(Stop.getDistanceBetweenStops(stops.get(i), stops.get(j)), (int) stopDistances.get(i).get(j));
-      }
+  public void testFindStopByID() {
+    assertEquals(Stop.findStop(stopIDs.get(2)), stops.get(2));
+    try {
+      Stop.findStop(12345);
+      fail("expected IllegalArgumentException for non-existent stop ID");
+    } catch (IllegalArgumentException e) {
+      assertEquals("unable to find stop with ID# " + 12345, e.getMessage());
     }
+  }
+
+  /**
+   * Test findStop(String) method.
+   */
+  @Test
+  public void testFindStopByName() {
+    assertEquals(Arrays.asList(stops.get(1)), Stop.findStop("terminal"));
+    assertEquals(new ArrayList<>(), Stop.findStop("NONEXISTENTSTOP"));
+    assertEquals(Arrays.asList(stops.get(1), stops.get(2)), Stop.findStop("b"));
   }
 
   /**

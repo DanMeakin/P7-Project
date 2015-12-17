@@ -50,10 +50,10 @@ public class CapacityDataStoreWriterTest {
     private static List<RouteTimetable> routeTimetables;
     private static List<Route> routeTimetableRoutes;
 
-    List<Bus> mockedBuses = new ArrayList<>();
+    private static List<Bus> mockedBuses = new ArrayList<>();
 
-    @Before
-    public void setUp() {
+    @BeforeClass
+    public static void setUpClass() {
 
         fromDate = new GregorianCalendar(2015, GregorianCalendar.JANUARY, 1).getTime();
         toDate = new GregorianCalendar(2015, GregorianCalendar.DECEMBER, 31).getTime();
@@ -141,7 +141,7 @@ public class CapacityDataStoreWriterTest {
         schedule = new Schedule(
                 scheduleStart,
                 scheduleEnd,
-                Schedule.DayOptions.WEEKDAYS
+                Schedule.DayOption.WEEKDAYS
         );
 
         for (int i = 0; i < stopsRoute0.size() - 1; i++) {
@@ -194,17 +194,31 @@ public class CapacityDataStoreWriterTest {
 
     @Test
     public void testWriteBusStateChange() {
+        SimpleDateFormat time = new SimpleDateFormat("HH:mm:ss Z");
+        SimpleDateFormat dayMonthYear = new SimpleDateFormat("dd/MM/yyyy");
         String[] expectedBusData = new String[buses.size()];
         for (int i = 0; i < buses.size(); i++) {
             buses.get(i).arrivesAtStop(buses.get(i).getRouteTimetable().getRoute().getStops().get(0));
             buses.get(i).passengersBoard(21 + i * 2);
             buses.get(i).passengersExit(8 + i * 2);
             CapacityDataStoreWriter.writeBusStateChange(buses.get(i));
-            expectedBusData[i] = (CapacityDataStoreWriter.getFormattedDayMonth() + "," + CapacityDataStoreWriter.getFormattedTime() + "," + buses.get(i).getFleetNumber() + "," +
-                    buses.get(i).getRouteTimetable().getID() + "," + buses.get(i).getRouteTimetable().getRoute().getNumber() + "," + buses.get(i).getRouteTimetable().getRoute().getDescription() + "," +
-                    buses.get(i).getRouteTimetable().getStartTime() + "," + buses.get(i).getRouteTimetable().getSchedule().getOperatingDay() + "," + buses.get(i).getLastStop().getID() + "," + buses.get(i).getLastStop().getName() + "," +
-                    buses.get(i).getNumPassengersExited() + "," + buses.get(i).getNumPassengersBoarded() + "," + buses.get(i).getNumPassengers() + "," +
-                    buses.get(i).getSeatedOccupationRate() + "," + buses.get(i).getTotalOccupationRate() + ",");
+            expectedBusData[i] = (
+                dayMonthYear.format(testDate) + "," +
+                time.format(testDate) + "," +
+                buses.get(i).getFleetNumber() + "," +
+                buses.get(i).getRouteTimetable().getID() + "," + 
+                buses.get(i).getRouteTimetable().getRoute().getNumber() + "," + 
+                buses.get(i).getRouteTimetable().getRoute().getDescription() + "," +
+                buses.get(i).getRouteTimetable().getStartTime() + "," + 
+                buses.get(i).getRouteTimetable().getSchedule().getOperatingDay() + "," +
+                buses.get(i).getStop().getID() + "," + 
+                buses.get(i).getStop().getName() + "," +
+                buses.get(i).getNumPassengersExited() + "," + 
+                buses.get(i).getNumPassengersBoarded() + "," + 
+                buses.get(i).getNumPassengers() + "," +
+                buses.get(i).getSeatedOccupationRate() + "," +
+                buses.get(i).getTotalOccupationRate() + ","
+                );
 
             buses.get(i).leavesStop();
         }
@@ -226,48 +240,22 @@ public class CapacityDataStoreWriterTest {
     }
 
     @Test
-    public void testGetFormattedDayMonth(){
-        Date date = new Date();
-        SimpleDateFormat dayMonthYear = new SimpleDateFormat("dd/MM/yyyy");
-        assertEquals(dayMonthYear.format(date), CapacityDataStoreWriter.getFormattedDayMonth());
-    }
-
-    @Test
-    public void testGetFormattedTime(){
-        Date date = new Date();
-        SimpleDateFormat time = new SimpleDateFormat("HH:mm:ss Z");
-        assertEquals(time.format(date), CapacityDataStoreWriter.getFormattedTime());
-    }
-
-    @Test
-    public void testSetDate(){
+    public void testSetCurrentDate(){
         GregorianCalendar gc = new GregorianCalendar(2015, GregorianCalendar.APRIL, 04);
         testDate = gc.getTime();
-        CapacityDataStoreWriter.setDate(testDate);
-        assertEquals(testDate, CapacityDataStoreWriter.getDate());
-    }
-
-    @Test
-    public void testGetDate(){
-        assertEquals(testDate, CapacityDataStoreWriter.getDate());
-    }
-
-    @Test
-    public void testGetCurrentDate(){
-        Date testDate = new Date();
+        CapacityDataStoreWriter.setCurrentDate(testDate);
         assertEquals(testDate, CapacityDataStoreWriter.getCurrentDate());
     }
 
     @Test
-    public void testSetLock(){
-        CapacityDataStoreWriter.setLock();
-        assertEquals(true, CapacityDataStoreWriter.getLockStatus());
-    }
-
-    @Test
-    public void testRemoveLock(){
-        CapacityDataStoreWriter.removeLock();
-        assertEquals(false, CapacityDataStoreWriter.getLockStatus());
+    public void testGetDate(){
+        Date actual = CapacityDataStoreWriter.getCurrentDate();
+        assertEquals(testDate.getYear(), actual.getYear());
+        assertEquals(testDate.getMonth(), actual.getMonth());
+        assertEquals(testDate.getDay(), actual.getDay());
+        assertEquals(testDate.getHours(), actual.getHours());
+        assertEquals(testDate.getMinutes(), actual.getMinutes());
+        assertEquals(testDate.getSeconds(), actual.getSeconds());
     }
 
     @Test

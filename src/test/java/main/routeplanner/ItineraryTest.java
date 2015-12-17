@@ -3,6 +3,7 @@ package main.routeplanner;
 import org.junit.*;
 
 import main.CapacityCalculator;
+import main.Stop;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -34,6 +35,18 @@ public class ItineraryTest {
       ItineraryLeg il2 = mock(ItineraryLeg.class);
       when(il1.equals(il1)).thenReturn(true);
       when(il2.equals(il2)).thenReturn(true);
+      Stop origin1 = mock(Stop.class);
+      Stop destination1 = mock(Stop.class);
+      Stop origin2 = mock(Stop.class);
+      Stop destination2 = mock(Stop.class);
+      when(origin1.toString()).thenReturn("L1 Origin");
+      when(destination1.toString()).thenReturn("L1 Destination");
+      when(origin2.toString()).thenReturn("L2 Origin");
+      when(destination2.toString()).thenReturn("L2 Destination");
+      when(il1.getOrigin()).thenReturn(origin1);
+      when(il1.getDestination()).thenReturn(destination1);
+      when(il2.getOrigin()).thenReturn(origin2);
+      when(il2.getDestination()).thenReturn(destination2);
       legs1.add(il1);
       legs2.add(il2);
     }
@@ -67,6 +80,18 @@ public class ItineraryTest {
     assertNotEquals(itinerary1, o);
     assertNotEquals(itinerary2, o);
     assertNotEquals(itinerary3, o);
+  }
+
+  /**
+   * Tests the toString method.
+   */
+  @Test
+  public void testToString() {
+    String expected = "Itinerary: " + date1;
+    for (ItineraryLeg il : itinerary1.getLegs()) {
+      expected += ", " + il.getOrigin() + " -> " + il.getDestination();
+    }
+    assertEquals(expected, itinerary1.toString());
   }
 
   /**

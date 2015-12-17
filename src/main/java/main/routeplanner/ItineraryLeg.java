@@ -13,7 +13,7 @@ import main.Walk;
  * specific bus journey on which the passenger is to travel, and the start
  * and end stops of this leg of the itinerary.
  */
-class ItineraryLeg {
+public class ItineraryLeg {
 
   // Only one of these two fields is populated at one time
   private RouteTimetable routeTimetable;
@@ -40,7 +40,7 @@ class ItineraryLeg {
     this.destination = destination;
     this.startTime = rt.timeAtStop(origin);
     this.endTime = rt.timeAtStop(destination);
-    this.capacityCalculator = new CapacityCalculator(123.123, rt, origin);
+    this.capacityCalculator = new CapacityCalculator(rt, origin);
   }
 
   /**

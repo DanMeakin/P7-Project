@@ -181,4 +181,12 @@ public class RouteTimetableTest {
   public void testGetID(){
     assertEquals(routeTimetableCounter, routeTimetable.getID());
   }
+
+  /**
+   * Test getSchedule method.
+   */
+  @Test
+  public void testGetSchedule() {
+    assertEquals(mockedSchedule, routeTimetable.getSchedule());
+  }
 }

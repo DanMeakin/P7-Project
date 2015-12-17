@@ -111,6 +111,14 @@ public class RouteTest {
   }
 
   /**
+   * Test findRouteByNumber method.
+   */
+  @Test
+  public void testFindRouteByNumber() {
+    assertEquals(Arrays.asList(route, invertedRoute), Route.findRouteByNumber(routeNumber));
+  }
+
+  /**
    * Test has number.
    *
    * This method tests that a route's number is accessible through a Route
