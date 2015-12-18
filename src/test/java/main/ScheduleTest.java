@@ -6,12 +6,12 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.function.Predicate;
+import java.time.Month;
 
 import main.Bus;
 import main.Route;
@@ -21,12 +21,12 @@ import main.Schedule.DayOption;
 
 public class ScheduleTest {
 
-  private static Date weekdayScheduleStart;
-  private static Date weekdayScheduleEnd;
-  private static Date saturdayScheduleStart;
-  private static Date saturdayScheduleEnd;
-  private static Date sundayScheduleStart;
-  private static Date sundayScheduleEnd;
+  private static LocalDate weekdayScheduleStart;
+  private static LocalDate weekdayScheduleEnd;
+  private static LocalDate saturdayScheduleStart;
+  private static LocalDate saturdayScheduleEnd;
+  private static LocalDate sundayScheduleStart;
+  private static LocalDate sundayScheduleEnd;
 
   private static Schedule weekdaySchedule;
   private static Schedule saturdaySchedule;
@@ -86,12 +86,12 @@ public class ScheduleTest {
     anotherMockedBus = mock(Bus.class);
     when(anotherMockedBus.equals(anotherMockedBus)).thenReturn(true);
     
-    weekdayScheduleStart = new GregorianCalendar(2016, GregorianCalendar.JANUARY, 1).getTime();
-    weekdayScheduleEnd = new GregorianCalendar(2016, GregorianCalendar.DECEMBER, 31).getTime();
-    saturdayScheduleStart = new GregorianCalendar(2015, GregorianCalendar.JANUARY, 1).getTime();
-    saturdayScheduleEnd = new GregorianCalendar(2015, GregorianCalendar.DECEMBER, 31).getTime();
-    sundayScheduleStart = new GregorianCalendar(2014, GregorianCalendar.JANUARY, 1).getTime();
-    sundayScheduleEnd = new GregorianCalendar(2014, GregorianCalendar.DECEMBER, 31).getTime();
+    weekdayScheduleStart = LocalDate.of(2016, Month.JANUARY, 1);
+    weekdayScheduleEnd = LocalDate.of(2016, Month.DECEMBER, 31);
+    saturdayScheduleStart = LocalDate.of(2015, Month.JANUARY, 1);
+    saturdayScheduleEnd = LocalDate.of(2015, Month.DECEMBER, 31);
+    sundayScheduleStart = LocalDate.of(2014, Month.JANUARY, 1);
+    sundayScheduleEnd = LocalDate.of(2014, Month.DECEMBER, 31);
 
     weekdaySchedule = new Schedule(
         weekdayScheduleStart,
@@ -136,8 +136,8 @@ public class ScheduleTest {
     String msg = "SUNDAY Schedule for period is already defined";
     thrown.expectMessage(msg);
     new Schedule(
-        new GregorianCalendar(2014, GregorianCalendar.JANUARY, 20).getTime(),
-        new GregorianCalendar(2015, GregorianCalendar.JANUARY, 19).getTime(),
+        LocalDate.of(2014, Month.JANUARY, 20),
+        LocalDate.of(2015, Month.JANUARY, 19),
         DayOption.SUNDAY
         );
   }
@@ -156,8 +156,8 @@ public class ScheduleTest {
     String msg = "WEEKDAYS Schedule for period is already defined";
     thrown.expectMessage(msg);
     new Schedule(
-        new GregorianCalendar(2015, GregorianCalendar.JANUARY, 20).getTime(),
-        new GregorianCalendar(2016, GregorianCalendar.JANUARY, 19).getTime(),
+        LocalDate.of(2015, Month.JANUARY, 20),
+        LocalDate.of(2016, Month.JANUARY, 19),
         DayOption.WEEKDAYS
         );
   }
@@ -176,8 +176,8 @@ public class ScheduleTest {
     String msg = "SATURDAY Schedule for period is already defined";
     thrown.expectMessage(msg);
     new Schedule(
-        new GregorianCalendar(2015, GregorianCalendar.MAY, 3).getTime(),
-        new GregorianCalendar(2015, GregorianCalendar.JUNE, 30).getTime(),
+        LocalDate.of(2015, Month.MAY, 3),
+        LocalDate.of(2015, Month.JUNE, 30),
         DayOption.SATURDAY
         );
   }
@@ -198,8 +198,8 @@ public class ScheduleTest {
     String msg = "SATURDAY Schedule for period is already defined";
     thrown.expectMessage(msg);
     new Schedule(
-        new GregorianCalendar(2014, GregorianCalendar.AUGUST, 15).getTime(),
-        new GregorianCalendar(2016, GregorianCalendar.FEBRUARY, 27).getTime(),
+        LocalDate.of(2014, Month.AUGUST, 15),
+        LocalDate.of(2016, Month.FEBRUARY, 27),
         DayOption.SATURDAY
         );
   }
@@ -213,13 +213,13 @@ public class ScheduleTest {
    */
   @Test
   public void testFindSchedule() {
-    Date weekday = new GregorianCalendar(2016, GregorianCalendar.SEPTEMBER, 14).getTime();
-    Date saturday = new GregorianCalendar(2015, GregorianCalendar.NOVEMBER, 28).getTime();
-    Date sunday = new GregorianCalendar(2014, GregorianCalendar.MARCH, 9).getTime();
+    LocalDate weekday = LocalDate.of(2016, Month.SEPTEMBER, 14);
+    LocalDate saturday = LocalDate.of(2015, Month.NOVEMBER, 28);
+    LocalDate sunday = LocalDate.of(2014, Month.MARCH, 9);
 
-    Date futureDate = new GregorianCalendar(2025, GregorianCalendar.OCTOBER, 7).getTime();
-    Date pastDate = new GregorianCalendar(2000, GregorianCalendar.JANUARY, 1).getTime();
-    Date weekday2015 = new GregorianCalendar(2015, GregorianCalendar.APRIL, 23).getTime();
+    LocalDate futureDate = LocalDate.of(2025, Month.OCTOBER, 7);
+    LocalDate pastDate = LocalDate.of(2000, Month.JANUARY, 1);
+    LocalDate weekday2015 = LocalDate.of(2015, Month.APRIL, 23);
 
     assertEquals(weekdaySchedule, Schedule.findSchedule(weekday));
     assertEquals(saturdaySchedule, Schedule.findSchedule(saturday));
@@ -243,13 +243,13 @@ public class ScheduleTest {
   public void testScheduleExists() {
     try {
       new Schedule(
-          new GregorianCalendar(2013, GregorianCalendar.DECEMBER, 1).getTime(),
-          new GregorianCalendar(2013, GregorianCalendar.DECEMBER, 31).getTime(),
+          LocalDate.of(2013, Month.DECEMBER, 1),
+          LocalDate.of(2013, Month.DECEMBER, 31),
           DayOption.SUNDAY
           );
       new Schedule(
-          new GregorianCalendar(2015, GregorianCalendar.JANUARY, 1).getTime(),
-          new GregorianCalendar(2015, GregorianCalendar.JANUARY, 31).getTime(),
+          LocalDate.of(2015, Month.JANUARY, 1),
+          LocalDate.of(2015, Month.JANUARY, 31),
           DayOption.SUNDAY
           );
     } catch (IllegalArgumentException e) {
@@ -540,23 +540,23 @@ public class ScheduleTest {
     });
 
     // Create all required predicates to test for the correct day of week
-    List<Predicate<Date>> ps = new ArrayList<>();
-    ps.add((Date d) -> dayOfWeek(d) >= 2 && dayOfWeek(d) <= 6);
-    ps.add((Date d) -> dayOfWeek(d) == 7);
-    ps.add((Date d) -> dayOfWeek(d) == 1);
+    List<Predicate<LocalDate>> ps = new ArrayList<>();
+    ps.add((LocalDate d) -> dayOfWeek(d) >= 2 && dayOfWeek(d) <= 6);
+    ps.add((LocalDate d) -> dayOfWeek(d) == 7);
+    ps.add((LocalDate d) -> dayOfWeek(d) == 1);
 
     // Undertake testing on each schedule
     for (int i = 0; i < schedules.size(); i++ ) {
       Schedule s = schedules.get(i);
-      Predicate<Date> p = ps.get(i);
-      List<Date> actualDates = s.scheduledDates();
+      Predicate<LocalDate> p = ps.get(i);
+      List<LocalDate> actualDates = s.scheduledDates();
       if (actualDates.size() == 0) {
         fail("scheduled dates must not be empty");
       }
-      for (Date d : actualDates) {
-        if ((i == 0 && (d.before(weekdayScheduleStart) || d.after(weekdayScheduleEnd))) || 
-            (i == 1 && (d.before(saturdayScheduleStart) || d.after(saturdayScheduleEnd))) ||
-            (i == 2 && (d.before(sundayScheduleStart) || d.after(sundayScheduleEnd)))) {
+      for (LocalDate d : actualDates) {
+        if ((i == 0 && (d.isBefore(weekdayScheduleStart) || d.isAfter(weekdayScheduleEnd))) || 
+            (i == 1 && (d.isBefore(saturdayScheduleStart) || d.isAfter(saturdayScheduleEnd))) ||
+            (i == 2 && (d.isBefore(sundayScheduleStart) || d.isAfter(sundayScheduleEnd)))) {
           String msg = "schedule dates contains dates outside of the " + 
             "specified date range for the schedule: " + d;
           fail(msg);
@@ -644,10 +644,7 @@ public class ScheduleTest {
    * @return numerical day of week, with Sunday = 1, Monday = 2, ... , 
    *  Saturday = 7
    */
-  private static int dayOfWeek(Date d) {
-    Calendar c = Calendar.getInstance();
-    c.setTime(d);
-    int dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
-    return dayOfWeek;
+  private static int dayOfWeek(LocalDate d) {
+    return d.getDayOfWeek().getValue() % 7 + 1;
   }
 }
