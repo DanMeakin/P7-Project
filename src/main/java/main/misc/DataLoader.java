@@ -137,11 +137,7 @@ public class DataLoader {
       for (Route r : Route.findRouteByNumber(number)) {
         int currentTime = startTime;
         while (currentTime <= endTime) {
-          // Rush hour between 8am and 10am, and 4pm and 6pm
-          boolean isRushHour = 
-            (startTime >= 8*60 && startTime <= 10*60) ||
-            (startTime >= 16*60 && startTime <= 18*60);
-          RouteTimetable rt = new RouteTimetable(r, weekdaySchedule, currentTime, isRushHour);
+          RouteTimetable rt = new RouteTimetable(r, weekdaySchedule, currentTime, isRushHour(currentTime));
           Bus bus = new Bus(counter, genericBusType, acquisitionDate);
           weekdaySchedule.allocateBus(rt, bus);
           System.out.println("Created RT for Route " + r.getNumber() + " " + r.getDescription() + " at " + currentTime);
@@ -194,5 +190,17 @@ public class DataLoader {
     } catch (IOException e) {
       throw new RuntimeException("IOException: " + e.getMessage());
     }
+  }
+
+  /**
+   * Determines whether time falls within rush hour.
+   *
+   * Rush hour is defined as being between 8am - 10am, and
+   * 4pm - 6pm.
+   *
+   * @return true if time falls within rush hour, else false
+   */
+  private boolean isRushHour(int time) {
+    return (time >= 8*60 && time <= 10*60) || (time >= 16*60 && time <= 18*60);
   }
 }
