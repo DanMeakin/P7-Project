@@ -201,13 +201,13 @@ public class ItineraryLegTest {
   }
 
   /**
-   * test calculateCrowdedness method with non-bus itinerary leg.
+   * test crowdedness method with non-bus itinerary leg.
    */
   @Test
-  public void testCalculateCrowdednessWithNonBus() {
+  public void testCrowdednessWithNonBus() {
     ItineraryLeg l = legs.get(8);
     try {
-      l.calculateCrowdedness();
+      l.crowdedness();
       fail("expected IllegalArgumentException to be thrown");
     } catch (IllegalArgumentException e) {
       assertEquals("unable to calculate crowdedness of a walk leg", e.getMessage());

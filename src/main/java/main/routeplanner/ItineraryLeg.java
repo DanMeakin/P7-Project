@@ -225,7 +225,7 @@ public class ItineraryLeg {
    *                                  of a walk (only applies to buses)
    * @see CapacityCalculator
    */
-  public CapacityCalculator.CrowdednessIndicator calculateCrowdedness() {
+  public CapacityCalculator.CrowdednessIndicator crowdedness() {
     if (isBus()) {
       return capacityCalculator.crowdedness();
     }
