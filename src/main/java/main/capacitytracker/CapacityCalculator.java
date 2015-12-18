@@ -15,6 +15,7 @@ public class CapacityCalculator {
 
   private final RouteTimetable routeTimetable;
   private final Stop stop;
+  private final boolean realTime;
   private final DataStoreReader dataStore;
 
   public static enum CrowdednessIndicator {
@@ -41,8 +42,27 @@ public class CapacityCalculator {
    * @param stop           the stop for which to calculate likely crowdedness
    */
   public CapacityCalculator(RouteTimetable routeTimetable, Stop stop) {
+    this(routeTimetable, stop, true);
+  }
+
+  /**
+   * Initializes a CapacityCalculator instance.
+   *
+   * This constructor includes the optional realTime flag, which allows the
+   * caller to enable or disable real-time crowdedness calculation. It may be
+   * desirable to disable real-time calculations where a query is for a day
+   * other than the current day.
+   *
+   * @param routeTimetable the route timetable for which to calculate likely
+   *                       capacity/crowdedness
+   * @param stop           the stop for which to calculate likely crowdedness
+   * @param realTime       flag whether to attempt real-time crowdedness
+   *                       calculation
+   */
+  public CapacityCalculator(RouteTimetable routeTimetable, Stop stop, boolean realTime) {
     this.routeTimetable = routeTimetable;
     this.stop = stop;
+    this.realTime = realTime;
     this.dataStore = new DataStoreReader("data", stop, routeTimetable);
   }
 
@@ -54,20 +74,17 @@ public class CapacityCalculator {
    *         likely standing room available but no seating available; and
    *         RED if there is likely no room available
    */
-  public CrowdednessIndicator getCrowdednessIndicator() {
-    return pastCrowdednessIndicator();
-  }
+  public CrowdednessIndicator crowdedness() {
+    Map<String, Double> crowdedness;
 
-  /**
-   * Returns an indicator of likely crowdedness of this RouteTimetable at this
-   * Stop based on historic data.
-   *
-   * @return GREEN if there is likely seating available; ORANGE if there is 
-   *         likely standing room available but no seating available; and
-   *         RED if there is likely no room available
-   */
-  private CrowdednessIndicator pastCrowdednessIndicator() {
-    Map<String, Double> crowdedness = pastAverageCrowdedness();
+    // Select type of calculation to carry out
+    if (realTimeAvailable()) {
+      crowdedness = realTimePredictedCrowdedness();
+    } else {
+      crowdedness = pastAverageCrowdedness();
+    }
+
+    // Determine proper indicator to use
     if (crowdedness.get("seatedOccupancy") < 1) {
       return CrowdednessIndicator.GREEN;
     } else if (crowdedness.get("totalOccupancy") < 1) {
@@ -75,6 +92,27 @@ public class CapacityCalculator {
     } else {
       return CrowdednessIndicator.RED;
     }
+  }
+
+  /**
+   * Determine whether real time data is available.
+   *
+   * Real time data is available if the RouteTimetable requested is currently
+   * in service and the bus has not already passed the desired stop.
+   * 
+   * @return true if real time data is available, else false
+   */
+  private boolean realTimeAvailable() {
+    if (!getRealTime()) {
+      return false;
+    }
+
+    Stop busCurrentLocation = findBusCurrentLocation();
+    if (busCurrentLocation == null) {
+      return false;
+    }
+
+    return !(getRouteTimetable().getRoute().compareStops(busCurrentLocation, getStop()) > 0);
   }
 
   /**
@@ -124,20 +162,11 @@ public class CapacityCalculator {
    *         totalOccupancy rate for RouteTimetable at Stop
    */
   private Map<String, Double> realTimePredictedCrowdedness() {
-    Stop busCurrentLocation = findBusCurrentLocation();
-    boolean busAfterDesiredStop = 
-      getRouteTimetable().getRoute().compareStops(busCurrentLocation, getStop()) > 0;
-    if (busCurrentLocation == null) {
-      String msg = "bus is not currently on route; unable to continue";
-      throw new UnsupportedOperationException(msg);
-    } else if (busAfterDesiredStop) {
-      String msg = "bus has already passed the requested stop";
-      throw new UnsupportedOperationException(msg);
-    }
     List<Number> totalPredictions = new ArrayList<>();
     List<Number> seatedPredictions = new ArrayList<>();
 
     for (Stop s : getRouteTimetable().getStops()) {
+      Stop busCurrentLocation = findBusCurrentLocation();
       // If Stop s is before bus current location then get crowdedness
       if (getRouteTimetable().getRoute().compareStops(s, busCurrentLocation) < 0) {
         double currentTotalOccupancyRate = -1;
@@ -241,6 +270,15 @@ public class CapacityCalculator {
    */
   public Stop getStop() {
     return stop;
+  }
+
+  /**
+   * Gets value of realTime flag.
+   *
+   * @return value of realTime flag
+   */
+  public boolean getRealTime() {
+    return realTime;
   }
 
 }
