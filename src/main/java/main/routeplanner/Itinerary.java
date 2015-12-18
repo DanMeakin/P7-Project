@@ -76,6 +76,17 @@ public class Itinerary {
   }
 
   /**
+   * Calculates the total duration of the Itinerary journey.
+   *
+   * @return duration of journey in minutes
+   */
+  public int totalDuration() {
+    int startTime = getLegs().get(0).getStartTime();
+    int endTime = getLegs().get(getLegs().size()-1).getEndTime();
+    return endTime - startTime;
+  }
+
+  /**
    * Gets date of itinerary.
    *
    * @return the date to which this itinerary relates
