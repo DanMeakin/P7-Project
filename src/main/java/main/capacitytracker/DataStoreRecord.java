@@ -88,6 +88,38 @@ class DataStoreRecord {
     return occupancyLevel;
   }
 
+  public int getMaxSeatedCapacity() {
+    return getBus().getSeatedCapacity();
+  }
+
+  public int getMaxStandingCapacity() {
+    return getBus().getStandingCapacity();
+  }
+
+  public int getMaxTotalCapacity() {
+    return getMaxStandingCapacity() + getMaxSeatedCapacity();
+  }
+
+  /**
+   * Calculates the percentage of seated capacity occupied on the bus, as a
+   * decimal.
+   *
+   * @return percentage (as a decimal) of seated capacity occupied on bus
+   */
+  public double getSeatedOccupancyRate() {
+    return (double) getNumPassengersOnDeparture() / getMaxSeatedCapacity();
+  }
+
+  /**
+   * Calculates the percentage of total capacity occupied on the bus, as a
+   * decimal.
+   *
+   * @return percentage (as a decimal) of total capacity occupied on bus
+   */
+  public double getTotalOccupancyRate() {
+    return (double) getNumPassengersOnDeparture() / getMaxTotalCapacity();
+  }
+
   /**
    * Finds route matching number and description.
    *
