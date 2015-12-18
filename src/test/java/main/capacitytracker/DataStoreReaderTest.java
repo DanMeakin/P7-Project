@@ -14,9 +14,6 @@ import org.apache.commons.csv.*;
 
 import main.model.*;
 
-/**
- * @author Ivo on 14-12-2015.
- */
 public class DataStoreReaderTest {
 
   private static DataStoreReader dataStoreReader;

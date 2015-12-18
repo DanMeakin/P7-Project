@@ -76,7 +76,6 @@ public class DataStoreReader {
    */
   public DataStoreRecord selectRecordForDate(LocalDate date) {
     for (DataStoreRecord r : read()) {
-      System.out.println(r.getTimestamp());
       if (r.getTimestamp().toLocalDate().equals(date)) {
         return r;
       }

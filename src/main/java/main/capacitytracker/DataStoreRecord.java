@@ -15,7 +15,6 @@ import main.model.*;
 class DataStoreRecord {
 
   private static DateTimeFormatter timestampFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-
   private final LocalDateTime timestamp;
   private final Bus bus;
   private final RouteTimetable routeTimetable;
@@ -32,6 +31,7 @@ class DataStoreRecord {
    * @param record a CSVRecord representing one row in the dataStore file
    */
   public DataStoreRecord(CSVRecord record) {
+    System.out.println(record);
     this.timestamp = LocalDateTime.parse(record.get("timestamp"), timestampFormat);
     this.bus = Bus.findBus(Integer.parseInt(record.get("busFleetNumber")));
     this.routeTimetable = findRouteTimetable(
@@ -46,6 +46,8 @@ class DataStoreRecord {
     this.numPassengersExited = Integer.parseInt(record.get("numberPassengersExited"));
     this.numPassengersBoarded = Integer.parseInt(record.get("numberPassengersBoarded"));
     this.occupancyLevel = Double.parseDouble(record.get("occupancyLevel"));
+    System.out.println("Passengers on Arrival: " + numPassengersOnArrival);
+    System.out.println("Passengers on Departure: " + numPassengersOnDeparture);
   }
 
   /**
@@ -155,13 +157,14 @@ class DataStoreRecord {
    * @return route timetable matching this record
    */
   private RouteTimetable findRouteTimetable(String routeNumber, String routeDescription, LocalDate date, String startTime) {
+    System.out.println(routeNumber + ", " + routeDescription + ", " + date + ", " + startTime);
     String[] stComps = startTime.split(":");
     int time = Integer.parseInt(stComps[0]) * 60 + Integer.parseInt(stComps[1]);
     Route r = findRoute(routeNumber, routeDescription);
-    System.out.println("Date: " + date);
     Schedule s = Schedule.findSchedule(date);
+    System.out.println("Route: " + r);
+    System.out.println(Route.getAllRoutes());
     System.out.println("Schedule: " + s);
-    System.out.println("First stop: " + r.getStops().get(0));
     return s.nextDepartureRouteTimetable(time, r.getStops().get(0), r);
   }
 }
