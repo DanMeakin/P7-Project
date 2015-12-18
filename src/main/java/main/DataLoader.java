@@ -77,55 +77,6 @@ public class DataLoader {
     return new File(getDataPath(), "frequencies.csv");
   }
 
-  public static void main(String[] args) {
-    new DataLoader("data");
-    System.out.println("Got " + Stop.getAllStops().size() + " Stops; got " + Route.getAllRoutes().size() + " Routes; got " + Walk.getAllWalks().size() + " Walks!");
-    System.out.println("Created " + (RouteTimetable.getCounterValue() - 10_000) + " RouteTimetables; " + Bus.getAllBuses().size() + " buses");
-    long startTime = System.nanoTime();
-    ItineraryFinder itf = new ItineraryFinder(null, null, LocalDateTime.now());
-    long endTime = System.nanoTime();
-    System.out.println("Took " + (endTime - startTime) / 1_000_000_000 + "s");
-    Scanner scan = new Scanner(System.in);
-    while (true) {
-      Stop start;
-      Stop end;
-      System.out.println("Please enter starting stop: ");
-      String s = scan.next();
-      if (s.equals("exit")) {
-        break;
-      }
-      List<Stop> starts = Stop.findStop(s);
-      if (starts.size() > 0) {
-        start = starts.get(0);
-      } else {
-        continue;
-      }
-      System.out.println("Got " + start);
-      System.out.println("Please enter ending stop: ");
-      String e = scan.next();
-      List<Stop> ends = Stop.findStop(e);
-      if (ends.size() > 0) {
-        end = ends.get(0);
-      } else {
-        continue;
-      }
-      System.out.println("Got " + end);
-      itf = new ItineraryFinder(start, end, LocalDateTime.of(2015, Calendar.DECEMBER, 1, 10, 0, 0));
-      List<Itinerary> best = itf.findBestItineraries(3);
-      for (int i = 0; i < best.size(); i++) {
-        System.out.println("==== BEST ITINERARY #" + (i+1) + " ====");
-        for (ItineraryLeg leg : best.get(i).getLegs()) {
-          String service = "Walk";
-          if (leg.isBus()) {
-            service = "Bus " + leg.getRouteTimetable().getRoute().getNumber() + " " + leg.getRouteTimetable().getRoute().getNumber();
-          }
-          System.out.println(service + ": " + leg.getOrigin() + " -> " + leg.getDestination() + ", " + leg.getStartTime() / 60 + ":" + leg.getStartTime() % 60);
-        }
-      }
-    }
-    scan.close();
-  }
-
   /**
    * Loads stops data from file.
    */
