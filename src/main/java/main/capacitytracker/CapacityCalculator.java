@@ -8,13 +8,14 @@ import main.Stop;
 import org.apache.commons.math3.stat.regression.SimpleRegression;
 
 /**
- * The CapacityCaluclator class calculates the
+ * The CapacityCalculator class calculates the
  */
 public class CapacityCalculator {
 
   private final RouteTimetable routeTimetable;
   private final Stop stop;
-  private final DataStoreReader dataStore;
+  private final DataStoreReader stopDataStore;
+  private final DataStoreReader routeTimetableDataStore;
 
   public static enum CrowdednessIndicator {
 
@@ -42,7 +43,8 @@ public class CapacityCalculator {
   public CapacityCalculator(RouteTimetable routeTimetable, Stop stop) {
     this.routeTimetable = routeTimetable;
     this.stop = stop;
-    this.dataStore = new DataStoreReader("data", stop, routeTimetable);
+    this.stopDataStore = new DataStoreReader("data", stop, routeTimetable);
+    this.routeTimetableDataStore = new DataStoreReader("data", routeTimetable);
   }
 
   /**
@@ -129,6 +131,31 @@ public class CapacityCalculator {
   }
 
   /**
+   * Calculates the crowdedness of a currently-operating bus based on the
+   * deviation of current crowdedness at previous stops from the mean.
+   *
+   * The method iterates through stops on the current RouteTimetable which
+   * have already been travelled on the RouteTimetable and determines how
+   * much more or less crowded than average this RouteTimetable is.
+   *
+   * This then forms the basis of a real-time crowdedness estimate.
+   *
+   * @return a list of total occupancy values for each Stop on the current
+   *         RouteTimetable where these stops have been visited by the vehicle
+   *         already
+   */
+  private List<Double> precedingStopsCrowdedness() {
+    Map<String, String> data = getRouteTimetableDataStore().getPassengerData();
+    for (Stop s : getRouteTimetable().getStops()) {
+      // If Stop s is before requested stop then get crowdedness
+      if (getRouteTimetable().getRoute().compareStops(s, getStop()) < 0) {
+               
+      }
+
+    }   
+  }
+
+  /**
    * Calculates the average (mean) of all entries in list.
    *
    * @param list a list of numerical values
@@ -143,12 +170,39 @@ public class CapacityCalculator {
   }
 
   /**
-   * Gets dataStore field.
+   * Gets stop dataStore field.
    *
-   * @return dataStore instance
+   * @return dataStore instance for specific stop and route timetable
    */
-  public DataStoreReader getDataStore() {
-    return dataStore;
+  public DataStoreReader getStopDataStore() {
+    return stopDataStore;
+  }
+
+  /**
+   * Gets route timetable dataStore field.
+   *
+   * @return dataStore instance for specific route timetable
+   */
+  public DataStoreReader getRouteTimetableDataStore() {
+    return routeTimetableDataStore;
+  }
+
+  /**
+   * Gets routeTimetable associated with this.
+   *
+   * @return routeTimetable associated with this
+   */
+  public RouteTimetable getRouteTimetable() {
+    return routeTimetable;
+  }
+
+  /**
+   * Gets stop associated with this.
+   *
+   * @return stop associated with this
+   */
+  public Stop getStop() {
+    return stop;
   }
 
 }
