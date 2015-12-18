@@ -119,7 +119,7 @@ public class Itinerary {
    *
    * @return crowdedness level of this itinerary
    */
-  public CapacityCalculator.CrowdednessIndicator determineCrowdedness() {
+  public CapacityCalculator.CrowdednessIndicator crowdedness() {
     CapacityCalculator.CrowdednessIndicator crowdedness = 
       CapacityCalculator.CrowdednessIndicator.GREEN;
     for (ItineraryLeg leg : getLegs()) {

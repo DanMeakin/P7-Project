@@ -99,7 +99,7 @@ public class ItineraryTest {
   }
 
   /**
-   * Tests the determineCrowdedness method.
+   * Tests the crowdedness method.
    *
    * This method returns the crowdedness value for an itinerary using the
    * CapacityCalculator class.
@@ -142,8 +142,8 @@ public class ItineraryTest {
         when(legs2.get(i).isBus()).thenReturn(true);
       }
     }
-    assertEquals(CapacityCalculator.CrowdednessIndicator.RED, itinerary1.determineCrowdedness());
-    assertEquals(CapacityCalculator.CrowdednessIndicator.ORANGE, itinerary2.determineCrowdedness());
+    assertEquals(CapacityCalculator.CrowdednessIndicator.RED, itinerary1.crowdedness());
+    assertEquals(CapacityCalculator.CrowdednessIndicator.ORANGE, itinerary2.crowdedness());
   }
 
   /**

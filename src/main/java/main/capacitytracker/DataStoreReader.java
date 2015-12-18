@@ -25,9 +25,11 @@ public class DataStoreReader {
   /**
    * Instantiates a new DataStoreReader instance.
    *
-   * @param stop           the stop for which to obtain data
-   * @param routeTimetable the route timetable on which buses travel for which
-   *                       to obtain data
+   * @param dataStoreFolderPath the path to the folder containing the datastore
+   *                            file
+   * @param stop                the stop for which to obtain data
+   * @param routeTimetable      the route timetable on which buses travel for 
+   *                            which to obtain data
    */
   public DataStoreReader(String dataStoreFolderPath, Stop stop, RouteTimetable routeTimetable) {
     this.stop = stop;

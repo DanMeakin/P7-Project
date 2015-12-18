@@ -122,7 +122,7 @@ public class ItineraryFinder {
     List<List<TArc>> bestPaths = calculateKLeastTimePaths(n);
     for (List<TArc> path : bestPaths) {
       Itinerary itinerary = convertTArcsToItinerary(path);
-      if (!itinerary.determineCrowdedness().moreCrowdedThan(getFilter())) {
+      if (!itinerary.crowdedness().moreCrowdedThan(getFilter())) {
         bestItineraries.add(itinerary);
       }
     }

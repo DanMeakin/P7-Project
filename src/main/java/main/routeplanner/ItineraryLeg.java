@@ -36,6 +36,11 @@ public class ItineraryLeg {
    *
    * This creates an instance of ItineraryLeg, containing a route timetable,
    * and starting and ending stops.
+   *
+   * @param date        the date on which this journey takes place
+   * @param rt          the RouteTimetable on which this journey takes place
+   * @param origin      the stop at which this journey begins
+   * @param destination the stop at which this journey ends
    */
   public ItineraryLeg(LocalDate date, RouteTimetable rt, Stop origin, Stop destination) {
     this.date = date;
@@ -56,6 +61,11 @@ public class ItineraryLeg {
    * This creates an instance of ItineraryLeg without a RouteTimetable. Instead,
    * this constructor is used to construct a walking leg of a journey between
    * the origin and destination.
+   *
+   * @param date      the date on which this journey takes place
+   * @param walk      the walk to which this journey relates
+   * @param startTime the start time of this journey (in minutes after
+   *                  midnight)
    */
   public ItineraryLeg(LocalDate date, Walk walk, int startTime) {
     this.date = date;
@@ -100,6 +110,7 @@ public class ItineraryLeg {
    * Two ItineraryLeg instances are equal only if they are of the same type, they
    * are from the same origin and to the same destination at the same time.
    *
+   * @param otherItineraryLeg the other ItineraryLeg instance to compare against
    * @return true if equal, else false
    */
   public boolean equals(ItineraryLeg otherItineraryLeg) {

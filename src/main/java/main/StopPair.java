@@ -60,6 +60,10 @@ public class StopPair {
   /**
    * Determine StopPair equality.
    *
+   * Two StopPairs are equal only if the first stop is equal to the first,
+   * and the second is equal to the second.
+   *
+   * @param otherStopPair the other instance to compare this against
    * @return true if S1 equals otherS1 and S2 equals otherS2, else false
    */
   public boolean equals(StopPair otherStopPair) {
