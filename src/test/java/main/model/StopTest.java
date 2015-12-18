@@ -198,7 +198,6 @@ public class StopTest {
   public void testDistanceTo() {
     for (int i = 0; i < 3; i++) {
       for (int j = 0; j < 3; j++) {
-        System.out.println(stops.get(i).distanceTo(stops.get(j)));
         assertEquals(stops.get(i).distanceTo(stops.get(j)), (int) stopDistances.get(i).get(j));
       }
     }

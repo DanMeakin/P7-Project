@@ -140,7 +140,6 @@ public class DataLoader {
           RouteTimetable rt = new RouteTimetable(r, weekdaySchedule, currentTime, isRushHour(currentTime));
           Bus bus = new Bus(counter, genericBusType, acquisitionDate);
           weekdaySchedule.allocateBus(rt, bus);
-          System.out.println("Created RT for Route " + r.getNumber() + " " + r.getDescription() + " at " + currentTime);
           currentTime += weekdayFrequency;
           counter++;
         }
@@ -149,7 +148,6 @@ public class DataLoader {
           RouteTimetable rt = new RouteTimetable(r, saturdaySchedule, currentTime, false);
           Bus bus = new Bus(counter, genericBusType, acquisitionDate);
           saturdaySchedule.allocateBus(rt, bus);
-          System.out.println("Created RT for Route " + r.getNumber() + " " + r.getDescription() + " at " + currentTime);
           currentTime += saturdayFrequency;
           counter++;
         }
@@ -158,7 +156,6 @@ public class DataLoader {
           RouteTimetable rt = new RouteTimetable(r, sundaySchedule, currentTime, false);
           Bus bus = new Bus(counter, genericBusType, acquisitionDate);
           sundaySchedule.allocateBus(rt, bus);
-          System.out.println("Created RT for Route " + r.getNumber() + " " + r.getDescription() + " at " + currentTime);
           currentTime += sundayFrequency;
           counter++;
         }
