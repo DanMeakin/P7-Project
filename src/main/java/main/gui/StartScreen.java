@@ -1,9 +1,5 @@
 package main.gui;
 
-import main.capacitytracker.CapacityCalculator;
-import main.DataLoader;
-import main.Stop;
-import main.routeplanner.ItineraryFinder;
 import org.jdesktop.swingx.JXDatePicker;
 import org.jdesktop.swingx.border.DropShadowBorder;
 
@@ -18,6 +14,10 @@ import java.time.ZoneId;
 import java.util.*;
 import java.util.List;
 
+import main.capacitytracker.CapacityCalculator;
+import main.misc.DataLoader;
+import main.model.*;
+import main.routeplanner.ItineraryFinder;
 
 /**
  * * @authors Ivo Hendriks, Janus Avbæk Larsen, Helle Hyllested Larsen, Dan Meakin 02-12-2015.

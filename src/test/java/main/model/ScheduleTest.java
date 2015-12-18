@@ -1,4 +1,4 @@
-package main;
+package main.model;
 
 import org.junit.*;
 import org.junit.rules.ExpectedException;
@@ -9,15 +9,10 @@ import java.util.List;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.function.Predicate;
 import java.time.Month;
 
-import main.Bus;
-import main.Route;
-import main.RouteTimetable;
-import main.Schedule;
-import main.Schedule.DayOption;
+import main.model.Schedule.DayOption;
 
 public class ScheduleTest {
 

@@ -1,23 +1,19 @@
-package main;
+package main.misc;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.*;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.List;
-import java.util.Scanner;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
 import org.apache.commons.csv.*;
 
-import main.routeplanner.Itinerary;
-import main.routeplanner.ItineraryFinder;
-import main.routeplanner.ItineraryLeg;
+import main.model.*;
+import main.model.Schedule.DayOption;
 
 /**
  * This class loads example Stop, Route, RouteTimetable, Bus and BusType data

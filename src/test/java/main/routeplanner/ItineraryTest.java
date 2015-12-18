@@ -2,14 +2,14 @@ package main.routeplanner;
 
 import org.junit.*;
 
-import main.capacitytracker.CapacityCalculator;
-import main.Stop;
-
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
 import java.time.*;
+
+import main.capacitytracker.CapacityCalculator;
+import main.model.*;
 
 /**
  * This class contains the unit tests to test the Itinerary class.
@@ -133,8 +133,8 @@ public class ItineraryTest {
       CapacityCalculator.CrowdednessIndicator.RED
     };
     for (int i = 0; i < 10; i++) {
-      when(legs1.get(i).calculateCrowdedness()).thenReturn(crowdedness1[i]);
-      when(legs2.get(i).calculateCrowdedness()).thenReturn(crowdedness2[i]);
+      when(legs1.get(i).crowdedness()).thenReturn(crowdedness1[i]);
+      when(legs2.get(i).crowdedness()).thenReturn(crowdedness2[i]);
       // Only process the first nine legs for crowdedness purposes. Ignore the
       // last entry
       if (i < 9) {

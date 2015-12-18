@@ -8,9 +8,7 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.util.*;
 
-import main.RouteTimetable;
-import main.Stop;
-import main.Walk;
+import main.model.*;
 import main.routeplanner.ItineraryLeg.ItineraryLegType;
 
 /**

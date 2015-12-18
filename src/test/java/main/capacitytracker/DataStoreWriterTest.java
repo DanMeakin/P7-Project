@@ -12,11 +12,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-import main.Bus;
-import main.Route;
-import main.RouteTimetable;
-import main.Schedule;
-import main.Stop;
+import main.model.*;
 
 public class DataStoreWriterTest {
 

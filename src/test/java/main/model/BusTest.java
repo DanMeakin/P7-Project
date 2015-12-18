@@ -1,4 +1,4 @@
-package main;
+package main.model;
 
 import org.junit.*;
 import org.junit.rules.ExpectedException;
@@ -10,11 +10,6 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Observer;
 import java.util.ArrayList;
-
-import main.Bus;
-import main.BusType;
-import main.RouteTimetable;
-import main.Stop;
 
 /**
  * BusTest class contains a series of unit tests for the Bus class.
@@ -324,7 +319,7 @@ public class BusTest {
    */
   @Test
   public void testLeavesStop() {
-    Stop currentStop = stoppedBus.getStop();
+    stoppedBus.getStop();
     stoppedBus.leavesStop();
     assertFalse(stoppedBus.isAtStop());
     assertNull(stoppedBus.getStop());

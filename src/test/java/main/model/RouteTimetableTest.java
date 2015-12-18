@@ -1,4 +1,4 @@
-package main;
+package main.model;
 
 import org.junit.*;
 import org.junit.rules.ExpectedException;
@@ -10,12 +10,6 @@ import java.util.List;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.Arrays;
-
-import main.RouteTimetable;
-import main.Bus;
-import main.Route;
-import main.Schedule;
-import main.Stop;
 
 public class RouteTimetableTest {
 

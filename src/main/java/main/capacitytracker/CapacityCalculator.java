@@ -3,8 +3,7 @@ package main.capacitytracker;
 import java.util.*;
 import java.time.LocalDate;
 
-import main.RouteTimetable;
-import main.Stop;
+import main.model.*;
 
 import org.apache.commons.math3.stat.regression.SimpleRegression;
 

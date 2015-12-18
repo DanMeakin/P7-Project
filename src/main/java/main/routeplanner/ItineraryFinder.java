@@ -1,15 +1,10 @@
 package main.routeplanner;
 
 import main.capacitytracker.CapacityCalculator;
-import main.Path;
-import main.Route;
-import main.Schedule;
-import main.Stop;
-import main.Walk;
+import main.model.*;
 
 import java.time.*;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 

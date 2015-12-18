@@ -1,7 +1,9 @@
-package main;
+package main.misc;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import main.model.Stop;
 
 /**
  * The StopPair class defines a 2-tuple of Stops.

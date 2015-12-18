@@ -1,4 +1,4 @@
-package main;
+package main.misc;
 
 import org.junit.*;
 import org.junit.rules.ExpectedException;
@@ -6,6 +6,8 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
+
+import main.model.*;
 
 /**
  * This class contains a suite of unit tests for the DataLoader class.

@@ -1,10 +1,8 @@
-package main; 
+package main.model;
 
 import org.junit.*;
 import org.junit.rules.ExpectedException;
 import static org.junit.Assert.*;
-
-import main.Stop;
 
 import java.util.List;
 import java.util.ArrayList;

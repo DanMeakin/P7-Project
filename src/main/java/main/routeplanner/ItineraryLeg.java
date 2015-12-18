@@ -3,9 +3,7 @@ package main.routeplanner;
 import java.time.LocalDate;
 
 import main.capacitytracker.CapacityCalculator;
-import main.RouteTimetable;
-import main.Stop;
-import main.Walk;
+import main.model.*;
 
 /**
  * This class is used to represent one leg of an itinerary.

@@ -10,9 +10,7 @@ import java.util.Observer;
 
 import org.apache.commons.csv.*;
 
-import main.Bus;
-import main.RouteTimetable;
-import main.Stop;
+import main.model.*;
 
 /**
  * This class writes bus capacity information to the datastore file upon

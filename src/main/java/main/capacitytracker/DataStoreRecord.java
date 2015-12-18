@@ -7,11 +7,7 @@ import java.util.List;
 
 import org.apache.commons.csv.CSVRecord;
 
-import main.Bus;
-import main.Route;
-import main.RouteTimetable;
-import main.Schedule;
-import main.Stop;
+import main.model.*;
 
 /**
  * This class defines one record in the datastore.

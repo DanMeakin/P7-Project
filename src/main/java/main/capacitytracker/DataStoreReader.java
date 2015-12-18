@@ -8,8 +8,7 @@ import java.util.*;
 
 import org.apache.commons.csv.*;
 
-import main.RouteTimetable;
-import main.Stop;
+import main.model.*;
 
 /**
  * This class reads bus capacity information from the datastore file upon

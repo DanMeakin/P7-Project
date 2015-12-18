@@ -7,12 +7,7 @@ import static org.mockito.Mockito.*;
 import java.util.*;
 import java.time.*;
 
-import main.Path;
-import main.Schedule;
-import main.Route;
-import main.RouteTimetable;
-import main.Stop;
-import main.Walk;
+import main.model.*;
 import main.capacitytracker.CapacityCalculator;
 
 /**

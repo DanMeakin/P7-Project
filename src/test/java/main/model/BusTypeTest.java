@@ -1,20 +1,11 @@
-package main;
+package main.model;
 
 import org.junit.*;
-import org.junit.rules.ExpectedException;
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
 
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-
-import main.Bus;
-import main.BusType;
-import main.Schedule;
 
 /**
  * BusTypeTest class contains a series of unit tests for the BusType class.
