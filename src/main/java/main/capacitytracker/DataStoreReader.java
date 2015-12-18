@@ -1,6 +1,8 @@
 package main.capacitytracker;
 
 import java.io.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import org.apache.commons.csv.*;
@@ -37,6 +39,22 @@ public class DataStoreReader {
   }
 
   /**
+   * Instantiates a new DataStoreReader instance.
+   *
+   * @param routeTimetable the route timetable on which buses travel for which
+   *                       to obtain data
+   */
+  public DataStoreReader(String dataStoreFolderPath, RouteTimetable routeTimetable) {
+    this.stop = null;
+    this.routeTimetable = routeTimetable;
+    try {
+      initializeDataStore(dataStoreFolderPath);
+    } catch (IOException e) {
+      throw new RuntimeException("error accessing datastore: " + e);
+    }
+  }
+
+  /**
    * Reads passenger data matching stop and routeTimetable.
    *
    * @return a list of maps containing data about passenger numbers on the
@@ -53,10 +71,10 @@ public class DataStoreReader {
         "maxTotalPassengers",
     };
     List<Map<String, Integer>> data = new ArrayList<>();
-    for (CSVRecord record : readMatchingData()) {
+    for (Map<String, Integer> record : readMatchingData()) {
       Map<String, Integer> thisMap = new HashMap<>();
       for (String key : keys) {
-        thisMap.put(key, Integer.parseInt(record.get(key)));
+        thisMap.put(key, record.get(key));
       }
       data.add(thisMap);
     }
@@ -74,10 +92,19 @@ public class DataStoreReader {
     dataStore = new CSVParser(br, CSVFormat.DEFAULT);
   }
 
-  private List<CSVRecord> readMatchingData() {
-    List<CSVRecord> matchingData = new ArrayList<>();
+  /**
+   * Reads matching records from the dataStore.
+   *
+   * A record matches if it relates to the same RouteTimetable and Stop as
+   * those passed into the reader.
+   *
+   * @return CSVRecords containing matching data
+   */
+  private List<Map<String, Integer>> readMatchingData() {
+    List<Map<String, Integer>> matchingData = new ArrayList<>();
     for (CSVRecord record : dataStore) {
       if (isMatching(record)) {
+        Map<String, Integer> thisMap = new HashMap<>();
         matchingData.add(record);
       }
     }
@@ -95,10 +122,31 @@ public class DataStoreReader {
    * @return true if record matches, else false
    */
   private boolean isMatching(CSVRecord record) {
-    return (
-        Integer.parseInt(record.get("stopID")) == stop.getID() &&
-        Integer.parseInt(record.get("routeTimetableID")) == routeTimetable.getID()
-        );
+    boolean matchRT = getRouteTimetable().getID() == Integer.parseInt(record.get("routeTimetableID"));
+    boolean matchStop = getStop() == null || getStop().getID() == Integer.parseInt(record.get("stopID"));
+    return (matchRT && matchStop);
   }
+
+  /**
+   * Gets RouteTimetable associated with this.
+   *
+   * @return RouteTimetable associated with this.
+   */
+  public RouteTimetable getRouteTimetable() {
+    return routeTimetable;
+  }
+
+  /**
+   * Gets Stop associated with this.
+   *
+   * A Stop does not need to be passed to DataStoreReader. As such, this method
+   * might return a null value.
+   *
+   * @return Stop associated with this.
+   */
+  public Stop getStop() {
+    return stop;
+  }
+
 
 }
