@@ -592,7 +592,6 @@ public class ItineraryFinderTest {
     ItineraryFinder.TArc walkTArc = itineraryFinder.new TArc(nodes[3], nodes[6], walks[0], 60 * 10);
     ItineraryFinder.TArc rushHourTArc = itineraryFinder.new TArc(nodes[0], nodes[2], routes[0], 60 * 10);
 
-
     assertEquals(23, tArc.journeyTime());
     assertEquals(CostEstimator.UNCONNECTED, lateTArc.journeyTime());
     assertEquals(1, walkTArc.journeyTime());

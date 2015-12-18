@@ -101,6 +101,7 @@ public class DataStoreWriterTest {
   @AfterClass
   public static void tearDownClass() {
     File f = new File(dataStorePath, "datastore.csv");
+    f.delete();
   }
 
   /**

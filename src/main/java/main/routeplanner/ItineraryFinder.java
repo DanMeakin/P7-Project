@@ -375,7 +375,7 @@ public class ItineraryFinder {
    * Find and set schedule based on instance's date.
    */
   private void setSchedule() {
-    this.schedule = Schedule.findSchedule(LocalDate.now());
+    this.schedule = Schedule.findSchedule(getDate());
   }
 
   /**

@@ -41,6 +41,10 @@ public class DataStoreRecordTest {
     for (Path p : new ArrayList<Path>(Path.getAllPaths())) {
       Path.removePath(p);
     }
+    for (Bus b : new ArrayList<Bus>(Bus.getAllBuses())) {
+      Bus.removeBus(b);
+    }
+
     Route route = new Route("10", "Test Description", mock(Stop.class));
     routeTimetable = mock(RouteTimetable.class);
     when(routeTimetable.getID()).thenReturn(1088);
