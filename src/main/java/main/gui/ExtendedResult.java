@@ -1,5 +1,7 @@
 package main.gui;
 
+import main.routeplanner.Itinerary;
+import main.routeplanner.ItineraryLeg;
 import org.jdesktop.swingx.border.DropShadowBorder;
 
 import javax.swing.*;
@@ -29,7 +31,9 @@ public class ExtendedResult extends JPanel{
     private final Font h2 = new Font("Roboto", Font.PLAIN, 18);
     private final Font h3 = new Font("Roboto", Font.PLAIN, 14);
 
-    public ExtendedResult(){
+    private Itinerary itinerary;
+
+    public ExtendedResult(Itinerary itinerary){
          super();
         //this.setBackground(Color.decode(SECONDARY_COLOR));
         this.setLayout(new FlowLayout(FlowLayout.LEADING,0,0));
@@ -69,6 +73,16 @@ public class ExtendedResult extends JPanel{
         travelLabelContainer.add(travelDetails);
 
         pContent.add(getDivider());
+
+        // Info fra cord
+        JLabel newLabel = new JLabel(itinerary.toString());
+        for(ItineraryLeg leg: itinerary.getLegs()){
+            pContent.add(new JLabel(leg.getOrigin().getName()));
+            pContent.add(new JLabel(leg.getRouteTimetable().getRoute().getDescription()));
+
+        }
+
+        //pContent.add(newLabel);
 
         pContentContainer.add(pContent);
         this.add(pContentContainer);

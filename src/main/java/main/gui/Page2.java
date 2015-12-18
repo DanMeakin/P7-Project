@@ -1,11 +1,18 @@
 package main.gui;
 
 import com.sun.javafx.scene.control.skin.ScrollBarSkin;
+import main.CapacityCalculator;
+import main.routeplanner.Itinerary;
+import main.routeplanner.ItineraryFinder;
+import main.routeplanner.ItineraryLeg;
 import org.jdesktop.swingx.border.DropShadowBorder;
+
+import javax.print.DocFlavor;
 import javax.swing.*;
 import javax.swing.plaf.ScrollBarUI;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 import java.awt.*;
+import java.util.List;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -30,12 +37,18 @@ public class Page2 extends JPanel{
     private final Font h3 = new Font("Roboto", Font.PLAIN, 14);
 
 
-    public Page2(String from, String to){
+    private ItineraryFinder itineraryFinder;
+
+
+    public Page2(ItineraryFinder itineraryFinder){
 
         // Background
         super();
         this.setLayout(new FlowLayout(FlowLayout.LEADING,0,0));
         this.setPreferredSize(new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT));
+
+
+        this.itineraryFinder = itineraryFinder;
 
         // Search Container
         JPanel pSearchContainer = new JPanel();
@@ -68,7 +81,7 @@ public class Page2 extends JPanel{
 
         // JLabel which shows the typed From
 
-        JLabel typeFrom = new JLabel(from);
+        JLabel typeFrom = new JLabel(itineraryFinder.getStartingStop().getName());
 
         typeFrom.setFont(h2);
         typeFrom.setForeground(Color.decode(FIRST_TEXT_COLOR));
@@ -91,7 +104,7 @@ public class Page2 extends JPanel{
         pSearchContent.add(toLabel);
 
         // JLabel which shows the typed Destination
-        JLabel typeTo = new JLabel(to);
+        JLabel typeTo = new JLabel(itineraryFinder.getEndingStop().getName());
 
         typeTo.setFont(h2);
         typeTo.setForeground(Color.decode(FIRST_TEXT_COLOR));
@@ -122,15 +135,53 @@ public class Page2 extends JPanel{
         scrollPane.setViewportView(pContent);
         this.add(pSearchContainer);
         this.add(scrollPane);
-        pContent.add(new ResultCard(80,"2D","monday, 30.11.2015","12:45","Bornholmsdage(Aalborg)",56));
 
-        // loop for generation of cards (Hardcoded to 4 results)
-        for (int i = 0; i < 4; i++) {
+        // loop for generation of cards. This is expected to get the best Itineraries given a start stop, destination stop and local date time (Filter)(I get a list, but sometimes i get nothing out of the list. And what exactly is n(4) equal to( Everytime i set n to more than one, i get nothing back, why?)? )
+        List<Itinerary> itineraryList = itineraryFinder.findBestItineraries(4);
+        for (int i = 0; i < itineraryList.size(); i++) {
+            Itinerary currentItinerary = itineraryList.get(i);
+            List<ItineraryLeg> itineraryLegs = currentItinerary.getLegs();
+
+            String startTime = getTimeString(itineraryLegs.get(0).getStartTime());
+            String startStop = "";
+            for (ItineraryLeg leg: itineraryLegs){
+                if (leg.isBus()){
+                    startStop = leg.getOrigin().getName();
+                    break;
+
+                }
+            }
+
+            // Empty string is bus name - 0 equals duration time
+            pContent.add(new ResultCard(currentItinerary.determineCrowdedness(),itineraryLegs.get(0).getRouteTimetable().getRoute().getNumber(),currentItinerary.getDate().toString(),startTime,startStop,0,currentItinerary));
             System.out.println(i);
         }
 
 
         setVisible(true);
+    }
+
+    private String getTimeString(int minutesFromMidnight){
+
+        String hours = Integer.toString(minutesFromMidnight / 60);
+        hours = addZero(hours);
+
+
+        String minutes = Integer.toString(minutesFromMidnight % 60);
+        minutes = addZero(minutes);
+
+        return hours + ":" + minutes;
+
+    }
+
+    private String addZero(String timeValue){
+        String resultTimeValue = timeValue;
+        if (Integer.valueOf(timeValue) < 10){
+            resultTimeValue = "0" + resultTimeValue;
+
+
+        }
+        return resultTimeValue;
     }
 
     /**

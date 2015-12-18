@@ -1,5 +1,8 @@
 package main.gui;
 
+import main.CapacityCalculator;
+import main.routeplanner.Itinerary;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -25,13 +28,17 @@ public class ResultCard extends JPanel {
     private ImageIcon yellow = new ImageIcon(getClass().getResource("/main/gui/assets/icons/crowdednessMediumCrowded.png"));
     private ImageIcon red = new ImageIcon(getClass().getResource("/main/gui/assets/icons/crowdednessCrowded-100x100.png"));
 
+    private Itinerary itinerary;
 
-    public ResultCard(int crowdedness,String busNumber, String date, String departureTime, String busStop, int duration) {
+
+    public ResultCard(CapacityCalculator.crowdednessIndicator crowdednessIndicator, String busNumber, String date, String departureTime, String busStop, int duration, Itinerary itinerary) {
         super();
         this.setPreferredSize(new Dimension(CARD_WIDTH, CARD_HEIGHT));
         this.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
         this.setBackground(Color.decode(SECONDARY_COLOR));
         setVisible(true);
+
+        this.itinerary = itinerary;
 
         // Bus icon container
         JPanel busIcon = new JPanel();
@@ -121,25 +128,10 @@ public class ResultCard extends JPanel {
         // TODO: add actionlistner that makes it possible to change to ExtendedResult screen
 
         extendResultButton.addActionListener(new ActionListener() {
-/*
 
-
-        // Container for button that enables the user to go to travel details
-        JPanel extendResultsContainer = new JPanel();
-
-        // Button that enables the user to go to travel details
-        JButton extendResult = new JButton("Details");extendResult.setFont(h2);
-        extendResult.setForeground(Color.decode(PRIMARY_COLOR));
-        extendResult.setBackground(Color.decode("#FAFAFA"));
-        extendResult.setBorder(BorderFactory.createLineBorder(Color.decode("#FAFAFA")));
-        // TODO: add actionlistner that makes it possible to change to ExtendedResult screen
-
-        extendResult.addActionListener(new ActionListener() {
->>>>>>> 4b6ef1527a8b17fa6df4a3bbaa9988db06178acb
-*/
             @Override
             public void actionPerformed(ActionEvent e) {
-                changeScreen(getExtendedResult());
+                changeScreen(getExtendedResult(itinerary));
             }
 
         });
@@ -147,7 +139,7 @@ public class ResultCard extends JPanel {
         extendResultsContainer.add(extendResultButton);
         pResultTextContainer.add(extendResultsContainer);
 
-        busIconLabel.setIcon(crowdedness(crowdedness));
+        busIconLabel.setIcon(getCrowdednessIcon(crowdednessIndicator));
         busIcon.add(busIconLabel);
 
         busIcon.setBackground(Color.decode(SECONDARY_COLOR));
@@ -166,8 +158,8 @@ public class ResultCard extends JPanel {
 
     // TODO: Change screen when detail button is pressed
 
-    private JPanel getExtendedResult() {
-        JPanel ExtendedResult = new ExtendedResult();
+    private JPanel getExtendedResult(Itinerary itinerary) {
+        JPanel ExtendedResult = new ExtendedResult(itinerary);
         return ExtendedResult;
     }
 
@@ -175,7 +167,7 @@ public class ResultCard extends JPanel {
     private void changeScreen (JPanel panelToChangeTo){
         JPanel parent = (JPanel)getParent().getParent().getParent().getParent().getParent();
         parent.removeAll();
-        parent.add(getExtendedResult());
+        parent.add(getExtendedResult(itinerary));
 
         parent.revalidate();
         parent.repaint();
@@ -186,14 +178,14 @@ public class ResultCard extends JPanel {
     }
 
 
-    public ImageIcon crowdedness(int crowdedness){
+    public ImageIcon getCrowdednessIcon(CapacityCalculator.crowdednessIndicator crowdednessIndicator){
 
         ImageIcon crowdednessIcon;
 
-        if (crowdedness >= 75){
+        if (crowdednessIndicator == CapacityCalculator.crowdednessIndicator.RED){
             crowdednessIcon = red;
 
-        }else if (crowdedness >= 35){
+        }else if (crowdednessIndicator == CapacityCalculator.crowdednessIndicator.ORANGE){
             crowdednessIcon = yellow;
 
         }else {

@@ -1,6 +1,9 @@
 package main.gui;
 
+import main.CapacityCalculator;
+import main.DataLoader;
 import main.Stop;
+import main.routeplanner.ItineraryFinder;
 import org.jdesktop.swingx.JXDatePicker;
 import org.jdesktop.swingx.border.DropShadowBorder;
 
@@ -8,6 +11,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.List;
 
@@ -35,16 +42,15 @@ public class StartScreen extends JFrame {
     private TopBar pTop;
     private  ButtonGroup busFilter;
 
-    // Test Data
-    Stop stopOne = new Stop(6,"Boulevarden",1.0,2.0);
-    Stop stopTwo = new Stop(2,"Nytorv",3.0,4.0);
-
-
     // Variabler til formular
     private AutoComboBox fromBox;
     private AutoComboBox destinationBox;
     private JXDatePicker datePicker;
     private JTextField timeTextField;
+
+
+    private ItineraryFinder itineraryFinder;
+    private DataLoader dataLoader;
 
 
     public static void main (String args[]){
@@ -57,6 +63,9 @@ public class StartScreen extends JFrame {
         setSize (new Dimension(SCREEN_WIDTH,SCREEN_HEIGHT));
         setResizable(false);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
+
+        // Load data
+        dataLoader = new DataLoader("data/mock");
 
         // TopBar
         pTop = new TopBar();
@@ -136,14 +145,13 @@ public class StartScreen extends JFrame {
 
         fromBox = new AutoComboBox();
         // TODO: Udskiftes med resultatsæt fra rejseplanen.
-
         List<Stop> stopList = Stop.getAllStops();
         String[] stopArray = new String[Stop.numberOfStops()];
         for (int i = 0; i< stopArray.length; i++){
             stopArray[i] = stopList.get(i).getName();
         }
 
-        //String[] itemArray = {"Boulevarden","Bornholmsgade", "Nytorv"};
+
         fromBox.setKeyWord(stopArray);
         fromBox.setPreferredSize(new Dimension(230,30));
         fromBox.setBackground(Color.decode("#FAFAFA"));
@@ -167,7 +175,6 @@ public class StartScreen extends JFrame {
         destinationBox = new AutoComboBox();
 
         // TODO: Udskiftes med resultatsæt fra rejseplanen.
-        //String[] itemArray = {"Sejrøgade","Bornholmsgade", "Nytorv"};
         destinationBox.setKeyWord(stopArray);
         destinationBox.setPreferredSize(new Dimension(230,30));
         destinationBox.setBackground(Color.decode("#FAFAFA"));
@@ -235,14 +242,15 @@ public class StartScreen extends JFrame {
         timeContainer.setPreferredSize(new Dimension(430,60));
 
         // Time Container - Time Label
-        JLabel timeLabel = new JLabel(  "Time:");
+        JLabel timeLabel = new JLabel("Time:");
         timeLabel.setFont(h3);
         timeLabel.setForeground(Color.decode(TEXT_COLOR));
         timeContainer.add(timeLabel);
 
         // Time Container - time Textfield
 
-        timeTextField = new JTextField("   :   ");
+        timeTextField = new JTextField("");
+        timeTextField.setPreferredSize(new Dimension(100,15));
 
         timeContainer.add(timeTextField);
 
@@ -368,25 +376,48 @@ public class StartScreen extends JFrame {
         findBusButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // 1 Henter alle knapper i Bus filter gruppen
-                Enumeration allBusRadioButtons = busFilter.getElements();
+                /*// 1 Henter alle knapper i Bus filter gruppen
+
                 // 2 Henter første element fra Enumeration
                 JRadioButton firstElement = (JRadioButton)allBusRadioButtons.nextElement();
                 // 3 Er knappen valgt
-                boolean isSelected = firstElement.isSelected();
+                boolean isSelected = firstElement.isSelected();*/
 
 
-                String fromBoxSelection = fromBox.getSelectedItem().toString();
-                String toBoxSelection = destinationBox.getSelectedItem().toString();
+                // Get selected stop object (From)
+                int fromBoxSelectionIndex = fromBox.getSelectedIndex();
+                Stop selectedFromStop = Stop.getAllStops().get(fromBoxSelectionIndex);
+
+                // Get selected stop object (Destination)
+                int destinationBoxSelectionIndex = destinationBox.getSelectedIndex();
+                Stop selectedDestinationStop = Stop.getAllStops().get(destinationBoxSelectionIndex);
+
                 Date date = datePicker.getDate();
+                // Time is chosen by the system default timezone
+                LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
                 String time = timeTextField.getText().toString();
+                LocalTime localTime = LocalTime.parse(time);
 
-                System.out.println(time);
+                LocalDateTime localDateTime = LocalDateTime.of(localDate, localTime);
 
-                // Teksten nedenunder fjerner alt indhold og tilføjer nyt
-                changeScreen(getPage2(fromBoxSelection, toBoxSelection));
+                itineraryFinder = new ItineraryFinder(selectedFromStop,selectedDestinationStop,localDateTime);
 
-                System.out.println(isSelected);
+                // Set filter if selected
+                Enumeration allBusRadioButtons = busFilter.getElements();
+                JRadioButton red = (JRadioButton)allBusRadioButtons.nextElement();
+                JRadioButton orange = (JRadioButton)allBusRadioButtons.nextElement();
+                JRadioButton green = (JRadioButton)allBusRadioButtons.nextElement();
+
+                if (orange.isSelected()){
+                    itineraryFinder.setFilter(CapacityCalculator.crowdednessIndicator.ORANGE);
+                } else if(green.isSelected()){
+                    itineraryFinder.setFilter(CapacityCalculator.crowdednessIndicator.GREEN);
+                }
+
+
+                changeScreen(getPage2(itineraryFinder));
+
 
             }
         });
@@ -421,8 +452,8 @@ public class StartScreen extends JFrame {
     }
 
 
-    private JPanel getPage2(String from, String to) {
-        JPanel page2 = new Page2(from, to);
+    private JPanel getPage2(ItineraryFinder itineraryFinder) {
+        JPanel page2 = new Page2(itineraryFinder);
 
         return page2;
     }
