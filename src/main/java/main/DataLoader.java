@@ -3,7 +3,9 @@ package main;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.List;
 import java.util.Scanner;
 import java.util.ArrayList;
@@ -225,8 +227,8 @@ public class DataLoader {
    * Creates Schedules.
    */
   private void createSchedule() {
-    Date startDate = new GregorianCalendar(2015, GregorianCalendar.JANUARY, 1).getTime();
-    Date endDate = new GregorianCalendar(2016, GregorianCalendar.DECEMBER, 31).getTime();
+    LocalDate startDate = LocalDate.of(2015, Month.JANUARY, 1);
+    LocalDate endDate = LocalDate.of(2016, Month.DECEMBER, 31);
     weekdaySchedule = new Schedule(startDate, endDate, Schedule.DayOption.WEEKDAYS);
     saturdaySchedule = new Schedule(startDate, endDate, Schedule.DayOption.SATURDAY);
     sundaySchedule = new Schedule(startDate, endDate, Schedule.DayOption.SUNDAY);
