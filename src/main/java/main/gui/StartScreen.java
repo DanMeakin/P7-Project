@@ -213,7 +213,7 @@ public class StartScreen extends JFrame {
 
         // Space Container date and Leaving
         JPanel datePickerSpacer = new JPanel();
-        datePickerSpacer.setPreferredSize(new Dimension(95,60));
+        datePickerSpacer.setPreferredSize(new Dimension(100,60));
         datePickerSpacer.setBackground(Color.decode("#FAFAFA"));
 
         dateContainer.add(datePickerSpacer);
@@ -250,13 +250,13 @@ public class StartScreen extends JFrame {
         // Time Container - time Textfield
 
         timeTextField = new JTextField("");
-        timeTextField.setPreferredSize(new Dimension(100,15));
+        timeTextField.setPreferredSize(new Dimension(50,22));
 
         timeContainer.add(timeTextField);
 
         // Space Container time and Arriving
         JPanel timePickerSpacer = new JPanel();
-        timePickerSpacer.setPreferredSize(new Dimension(205,60));
+        timePickerSpacer.setPreferredSize(new Dimension(175,60));
         timePickerSpacer.setBackground(Color.decode("#FAFAFA"));
 
         timeContainer.add(timePickerSpacer);
@@ -376,13 +376,6 @@ public class StartScreen extends JFrame {
         findBusButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                /*// 1 Henter alle knapper i Bus filter gruppen
-
-                // 2 Henter første element fra Enumeration
-                JRadioButton firstElement = (JRadioButton)allBusRadioButtons.nextElement();
-                // 3 Er knappen valgt
-                boolean isSelected = firstElement.isSelected();*/
-
 
                 // Get selected stop object (From)
                 int fromBoxSelectionIndex = fromBox.getSelectedIndex();

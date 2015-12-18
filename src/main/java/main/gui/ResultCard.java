@@ -30,7 +30,6 @@ public class ResultCard extends JPanel {
 
     private Itinerary itinerary;
 
-
     public ResultCard(CapacityCalculator.crowdednessIndicator crowdednessIndicator, String busNumber, String date, String departureTime, String busStop, int duration, Itinerary itinerary) {
         super();
         this.setPreferredSize(new Dimension(CARD_WIDTH, CARD_HEIGHT));

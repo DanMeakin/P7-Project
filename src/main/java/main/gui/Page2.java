@@ -52,11 +52,11 @@ public class Page2 extends JPanel{
 
         // Search Container
         JPanel pSearchContainer = new JPanel();
-        pSearchContainer.setPreferredSize(new Dimension(SCREEN_WIDTH, 70));
+        pSearchContainer.setPreferredSize(new Dimension(SCREEN_WIDTH, 100));
 
         // Search Content
         JPanel pSearchContent = new JPanel();
-        pSearchContent.setPreferredSize(new Dimension(SCREEN_WIDTH -30, SCREEN_HEIGHT -700));
+        pSearchContent.setPreferredSize(new Dimension(SCREEN_WIDTH -30, SCREEN_HEIGHT -600));
         DropShadowBorder searchShadow = new DropShadowBorder();
         searchShadow.setShadowSize(5);
         searchShadow.setShadowColor(Color.BLACK);
@@ -96,7 +96,7 @@ public class Page2 extends JPanel{
 
         pSearchContent.add(pSearchIcon);
 
-        // Search Container - To Textfield
+        // Search Container - To Label
         JLabel toLabel = new JLabel ("To");
         toLabel.setForeground(Color.decode(TEXT_COLOR));
         toLabel.setFont(h2);
@@ -109,6 +109,8 @@ public class Page2 extends JPanel{
         typeTo.setFont(h2);
         typeTo.setForeground(Color.decode(FIRST_TEXT_COLOR));
         pSearchContent.add(typeTo);
+
+
 
         // Scrollbar
         JScrollPane scrollPane = new JScrollPane();
