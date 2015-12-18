@@ -167,6 +167,14 @@ public class RouteTimetableTest {
   }
 
   /**
+   * Test equals method.
+   */
+  @Test
+  public void testEquals() {
+    Object o = new Object();
+    assertNotEquals(routeTimetable, o);
+  }
+  /**
    * Test allocatedBus method.
    */
   @Test

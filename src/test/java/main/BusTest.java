@@ -494,6 +494,16 @@ public class BusTest {
   }
 
   /**
+   * testGetOccupancyLevel() method
+   */
+  @Test
+  public void testGetOccupancyLevel() {
+    double expected = (double) initialPassengers / (busTypeSeatedCapacity + busTypeStandingCapacity) ;
+    double actual = bus.getOccupancyLevel();
+    assertEquals(expected, actual, 0.001);
+  }
+
+  /**
    * testAddObserver() tests the Observable addObserver method.
    *
    * The purpose of this test is to ensure that the Bus acts as an
