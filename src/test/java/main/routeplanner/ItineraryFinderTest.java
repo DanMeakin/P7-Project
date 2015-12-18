@@ -98,6 +98,9 @@ public class ItineraryFinderTest {
     for (Path p : new ArrayList<Path>(Path.getAllPaths())) {
       Path.removePath(p);
     }
+    for (Bus b : new ArrayList<Bus>(Bus.getAllBuses())) {
+      Bus.removeBus(b);
+    }
     // Define stops/nodes
     nodes = new Stop[] {
       new Stop(1, "N1", 0, 0),

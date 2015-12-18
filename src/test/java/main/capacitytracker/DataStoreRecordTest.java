@@ -31,6 +31,16 @@ public class DataStoreRecordTest {
    */
   @BeforeClass
   public static void setUpClass() {
+    // Clear all existing Stops, Paths & Schedules
+    for (Schedule s : new ArrayList<Schedule>(Schedule.getAllSchedules())) {
+      Schedule.removeSchedule(s);
+    }
+    for (Stop s : new ArrayList<Stop>(Stop.getAllStops())) {
+      Stop.removeStop(s);
+    }
+    for (Path p : new ArrayList<Path>(Path.getAllPaths())) {
+      Path.removePath(p);
+    }
     Route route = new Route("10", "Test Description", mock(Stop.class));
     routeTimetable = mock(RouteTimetable.class);
     when(routeTimetable.getID()).thenReturn(1088);
