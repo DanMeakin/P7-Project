@@ -1,13 +1,15 @@
 package main;
 
 import java.util.*;
+import java.time.LocalDate;
+import java.time.DayOfWeek;
 
 /**
  * Defines a schedule which contains planned operations and scheduling of bus
  * travel within the Aalborg area.
  */
 public class Schedule {
-  
+
   /**
    * Provides options for the day type on which a schedule operates.
    *
@@ -23,9 +25,9 @@ public class Schedule {
   private static List<Schedule> allSchedules = new ArrayList<>();
 
   // the date from which this schedule is valid
-  private Date validFromDate;
+  private LocalDate validFromDate;
   // the date to which this schedule is valid
-  private Date validToDate;
+  private LocalDate validToDate;
   // the days for which this schedule is valid
   private DayOption operatingDay;
   // a data structure which holds all routeTimetables associated with this schedule
@@ -36,11 +38,11 @@ public class Schedule {
   /**
    * Creates a schedule.
    *
-   * @param validFromDate the date from which this scedule is valid.
-   * @param validToDate   the date to which this scedule is valid.
+   * @param validFromLocalDate the date from which this scedule is valid.
+   * @param validToLocalDate   the date to which this scedule is valid.
    * @param operatingDay  the days for which this schedule is valid.
    */
-  public Schedule (Date validFromDate, Date validToDate, DayOption operatingDay) {
+  public Schedule (LocalDate validFromDate, LocalDate validToDate, DayOption operatingDay) {
     this.validFromDate = validFromDate;
     this.validToDate = validToDate;
     this.operatingDay = operatingDay;
@@ -84,10 +86,10 @@ public class Schedule {
    * @param date the date for which a schedule is desired
    * @return schedule in operation for the specified date
    */
-  public static Schedule findSchedule (Date date) {
+  public static Schedule findSchedule (LocalDate date) {
     for (Schedule s : allSchedules) {
-      if (!date.before(s.getValidFromDate()) && 
-          !date.after(s.getValidToDate()) && 
+      if (!date.isBefore(s.getValidFromDate()) &&
+          !date.isAfter(s.getValidToDate()) &&
           operatingDayForDate(date) == s.getOperatingDay()) {
         return s;
       }
@@ -99,7 +101,7 @@ public class Schedule {
    * Adds a routeTimeTable to the schedule through the routeTimetableList
    * without associating a bus with it.
    *
-   * This method simply calls the 
+   * This method simply calls the
    * {@link #addRouteTimetable(RouteTimetable, Bus) addRouteTimetable} method
    * with a null value for bus.
    *
@@ -130,7 +132,7 @@ public class Schedule {
    * Allocates a bus to a particular RouteTimetable associated with schedule.
    *
    * @param routeTimetable the route timetable with which to associate bus
-   * @param bus            the bus to associate with the specified route 
+   * @param bus            the bus to associate with the specified route
    *                       timetable
    * @throws IllegalArgumentException if specified route timetable is not found
    *                                  within schedule
@@ -168,7 +170,7 @@ public class Schedule {
    * Finds the RouteTimetable on which the next departure of a route from a
    * stop takes place.
    *
-   * Similar to the nextDepartureTime method, this method finds the 
+   * Similar to the nextDepartureTime method, this method finds the
    * RouteTimetable representing the next departure of a bus from a given stop
    * after a particular point in time.
    *
@@ -178,7 +180,7 @@ public class Schedule {
    * @return the RouteTimetable representing the next departure of the next bus
    *  on the given route from the given stop
    * @throws UnsupportedOperationException if there is no departure information
-   *                                       available for this date 
+   *                                       available for this date
    */
   public RouteTimetable nextDepartureRouteTimetable(int time, Stop stop, Route route) throws IllegalArgumentException {
     int nextDepartureTime = 1_000_000; // Set time to initial high value
@@ -202,11 +204,11 @@ public class Schedule {
    * @param routeTimetable the route timetable to find the assiated bus for.
    * @return the entry in busList holding the bus associated
    *         with the routeTimetable.
-   * @throws IllegalArgumentException if the routeTimetable is not associated 
+   * @throws IllegalArgumentException if the routeTimetable is not associated
    *                                  with the schedule.
    */
   public Bus getAllocatedBus(RouteTimetable routeTimetable) throws IllegalArgumentException {
-    String msg = "RouteTimetable \"" + routeTimetable + 
+    String msg = "RouteTimetable \"" + routeTimetable +
       "\" is not found within Schedule";
     for (int i = 0; i < routeTimetableList.size(); i++) {
       if (routeTimetableList.get(i).equals(routeTimetable)) {
@@ -228,7 +230,7 @@ public class Schedule {
    */
   public List<RouteTimetable> getAllocatedRouteTimetables(Bus bus) throws IllegalArgumentException {
     List<RouteTimetable> allocatedRouteTimetables = new ArrayList<>();
-    String msg = "Bus \"" + bus + 
+    String msg = "Bus \"" + bus +
       "\" is not found within Schedule";
     for (int i = 0; i < busList.size(); i++) {
       if (busList.get(i).equals(bus)) {
@@ -258,7 +260,7 @@ public class Schedule {
       }
     }
     if (allocatedRouteTimetables.isEmpty()) {
-      String msg = "Route \"" + route + 
+      String msg = "Route \"" + route +
                    "\" is not found within Schedule";
       throw new IllegalArgumentException(msg);
     }
@@ -308,11 +310,11 @@ public class Schedule {
     return this.operatingDay;
   }
 
-  public Date getValidFromDate() {
+  public LocalDate getValidFromDate() {
     return this.validFromDate;
   }
 
-  public Date getValidToDate() {
+  public LocalDate getValidToDate() {
     return this.validToDate;
   }
 
@@ -321,25 +323,22 @@ public class Schedule {
    *
    * @return list of all dates schedule runs on
    */
-  public List<Date> scheduledDates() {
-    List<Date> dates = new ArrayList<>();
-    Date currentDate = getValidFromDate();
-    while (!currentDate.after(getValidToDate())) {
-      if (operatingDay == DayOption.WEEKDAYS && 
-          dayOfWeek(currentDate) >= 2 && 
-          dayOfWeek(currentDate) <= 6) {
+  public List<LocalDate> scheduledDates() {
+    List<LocalDate> dates = new ArrayList<>();
+    LocalDate currentDate = getValidFromDate();
+    while (!currentDate.isAfter(getValidToDate())) {
+      if (operatingDay == DayOption.WEEKDAYS &&
+          dayOfWeek(currentDate).getValue() >= DayOfWeek.MONDAY.getValue() &&
+          dayOfWeek(currentDate).getValue() <= DayOfWeek.FRIDAY.getValue()) {
         dates.add(currentDate);
       } else if (operatingDay == DayOption.SATURDAY &&
-          dayOfWeek(currentDate) == 7) {
+          dayOfWeek(currentDate) == DayOfWeek.SATURDAY) {
         dates.add(currentDate);
       } else if (operatingDay == DayOption.SUNDAY &&
-          dayOfWeek(currentDate) == 1) {
+          dayOfWeek(currentDate) == DayOfWeek.SUNDAY) {
         dates.add(currentDate);
       }
-      Calendar cal = Calendar.getInstance();
-      cal.setTime(currentDate);
-      cal.add(Calendar.DATE, 1);
-      currentDate = cal.getTime();
+      currentDate = currentDate.plusDays(1);
     }
     return dates;
   }
@@ -349,29 +348,27 @@ public class Schedule {
    *
    * @return integer value of day of week: Sunday = 1, Saturday = 7
    */
-  private static int dayOfWeek(Date d) {
-      Calendar c = Calendar.getInstance();
-      c.setTime(d);
-      return c.get(Calendar.DAY_OF_WEEK);
+  private static DayOfWeek dayOfWeek(LocalDate d) {
+      return d.getDayOfWeek();
   }
 
-  private static DayOption operatingDayForDate(Date d) {
-    if (dayOfWeek(d) == 1) {
+  private static DayOption operatingDayForDate(LocalDate d) {
+    if (dayOfWeek(d) == DayOfWeek.SUNDAY) {
       return DayOption.SUNDAY;
-    } else if (dayOfWeek(d) <= 6) {
-      return DayOption.WEEKDAYS;
-    } else {
+    } else if (dayOfWeek(d) == DayOfWeek.SATURDAY) {
       return DayOption.SATURDAY;
+    } else {
+      return DayOption.WEEKDAYS;
     }
   }
 
-  /** 
+  /**
    * Check if Schedule already exists within the system.
    *
    * A schedule already exists if:-
    *
    *  * Another schedule exists of the same type; and
-   *  * It does not end before the other schedule begins, or begin after the 
+   *  * It does not end before the other schedule begins, or begin after the
    *    other schedule ends.
    *
    * @param schedule the schedule object to check for existence
@@ -379,8 +376,8 @@ public class Schedule {
    */
   private static boolean scheduleExists(Schedule schedule) {
     for (Schedule otherSchedule : allSchedules) {
-      boolean scheduleBeforeOther = schedule.getValidToDate().before(otherSchedule.getValidFromDate());
-      boolean scheduleAfterOther = schedule.getValidFromDate().after(otherSchedule.getValidToDate());
+      boolean scheduleBeforeOther = schedule.getValidToDate().isBefore(otherSchedule.getValidFromDate());
+      boolean scheduleAfterOther = schedule.getValidFromDate().isAfter(otherSchedule.getValidToDate());
       boolean sameScheduleType = schedule.getOperatingDay() == otherSchedule.getOperatingDay();
       boolean withinOtherSchedule = !(scheduleBeforeOther || scheduleAfterOther);
       if (sameScheduleType && withinOtherSchedule) {
