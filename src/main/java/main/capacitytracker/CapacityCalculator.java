@@ -1,6 +1,7 @@
 package main.capacitytracker;
 
 import java.util.*;
+import java.time.LocalDate;
 
 import main.RouteTimetable;
 import main.Stop;
@@ -14,8 +15,7 @@ public class CapacityCalculator {
 
   private final RouteTimetable routeTimetable;
   private final Stop stop;
-  private final DataStoreReader stopDataStore;
-  private final DataStoreReader routeTimetableDataStore;
+  private final DataStoreReader dataStore;
 
   public static enum CrowdednessIndicator {
 
@@ -43,8 +43,7 @@ public class CapacityCalculator {
   public CapacityCalculator(RouteTimetable routeTimetable, Stop stop) {
     this.routeTimetable = routeTimetable;
     this.stop = stop;
-    this.stopDataStore = new DataStoreReader("data", stop, routeTimetable);
-    this.routeTimetableDataStore = new DataStoreReader("data", routeTimetable);
+    this.dataStore = new DataStoreReader("data", stop, routeTimetable);
   }
 
   /**
@@ -69,9 +68,9 @@ public class CapacityCalculator {
    */
   private CrowdednessIndicator pastCrowdednessIndicator() {
     Map<String, Double> crowdedness = pastAverageCrowdedness();
-    if (crowdedness.get("maxSeatedPassengers") - crowdedness.get("numberPassengersOnDeparture") > 0) {
+    if (crowdedness.get("seatedOccupancy") < 1) {
       return CrowdednessIndicator.GREEN;
-    } else if (crowdedness.get("maxTotalPassengers") - crowdedness.get("numberPassengersOnDeparture") > 0) {
+    } else if (crowdedness.get("totalOccupancy") < 1) {
       return CrowdednessIndicator.ORANGE;
     } else {
       return CrowdednessIndicator.RED;
@@ -89,70 +88,118 @@ public class CapacityCalculator {
    */
   private Map<String, Double> pastAverageCrowdedness() {
     Map<String, Double> crowdedness = new HashMap<>();
-    List<Map<String, Integer>> data = getDataStore().getPassengerData();
+    List<DataStoreRecord> data = getDataStore().read();
 
-    List<Number> arrival = new ArrayList<>();
-    List<Number> departure = new ArrayList<>();
-    List<Number> boarding = new ArrayList<>();
-    List<Number> exiting = new ArrayList<>();
-
-    List<Number> standingOccupancy = new ArrayList<>();
     List<Number> seatedOccupancy = new ArrayList<>();
     List<Number> totalOccupancy = new ArrayList<>();
 
     for (int i = 0; i < data.size(); i++) {
-      double standingOcc = (data.get(i).get("numberPassengersOnDeparture") - 
-                            data.get(i).get("maxSeatedPassengers")) / data.get(i).get("maxTotalPassengers");
-      double seatedOcc = (data.get(i).get("numberPassengersOnDeparture") / data.get(i).get("maxSeatedPassengers"));
-      double totalOcc = (data.get(i).get("numberPassengersOnDeparture")) / data.get(i).get("maxTotalPassengers");
-      arrival.add(data.get(i).get("numberPassengersOnArrival"));
-      departure.add(data.get(i).get("numberPassengersOnDeparture"));
-      boarding.add(data.get(i).get("numberPassengersBoarded"));
-      exiting.add(data.get(i).get("numberPassengersExited"));
-      standingOccupancy.add(standingOcc);
-      seatedOccupancy.add(seatedOcc);
-      totalOccupancy.add(totalOcc);
+      DataStoreRecord record = data.get(i);
+      seatedOccupancy.add(record.getSeatedOccupancyRate());
+      totalOccupancy.add(record.getTotalOccupancyRate());
     }
 
-    crowdedness.put("numberPassengersOnArrival", average(arrival));
-    crowdedness.put("numberPassengersOnDeparture", average(departure));
-    crowdedness.put("numberPassengersBoarded", average(boarding));
-    crowdedness.put("numberPassengersExited", average(exiting));
-
-    crowdedness.put("standingOccupancy", average(standingOccupancy));
     crowdedness.put("seatedOccupancy", average(seatedOccupancy));
     crowdedness.put("totalOccupancy", average(totalOccupancy));
-
-    crowdedness.put("maxSeatedPassengers", (double) data.get(0).get("maxSeatedPassengers"));
-    crowdedness.put("maxStandingPassengers", (double) data.get(0).get("maxStandingPassengers"));
-    crowdedness.put("maxTotalPassengers", (double) data.get(0).get("maxTotalPassengers"));
 
     return crowdedness;
   }
 
   /**
    * Calculates the crowdedness of a currently-operating bus based on the
-   * deviation of current crowdedness at previous stops from the mean.
+   * average linear regression value of the desired stop.
    *
-   * The method iterates through stops on the current RouteTimetable which
-   * have already been travelled on the RouteTimetable and determines how
-   * much more or less crowded than average this RouteTimetable is.
+   * This method creates linear regressions for all stops (S) which has already
+   * been visited today on RouteTimetable and plots the historic capacities of
+   * buses operating at each stop in S against the historic capacities of the
+   * same bus operating at the desired stop.
    *
-   * This then forms the basis of a real-time crowdedness estimate.
+   * Each linear regression is then used to make a prediction as to how crowded
+   * a bus arriving at the desired stop will be. The average (mean) is then
+   * taken as the prediction of crowdedness of the RouteTimetable when it
+   * arrives at stop.
    *
-   * @return a list of total occupancy values for each Stop on the current
-   *         RouteTimetable where these stops have been visited by the vehicle
-   *         already
+   * @return a map containing keys "seatedOccupancy" and "totalOccupancy" with
+   *         values being the predicted seatedOccupancy rate and the predicted
+   *         totalOccupancy rate for RouteTimetable at Stop
    */
-  private List<Double> precedingStopsCrowdedness() {
-    Map<String, String> data = getRouteTimetableDataStore().getPassengerData();
-    for (Stop s : getRouteTimetable().getStops()) {
-      // If Stop s is before requested stop then get crowdedness
-      if (getRouteTimetable().getRoute().compareStops(s, getStop()) < 0) {
-               
-      }
+  private Map<String, Double> realTimePredictedCrowdedness() {
+    Stop busCurrentLocation = findBusCurrentLocation();
+    boolean busAfterDesiredStop = 
+      getRouteTimetable().getRoute().compareStops(busCurrentLocation, getStop()) > 0;
+    if (busCurrentLocation == null) {
+      String msg = "bus is not currently on route; unable to continue";
+      throw new UnsupportedOperationException(msg);
+    } else if (busAfterDesiredStop) {
+      String msg = "bus has already passed the requested stop";
+      throw new UnsupportedOperationException(msg);
+    }
+    List<Number> totalPredictions = new ArrayList<>();
+    List<Number> seatedPredictions = new ArrayList<>();
 
+    for (Stop s : getRouteTimetable().getStops()) {
+      // If Stop s is before bus current location then get crowdedness
+      if (getRouteTimetable().getRoute().compareStops(s, busCurrentLocation) < 0) {
+        double currentTotalOccupancyRate = -1;
+        double currentSeatedOccupancyRate = -1;
+        SimpleRegression totalRegression = new SimpleRegression();
+        SimpleRegression seatedRegression = new SimpleRegression();
+        DataStoreReader ds = new DataStoreReader("data", s, getRouteTimetable());
+        for (DataStoreRecord r : ds.read()) {
+          LocalDate rDate = r.getTimestamp().toLocalDate();
+          if (rDate.equals(LocalDate.now())) {
+            currentTotalOccupancyRate = r.getTotalOccupancyRate();
+            currentSeatedOccupancyRate = r.getSeatedOccupancyRate();
+          } else {
+            DataStoreRecord desiredStopRecord = getDataStore().selectRecordForDate(rDate);
+            if (desiredStopRecord != null) {
+              totalRegression.addData(
+                  r.getTotalOccupancyRate(), 
+                  desiredStopRecord.getTotalOccupancyRate()
+                  );
+              seatedRegression.addData(
+                  r.getSeatedOccupancyRate(),
+                  desiredStopRecord.getSeatedOccupancyRate()
+                  );
+            }
+          }
+        }
+        double predictedTotalRate = totalRegression.predict(currentTotalOccupancyRate);
+        double predictedSeatedRate = seatedRegression.predict(currentSeatedOccupancyRate);
+        totalPredictions.add(predictedTotalRate);
+        seatedPredictions.add(predictedSeatedRate);
+      }
     }   
+
+    Map<String, Double> result = new HashMap<>();
+    result.put("seatedOccupancy", (double) average(seatedPredictions));
+    result.put("totalOccupancy", (double) average(totalPredictions));
+    return result;
+  }
+
+  /**
+   * Find the bus running this RouteTimetable's current location.
+   *
+   * If this RouteTimetable is currently in service and being run by a bus,
+   * this method will return the last Stop for which data is currently
+   * available. If the RouteTimetable is not being run then returns null.
+   *
+   * @return last Stop for which data is currently available for the bus
+   *         currently operating RouteTimetable, or null if the RT is not
+   *         currently in operation
+   */
+  private Stop findBusCurrentLocation() {
+    // List all stops in reverse, then go backwards through them until
+    // the last stop for which data exists is found
+    List<Stop> allStops = getRouteTimetable().getStops();
+    Collections.reverse(allStops);
+    for (Stop s : allStops) {
+      DataStoreReader ds = new DataStoreReader("data", s, getRouteTimetable());
+      if (ds.selectRecordForDate(LocalDate.now()) != null) {
+        return s;
+      }  
+    }
+    return null;
   }
 
   /**
@@ -174,17 +221,8 @@ public class CapacityCalculator {
    *
    * @return dataStore instance for specific stop and route timetable
    */
-  public DataStoreReader getStopDataStore() {
-    return stopDataStore;
-  }
-
-  /**
-   * Gets route timetable dataStore field.
-   *
-   * @return dataStore instance for specific route timetable
-   */
-  public DataStoreReader getRouteTimetableDataStore() {
-    return routeTimetableDataStore;
+  public DataStoreReader getDataStore() {
+    return dataStore;
   }
 
   /**
