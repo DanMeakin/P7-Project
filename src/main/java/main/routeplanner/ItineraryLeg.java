@@ -1,5 +1,7 @@
 package main.routeplanner;
 
+import java.time.LocalDate;
+
 import main.capacitytracker.CapacityCalculator;
 import main.RouteTimetable;
 import main.Stop;
@@ -19,10 +21,11 @@ public class ItineraryLeg {
   private RouteTimetable routeTimetable;
   private Walk walk;
 
-  private Stop origin;
-  private Stop destination;
-  private int startTime;
-  private int endTime;
+  private final LocalDate date;
+  private final Stop origin;
+  private final Stop destination;
+  private final int startTime;
+  private final int endTime;
 
   private CapacityCalculator capacityCalculator;
 
@@ -34,13 +37,17 @@ public class ItineraryLeg {
    * This creates an instance of ItineraryLeg, containing a route timetable,
    * and starting and ending stops.
    */
-  public ItineraryLeg(RouteTimetable rt, Stop origin, Stop destination) {
+  public ItineraryLeg(LocalDate date, RouteTimetable rt, Stop origin, Stop destination) {
+    this.date = date;
     this.routeTimetable = rt;
     this.origin = origin;
     this.destination = destination;
     this.startTime = rt.timeAtStop(origin);
     this.endTime = rt.timeAtStop(destination);
-    this.capacityCalculator = new CapacityCalculator(rt, origin);
+
+    // If ItineraryLeg is for today, try getting real-time capacity data
+    boolean realTime = date.equals(LocalDate.now());
+    this.capacityCalculator = new CapacityCalculator(rt, origin, realTime);
   }
 
   /**
@@ -50,7 +57,8 @@ public class ItineraryLeg {
    * this constructor is used to construct a walking leg of a journey between
    * the origin and destination.
    */
-  public ItineraryLeg(Walk walk, int startTime) {
+  public ItineraryLeg(LocalDate date, Walk walk, int startTime) {
+    this.date = date;
     this.walk = walk;
     this.origin = walk.getOrigin();
     this.destination = walk.getDestination();
@@ -129,6 +137,15 @@ public class ItineraryLeg {
   }
 
   /**
+   * Gets date of ItineraryLeg.
+   *
+   * @return date of ItineraryLeg
+   */
+  public LocalDate getDate() {
+    return date;
+  }
+
+  /**
    * Gets origin.
    *
    * @return origin stop
@@ -199,7 +216,7 @@ public class ItineraryLeg {
    */
   public CapacityCalculator.CrowdednessIndicator calculateCrowdedness() {
     if (isBus()) {
-      return capacityCalculator.getCrowdednessIndicator();
+      return capacityCalculator.crowdedness();
     }
     String msg = "unable to calculate crowdedness of a walk leg";
     throw new IllegalArgumentException(msg);

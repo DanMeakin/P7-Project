@@ -4,6 +4,8 @@ import org.junit.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
+import java.time.LocalDate;
+import java.time.Month;
 import java.util.*;
 
 import main.RouteTimetable;
@@ -17,6 +19,8 @@ import main.routeplanner.ItineraryLeg.ItineraryLegType;
  * The ItineraryLeg represents one leg of a journey for use elsewhere in the system.
  */
 public class ItineraryLegTest {
+
+  private static LocalDate date;
 
   private static Stop origin1;
   private static Stop origin2;
@@ -36,6 +40,7 @@ public class ItineraryLegTest {
    */
   @BeforeClass
   public static void setUpClass() {
+    date = LocalDate.of(2015, Month.FEBRUARY, 11);
     origin1 = mock(Stop.class);
     when(origin1.equals(origin1)).thenReturn(true);
     origin2 = mock(Stop.class);
@@ -68,18 +73,18 @@ public class ItineraryLegTest {
     when(w2.equals(w2)).thenReturn(true);
 
     legs = new ArrayList<>();
-    legs.add(new ItineraryLeg(rt1, origin1, destination1));
-    legs.add(new ItineraryLeg(rt1, origin1, destination2));
-    legs.add(new ItineraryLeg(rt1, origin2, destination1));
-    legs.add(new ItineraryLeg(rt1, origin2, destination2));
-    legs.add(new ItineraryLeg(rt2, origin1, destination1));
-    legs.add(new ItineraryLeg(rt2, origin1, destination2));
-    legs.add(new ItineraryLeg(rt2, origin2, destination1));
-    legs.add(new ItineraryLeg(rt2, origin2, destination2));
-    legs.add(new ItineraryLeg(w1, 6*60 + 15));
-    legs.add(new ItineraryLeg(w1, 7*60 + 2));
-    legs.add(new ItineraryLeg(w2, 6*60 + 40));
-    legs.add(new ItineraryLeg(w2, 8*60 + 9));
+    legs.add(new ItineraryLeg(date, rt1, origin1, destination1));
+    legs.add(new ItineraryLeg(date, rt1, origin1, destination2));
+    legs.add(new ItineraryLeg(date, rt1, origin2, destination1));
+    legs.add(new ItineraryLeg(date, rt1, origin2, destination2));
+    legs.add(new ItineraryLeg(date, rt2, origin1, destination1));
+    legs.add(new ItineraryLeg(date, rt2, origin1, destination2));
+    legs.add(new ItineraryLeg(date, rt2, origin2, destination1));
+    legs.add(new ItineraryLeg(date, rt2, origin2, destination2));
+    legs.add(new ItineraryLeg(date, w1, 6*60 + 15));
+    legs.add(new ItineraryLeg(date, w1, 7*60 + 2));
+    legs.add(new ItineraryLeg(date, w2, 6*60 + 40));
+    legs.add(new ItineraryLeg(date, w2, 8*60 + 9));
   }
 
   /**
@@ -94,8 +99,8 @@ public class ItineraryLegTest {
 
   @Test
   public void testEquals() {
-    ItineraryLeg leg1Duplicate = new ItineraryLeg(rt1, origin1, destination1);
-    ItineraryLeg leg2Duplicate = new ItineraryLeg(w1, 7*60 + 2);
+    ItineraryLeg leg1Duplicate = new ItineraryLeg(date, rt1, origin1, destination1);
+    ItineraryLeg leg2Duplicate = new ItineraryLeg(date, w1, 7*60 + 2);
     Object o = new Object();
 
     assertTrue(legs.get(0).equals(leg1Duplicate));
@@ -193,6 +198,21 @@ public class ItineraryLegTest {
   @Test
   public void testGetEndTime() {
     assertEquals(10*60 + 45, legs.get(0).getEndTime());
+  }
+
+  /**
+   * test calculateCrowdedness method with non-bus itinerary leg.
+   */
+  @Test
+  public void testCalculateCrowdednessWithNonBus() {
+    ItineraryLeg l = legs.get(8);
+    try {
+      l.calculateCrowdedness();
+      fail("expected IllegalArgumentException to be thrown");
+    } catch (IllegalArgumentException e) {
+      assertEquals("unable to calculate crowdedness of a walk leg", e.getMessage());
+    }
+
   }
 
 }
