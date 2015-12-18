@@ -1,5 +1,6 @@
 package main;
 
+import java.text.DecimalFormat;
 import java.util.*;
 import java.util.Date;
 import java.util.Observable;
@@ -10,7 +11,6 @@ import java.util.Observable;
  * busType, numOfPassengers etc. and implement
  * a number of domain specific methods such as addBus,
  * startRoute, arrivesAtStop, passengersBoarding etc.
- * @authors Ivo Hendriks, Janus Avbæk Larsen, Helle Hyllested Larsen, Dan Meakin.
  */
 public class Bus extends Observable {
   /** the fleet number of this bus  */
@@ -69,9 +69,20 @@ public class Bus extends Observable {
   }
 
   /**
+   * Get list of all buses within system.
+   *
+   * @return list of all buses within system
+   */
+  public static List<Bus> getAllBuses() {
+    return allBuses;
+  }
+
+  /**
    * Find a Bus from the list of all buses.
    *
    * @param fleetNumber the fleet number of the desired bus
+   * @return the bus matching with fleet number matching the fleetNumber
+   *         argument
    */
   public static Bus findBus(int fleetNumber) {
     for (Bus b : allBuses) {
@@ -107,8 +118,8 @@ public class Bus extends Observable {
       String msg = "bus is not at a stop";
       throw new UnsupportedOperationException(msg);
     }
-    setStop(null);
     notifyObservers(); // Notify observers after leaving stop
+    setStop(null);
   }
   
   /**
@@ -309,7 +320,7 @@ public class Bus extends Observable {
   /**
    * Set a bus to be on a route timetable.
    *
-   * @param rt the route rimetable the bus is set to be at.
+   * @param rt the route timetable the bus is set to be at.
    */
   private void setRouteTimetable(RouteTimetable rt) {
     this.route = rt;
@@ -334,7 +345,7 @@ public class Bus extends Observable {
   }
 
   /**
-   * Check wether a bus in currently at a Stop.
+   * Check whether a bus in currently at a Stop.
    *
    * @return true if a bus is at a Stop, false if not.
    */
@@ -343,12 +354,25 @@ public class Bus extends Observable {
   }
 
   /**
-   * Check wether a bus in currently on a Route.
+   * Check whether a bus in currently on a Route.
    *
    * @return true if a bus is one a Route, false if not.
    */
   public boolean isOnRoute() {
     return (getRouteTimetable() != null);
+  }
+
+  /**
+   * Get the percentage of bus capacity currently in use.
+   *
+   * This method calculates the percentage of bus capacity currently
+   * in use by dividing the number of passengers by the total capacity
+   * of the bus.
+   *
+   * @return occupancy level as a decimal
+   */
+  public double getOccupancyLevel(){
+    return (double) getNumPassengers() / (double) getTotalCapacity();
   }
 
   /**

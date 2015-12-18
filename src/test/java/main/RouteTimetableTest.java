@@ -1,6 +1,8 @@
 package main;
 
 import org.junit.*;
+import org.junit.rules.ExpectedException;
+
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -18,6 +20,7 @@ import main.Stop;
 public class RouteTimetableTest {
 
   private static RouteTimetable routeTimetable;
+  private static int routeTimetableCounter;
   private static int startTime;
   private static boolean isRushHour;
 
@@ -45,6 +48,9 @@ public class RouteTimetableTest {
     startTime = 10 * 60 + 30; // 10:30am
     isRushHour = false;
 
+    // Store value of counter prior to creation of RouteTimetable(s)
+    routeTimetableCounter = RouteTimetable.getCounterValue();
+
     mockedRoute = mock(Route.class);
     stopTiming = Arrays.asList(new Integer[] {0, 7, 15, 16, 20, 30});
     rushHourStopTiming = Arrays.asList(new Integer[] {0, 10, 19, 25, 35, 50});
@@ -54,6 +60,7 @@ public class RouteTimetableTest {
     when(mockedRoute.getStopTiming(true, true)).thenReturn(rushHourStopTiming);
 
     mockedStops = Arrays.asList(new Stop[] {
+      mock(Stop.class),
       mock(Stop.class), 
       mock(Stop.class), 
       mock(Stop.class), 
@@ -61,11 +68,14 @@ public class RouteTimetableTest {
       mock(Stop.class)
     });
     when(mockedRoute.getStops()).thenReturn(mockedStops);
+    for (Stop s : mockedStops) {
+      when(mockedRoute.includesStop(s)).thenReturn(true);
+    }
 
     mockedSchedule = mock(Schedule.class);
     validFrom = new GregorianCalendar(2015, GregorianCalendar.JANUARY, 1).getTime();
     validTo = new GregorianCalendar(2015, GregorianCalendar.DECEMBER, 31).getTime();
-    when(mockedSchedule.getOperatingDay()).thenReturn(Schedule.DayOptions.WEEKDAYS);
+    when(mockedSchedule.getOperatingDay()).thenReturn(Schedule.DayOption.WEEKDAYS);
     when(mockedSchedule.getValidFromDate()).thenReturn(validFrom);
     when(mockedSchedule.getValidToDate()).thenReturn(validTo);
 
@@ -76,7 +86,7 @@ public class RouteTimetableTest {
   }
 
   /**
-   * Test getStartTime() getter method.
+   * Test getStartTime getter method.
    */
   @Test
   public void testGetStartTime() {
@@ -84,7 +94,7 @@ public class RouteTimetableTest {
   }
 
   /**
-   * Test isRushHour() getter method.
+   * Test isRushHour getter method.
    */
   @Test
   public void testIsRushHour() {
@@ -92,7 +102,41 @@ public class RouteTimetableTest {
   }
 
   /**
-   * Test getStopTimes() method.
+   * Test timeAtStop method.
+   *
+   * The timeAtStop method gets the time at which the bus operating a 
+   * RouteTimetable is due to arrive at a given stop.
+   */
+  @Test
+  public void testTimeAtStop() {
+    for (int i = 0; i < mockedStops.size(); i++) {
+      int expectedStopTiming = startTime + stopTiming.get(i);
+      int actualStopTiming = routeTimetable.timeAtStop(mockedStops.get(i));
+      assertEquals(expectedStopTiming, actualStopTiming);
+    }
+  }
+
+  @Rule
+  public ExpectedException thrown = ExpectedException.none();
+
+  /**
+   * Test timeAtStop method with invalid stop.
+   *
+   * The timeAtStop method should throw an exception if passed a stop not
+   * contained within the route.
+   */
+  @Test
+  public void testTimeAtStopWithInvalidStop() {
+    thrown.expect(IllegalArgumentException.class);
+    Stop missingStop = mock(Stop.class);
+    String msg = "RouteTimetable does not include stop " + missingStop;
+    thrown.expectMessage(msg);
+
+    routeTimetable.timeAtStop(missingStop);
+  }
+
+  /**
+   * Test getStopTimes method.
    *
    * Each entry in getStopTimes() should be equal to the starting time of the
    * route, plus the cumulative time for that particular stop from the start
@@ -108,7 +152,7 @@ public class RouteTimetableTest {
   }
 
   /**
-   * Test getStops() method.
+   * Test getStops method.
    *
    * A RouteTimetable must provide access to the Stops exposed by the Route.
    * This test ensures this is provided.
@@ -123,11 +167,26 @@ public class RouteTimetableTest {
   }
 
   /**
-   * Test allocatedBus() method.
+   * Test allocatedBus method.
    */
   @Test
   public void testAllocatedBus() {
     assertEquals(routeTimetable.getAllocatedBus(), mockedBus);
   }
 
+  /**
+   * Test getID method.
+   */
+  @Test
+  public void testGetID(){
+    assertEquals(routeTimetableCounter, routeTimetable.getID());
+  }
+
+  /**
+   * Test getSchedule method.
+   */
+  @Test
+  public void testGetSchedule() {
+    assertEquals(mockedSchedule, routeTimetable.getSchedule());
+  }
 }

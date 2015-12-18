@@ -12,18 +12,36 @@ import java.util.Arrays;
 
 public class StopTest {
 
-  private static List<Stop> stops;
+  private List<Stop> stops;
   private static List<Integer> stopIDs;
   private static List<String> stopNames;
   private static List<Double> stopLatitudes;
   private static List<Double> stopLongitudes;
+  private static List<List<Integer>> stopDistances;
 
+  /**
+   * Sets-up fixtures and test data before any testing begins.
+   */
   @BeforeClass
   public static void setUpClass() {
     stopIDs = Arrays.asList(1, 2, 3);
     stopNames = Arrays.asList("Ritavej", "AAU Busterminal", "Boulevarden");
-    stopLatitudes = Arrays.asList(59.1092, 59.201, 42.123);
-    stopLongitudes = Arrays.asList(23.123, 23.165, 40.10);
+    stopLatitudes = Arrays.asList(57.027063, 57.016123, 57.046237);
+    stopLongitudes = Arrays.asList(9.959283, 9.991114, 9.918913);
+    // Distances calculated using online calculator found at
+    // http://www.movable-type.co.uk/scripts/latlong.html
+    stopDistances  = Arrays.asList(
+        Arrays.asList(0, 2279, 3242), // Stop 0 -> 0, 0 -> 1, 0 -> 2
+        Arrays.asList(2279, 0, 5505), // Stop 1 -> 0, 1 -> 1, 1 -> 2
+        Arrays.asList(3242, 5505, 0)  // Stop 2 -> 0, 2 -> 1, 2 -> 2
+        );
+  }
+
+  /**
+   * Executes set-up before each test.
+   */
+  @Before
+  public void setUp() {
     stops = new ArrayList<Stop>();
     for (int i = 0; i < stopIDs.size(); i++) {
       stops.add(
@@ -36,11 +54,20 @@ public class StopTest {
           );
     }
   }
-
-  @Before
-  public void setUp() {
+  
+  /**
+   * Executes tear-down after each test.
+   */
+  @After
+  public void tearDown() {
+    for (Stop s : new ArrayList<>(Stop.getAllStops())) {
+      Stop.removeStop(s);
+    }
   }
 
+  /**
+   * Test getID method.
+   */
   @Test
   public void testGetId() {
     for (int i = 0; i < stops.size(); i++) {
@@ -48,6 +75,9 @@ public class StopTest {
     }
   }
 
+  /**
+   * Test getName method.
+   */
   @Test
   public void testGetName() {
     for (int i = 0; i < stops.size(); i++) {
@@ -55,6 +85,9 @@ public class StopTest {
     }
   }
 
+  /**
+   * Test getLocation method.
+   */
   @Test
   public void testGetLocation() {
     for (int i = 0; i < stops.size(); i++) {
@@ -134,5 +167,93 @@ public class StopTest {
   @Test
   public void testCountStops() {
     assertEquals(Stop.numberOfStops(), 3);
+  }
+
+  /**
+   * Test findStop(int) method.
+   */
+  @Test
+  public void testFindStopByID() {
+    assertEquals(Stop.findStop(stopIDs.get(2)), stops.get(2));
+    try {
+      Stop.findStop(12345);
+      fail("expected IllegalArgumentException for non-existent stop ID");
+    } catch (IllegalArgumentException e) {
+      assertEquals("unable to find stop with ID# " + 12345, e.getMessage());
+    }
+  }
+
+  /**
+   * Test findStop(String) method.
+   */
+  @Test
+  public void testFindStopByName() {
+    assertEquals(Arrays.asList(stops.get(1)), Stop.findStop("terminal"));
+    assertEquals(new ArrayList<>(), Stop.findStop("NONEXISTENTSTOP"));
+    assertEquals(Arrays.asList(stops.get(1), stops.get(2)), Stop.findStop("b"));
+  }
+
+  /**
+   * Test distanceTo method.
+   */
+  @Test
+  public void testDistanceTo() {
+    for (int i = 0; i < 3; i++) {
+      for (int j = 0; j < 3; j++) {
+        System.out.println(stops.get(i).distanceTo(stops.get(j)));
+        assertEquals(stops.get(i).distanceTo(stops.get(j)), (int) stopDistances.get(i).get(j));
+      }
+    }
+  }
+  /**
+   * Test getLatitude method.
+   *
+   * This tests the getLatitude getter method on Stop.
+   */
+  @Test
+  public void testGetLatitude() {
+    for (int i = 0; i < 3; i++) {
+      assertEquals(stops.get(i).getLatitude(), (double) stopLatitudes.get(i), 0.000000001);
+    }
+  }
+
+  /**
+   * Test getLatitudeInRadians method.
+   *
+   * This tests the conversion of latitude to radians.
+   */
+  @Test
+  public void testGetLatitudeInRadians() {
+    for (int i = 0; i < 3; i++) {
+      double expected = stops.get(i).getLatitude() / 180 * Math.PI;
+      double actual = stops.get(i).getLatitudeInRadians();
+      assertEquals(expected, actual, 0.1);
+    }
+  }
+
+  /**
+   * Test getLongitude method.
+   *
+   * This tests the getLongitude getter method on Stop.
+   */
+  @Test
+  public void testGetLongitude() {
+    for (int i = 0; i < 3; i++) {
+      assertEquals(stops.get(i).getLongitude(), (double) stopLongitudes.get(i), 0.000000001);
+    }
+  }
+
+  /**
+   * Test getLongitudeInRadians method.
+   *
+   * This tests the conversion of longitude to radians.
+   */
+  @Test
+  public void testGetLongitudeInRadians() {
+    for (int i = 0; i < 3; i++) {
+      double expected = stops.get(i).getLongitude() / 180 * Math.PI;
+      double actual = stops.get(i).getLongitudeInRadians();
+      assertEquals(expected, actual, 0.1);
+    }
   }
 }
