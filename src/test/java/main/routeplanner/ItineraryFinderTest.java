@@ -13,6 +13,7 @@ import main.Route;
 import main.RouteTimetable;
 import main.Stop;
 import main.Walk;
+import main.capacitytracker.CapacityCalculator;
 
 /**
  * ItineraryFinderTest class contains a series of unit tests for the ItineraryFinder class.
@@ -308,11 +309,16 @@ public class ItineraryFinderTest {
         LocalDate.of(2015, Month.DECEMBER, 2),
         Arrays.asList(
           new ItineraryLeg(
+            LocalDate.of(2015, Month.DECEMBER, 2),
             schedule.nextDepartureRouteTimetable(60 * 6 + 2, nodes[0], routes[0]),
             nodes[0],
             nodes[2]
             ),
-          new ItineraryLeg(walks[2], 60 * 6 + 25)
+          new ItineraryLeg(
+            LocalDate.of(2015, Month.DECEMBER, 2),
+            walks[2], 
+            60 * 6 + 25
+            )
           )
         );
     Itinerary actual = itineraryFinder.findBestItinerary();
@@ -378,22 +384,34 @@ public class ItineraryFinderTest {
   public void testFindBestItineraries() {
     assertEquals("expected " + services.size() + ", actual " + Path.getAllPaths().size(), services.size(), Path.getAllPaths().size());
     assertEquals(services, Path.getAllPaths());
+    LocalDate date = LocalDate.of(2015, Month.DECEMBER, 2);
     List<ItineraryLeg> expected1 = Arrays.asList(
         new ItineraryLeg(
+          date,
           schedule.nextDepartureRouteTimetable(60 * 6 + 2, nodes[0], routes[0]),
           nodes[0],
           nodes[2]
           ),
-        new ItineraryLeg(walks[2], 60 * 6 + 25)
+        new ItineraryLeg(
+          date, 
+          walks[2], 
+          60 * 6 + 25
+          )
         );
     List<ItineraryLeg> expected2 = Arrays.asList(
         new ItineraryLeg(
+          date,
           schedule.nextDepartureRouteTimetable(60 * 6 + 3, nodes[0], routes[4]),
           nodes[0],
           nodes[6]
           ),
-        new ItineraryLeg(walks[1], 6 * 60 + 15),
         new ItineraryLeg(
+          date, 
+          walks[1],
+          6 * 60 + 15
+          ),
+        new ItineraryLeg(
+          date,
           schedule.nextDepartureRouteTimetable(60 * 6 + 20, nodes[3], routes[2]),
           nodes[3],
           nodes[4]
@@ -401,12 +419,18 @@ public class ItineraryFinderTest {
         );
     List<ItineraryLeg> expected3 = Arrays.asList(
         new ItineraryLeg(
+          date,
           schedule.nextDepartureRouteTimetable(60 * 6 + 4, nodes[0], routes[4]),
           nodes[0],
           nodes[6]
           ),
-        new ItineraryLeg(walks[1], 6 * 60 + 18),
         new ItineraryLeg(
+          date, 
+          walks[1],
+          6 * 60 + 18
+          ),
+        new ItineraryLeg(
+          date,
           schedule.nextDepartureRouteTimetable(60 * 6 + 20, nodes[3], routes[2]),
           nodes[3],
           nodes[4]
@@ -414,12 +438,18 @@ public class ItineraryFinderTest {
         );
     List<ItineraryLeg> expected4 = Arrays.asList(
         new ItineraryLeg(
+          date,
           schedule.nextDepartureRouteTimetable(60 * 6 + 7, nodes[0], routes[4]),
           nodes[0],
           nodes[6]
           ),
-        new ItineraryLeg(walks[1], 6 * 60 + 21),
         new ItineraryLeg(
+          date,
+          walks[1],
+          6 * 60 + 21
+          ),
+        new ItineraryLeg(
+          date,
           schedule.nextDepartureRouteTimetable(60 * 6 + 23, nodes[3], routes[2]),
           nodes[3],
           nodes[4]
@@ -427,12 +457,18 @@ public class ItineraryFinderTest {
         );
     List<ItineraryLeg> expected5 = Arrays.asList(
         new ItineraryLeg(
+          date,
           schedule.nextDepartureRouteTimetable(60 * 6 + 10, nodes[0], routes[4]),
           nodes[0],
           nodes[6]
           ),
-        new ItineraryLeg(walks[1], 6 * 60 + 24),
         new ItineraryLeg(
+          date,
+          walks[1], 
+          6 * 60 + 24
+          ),
+        new ItineraryLeg(
+          date,
           schedule.nextDepartureRouteTimetable(60 * 6 + 26, nodes[3], routes[2]),
           nodes[3],
           nodes[4]
@@ -440,11 +476,11 @@ public class ItineraryFinderTest {
         );
      
     List<Itinerary> expected = Arrays.asList(
-        new Itinerary(LocalDate.of(2015, Month.DECEMBER, 2), expected1), 
-        new Itinerary(LocalDate.of(2015, Month.DECEMBER, 2), expected2),
-        new Itinerary(LocalDate.of(2015, Month.DECEMBER, 2), expected3),
-        new Itinerary(LocalDate.of(2015, Month.DECEMBER, 2), expected4), 
-        new Itinerary(LocalDate.of(2015, Month.DECEMBER, 2), expected5)
+        new Itinerary(date, expected1), 
+        new Itinerary(date, expected2),
+        new Itinerary(date, expected3),
+        new Itinerary(date, expected4), 
+        new Itinerary(date, expected5)
         );
     List<Itinerary> actual = itineraryFinder.findBestItineraries(5);
     for (int i = 0; i < actual.size(); i++) {
@@ -453,15 +489,13 @@ public class ItineraryFinderTest {
   }
 
   /**
-   * Test the findBestItineraries method with a passed crowdedness filter.
-   *
-   * The findBestItineraries method accepts an optional crowdedness filter
-   * which can be used to select only itineraries which contain journeys
-   * of a certain level of crowdedness.
+   * Test setFilter method.
    */
   @Test
-  public void testFindBestItinerariesWithCrowdednessFilter() {
-
+  public void testSetFilter() {
+    assertEquals(CapacityCalculator.CrowdednessIndicator.RED, itineraryFinder.getFilter());
+    itineraryFinder.setFilter(CapacityCalculator.CrowdednessIndicator.ORANGE);
+    assertEquals(CapacityCalculator.CrowdednessIndicator.ORANGE, itineraryFinder.getFilter());
   }
 
   /**
@@ -565,5 +599,18 @@ public class ItineraryFinderTest {
     assertEquals(CostEstimator.UNCONNECTED, lateTArc.journeyTime());
     assertEquals(1, walkTArc.journeyTime());
     assertEquals(23, rushHourTArc.journeyTime());
+  }
+
+  /**
+   * Test the TArc#pi method.
+   */
+  @Test
+  public void testPi() {
+    Walk mockWalk = mock(Walk.class);
+    when(mockWalk.walkingTime()).thenReturn(20);
+    ItineraryFinder.TArc tArc = itineraryFinder.new TArc(mock(Stop.class), mock(Stop.class), mockWalk, 60 * 10);
+    ItineraryFinder.TArc midnightTArc = itineraryFinder.new TArc(mock(Stop.class), mock(Stop.class), mockWalk, 60 * 24 - 1);
+    assertEquals(20, tArc.pi());
+    assertEquals(20, midnightTArc.pi());
   }
 }

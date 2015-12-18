@@ -59,6 +59,8 @@ public class ItineraryFinder {
     setDate(searchTime);
     setTime(searchTime);
     setSchedule(); 
+    // Set filter to RED, i.e. do not filter anything
+    setFilter(CapacityCalculator.CrowdednessIndicator.RED);
     costEstimator = new CostEstimator(endingStop);
   }
 
@@ -646,10 +648,6 @@ public class ItineraryFinder {
       this.time = time;
     }
 
-    public String toString() {
-      return "t-arc: " + getStartNode() + " -> " + getEndNode() + " (" + getService() + ") at " + getTime();
-    }
-    
     /**
      * Checks for equality of two t-arcs.
      *
@@ -685,11 +683,13 @@ public class ItineraryFinder {
     public ItineraryLeg toItineraryLeg() {
       if (getService() instanceof Walk) {
         return new ItineraryLeg(
+            getDate(),
             (Walk) getService(),
             getTime()
             );
       } else {
         return new ItineraryLeg(
+            getDate(),
             schedule.nextDepartureRouteTimetable(getTime(), getStartNode(), (Route) getService()),
             getStartNode(),
             getEndNode()
