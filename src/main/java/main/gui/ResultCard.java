@@ -1,6 +1,6 @@
 package main.gui;
 
-import main.CapacityCalculator;
+import main.capacitytracker.CapacityCalculator;
 import main.routeplanner.Itinerary;
 
 import javax.swing.*;
@@ -30,7 +30,7 @@ public class ResultCard extends JPanel {
 
     private Itinerary itinerary;
 
-    public ResultCard(CapacityCalculator.crowdednessIndicator crowdednessIndicator, String busNumber, String date, String departureTime, String busStop, int duration, Itinerary itinerary) {
+    public ResultCard(CapacityCalculator.CrowdednessIndicator crowdednessIndicator, String busNumber, String date, String departureTime, String busStop, int duration, Itinerary itinerary) {
         super();
         this.setPreferredSize(new Dimension(CARD_WIDTH, CARD_HEIGHT));
         this.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
@@ -177,14 +177,14 @@ public class ResultCard extends JPanel {
     }
 
 
-    public ImageIcon getCrowdednessIcon(CapacityCalculator.crowdednessIndicator crowdednessIndicator){
+    public ImageIcon getCrowdednessIcon(CapacityCalculator.CrowdednessIndicator crowdednessIndicator){
 
         ImageIcon crowdednessIcon;
 
-        if (crowdednessIndicator == CapacityCalculator.crowdednessIndicator.RED){
+        if (crowdednessIndicator == CapacityCalculator.CrowdednessIndicator.RED){
             crowdednessIcon = red;
 
-        }else if (crowdednessIndicator == CapacityCalculator.crowdednessIndicator.ORANGE){
+        }else if (crowdednessIndicator == CapacityCalculator.CrowdednessIndicator.ORANGE){
             crowdednessIcon = yellow;
 
         }else {

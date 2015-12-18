@@ -198,8 +198,8 @@ public class ItineraryFinderTest {
     }
 
     schedule = new Schedule(
-        new GregorianCalendar(2015, GregorianCalendar.JANUARY, 1).getTime(),
-        new GregorianCalendar(2015, GregorianCalendar.DECEMBER, 31).getTime(),
+        LocalDate.of(2015, Month.JANUARY, 1),
+        LocalDate.of(2015, Month.DECEMBER, 31),
         Schedule.DayOption.WEEKDAYS
         );
 

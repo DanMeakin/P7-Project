@@ -1,6 +1,7 @@
 package main.capacitytracker;
 
 import java.io.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -39,46 +40,39 @@ public class DataStoreReader {
   }
 
   /**
-   * Instantiates a new DataStoreReader instance.
+   * Reads matching records from the dataStore.
    *
-   * @param routeTimetable the route timetable on which buses travel for which
-   *                       to obtain data
+   * A record matches if it relates to the same RouteTimetable and Stop as
+   * those passed into the reader.
+   *
+   * @return CSVRecords containing matching data
    */
-  public DataStoreReader(String dataStoreFolderPath, RouteTimetable routeTimetable) {
-    this.stop = null;
-    this.routeTimetable = routeTimetable;
-    try {
-      initializeDataStore(dataStoreFolderPath);
-    } catch (IOException e) {
-      throw new RuntimeException("error accessing datastore: " + e);
+  public List<DataStoreRecord> read() {
+    List<DataStoreRecord> matchingData = new ArrayList<>();
+    for (CSVRecord record : dataStore) {
+      if (isMatching(record)) {
+        matchingData.add(new DataStoreRecord(record));
+      }
     }
+    return matchingData;
   }
 
   /**
-   * Reads passenger data matching stop and routeTimetable.
+   * Selects the record matching the passed date.
    *
-   * @return a list of maps containing data about passenger numbers on the
-   *         matching RouteTimetable and at the matching Stop
+   * As a RouteTimetable only runs once a day, there will only be at most
+   * one record for a Stop on a RouteTimetable each day.
+   *
+   * @param date the date for which to get the record
+   * @return record matching passed date
    */
-  public List<Map<String, Integer>> getPassengerData() {
-    String[] keys = new String[] {
-        "numberPassengersOnArrival",
-        "numberPassengersExited",
-        "numberPassengersBoarded",
-        "numberPassengersOnDeparture",
-        "maxSeatedPassengers",
-        "maxStandingPassengers",
-        "maxTotalPassengers",
-    };
-    List<Map<String, Integer>> data = new ArrayList<>();
-    for (Map<String, Integer> record : readMatchingData()) {
-      Map<String, Integer> thisMap = new HashMap<>();
-      for (String key : keys) {
-        thisMap.put(key, record.get(key));
+  public DataStoreRecord selectRecordForDate(LocalDate date) {
+    for (DataStoreRecord r : read()) {
+      if (r.getTimestamp().toLocalDate().equals(date)) {
+        return r;
       }
-      data.add(thisMap);
     }
-    return data;
+    return null;
   }
 
   /**
@@ -93,25 +87,6 @@ public class DataStoreReader {
   }
 
   /**
-   * Reads matching records from the dataStore.
-   *
-   * A record matches if it relates to the same RouteTimetable and Stop as
-   * those passed into the reader.
-   *
-   * @return CSVRecords containing matching data
-   */
-  private List<Map<String, Integer>> readMatchingData() {
-    List<Map<String, Integer>> matchingData = new ArrayList<>();
-    for (CSVRecord record : dataStore) {
-      if (isMatching(record)) {
-        Map<String, Integer> thisMap = new HashMap<>();
-        matchingData.add(record);
-      }
-    }
-    return matchingData;
-  }
-
-  /**
    * Tests if record matches Stop and RouteTimetable.
    *
    * The DataStoreReader processes relevant records only for a given query.
@@ -122,9 +97,8 @@ public class DataStoreReader {
    * @return true if record matches, else false
    */
   private boolean isMatching(CSVRecord record) {
-    boolean matchRT = getRouteTimetable().getID() == Integer.parseInt(record.get("routeTimetableID"));
-    boolean matchStop = getStop() == null || getStop().getID() == Integer.parseInt(record.get("stopID"));
-    return (matchRT && matchStop);
+    return (getRouteTimetable().getID() == Integer.parseInt(record.get("routeTimetableID")) &&
+            getStop().getID() == Integer.parseInt(record.get("stopID")));
   }
 
   /**
@@ -147,6 +121,5 @@ public class DataStoreReader {
   public Stop getStop() {
     return stop;
   }
-
 
 }

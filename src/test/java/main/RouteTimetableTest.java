@@ -7,9 +7,9 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
+import java.time.LocalDate;
+import java.time.Month;
 import java.util.Arrays;
-import java.util.Date;
-import java.util.GregorianCalendar;
 
 import main.RouteTimetable;
 import main.Bus;
@@ -31,8 +31,8 @@ public class RouteTimetableTest {
   private static List<Stop> mockedStops;
 
   private static Schedule mockedSchedule;
-  private static Date validFrom;
-  private static Date validTo;
+  private static LocalDate validFrom;
+  private static LocalDate validTo;
 
   private static Bus mockedBus;
 
@@ -73,8 +73,8 @@ public class RouteTimetableTest {
     }
 
     mockedSchedule = mock(Schedule.class);
-    validFrom = new GregorianCalendar(2015, GregorianCalendar.JANUARY, 1).getTime();
-    validTo = new GregorianCalendar(2015, GregorianCalendar.DECEMBER, 31).getTime();
+    validFrom = LocalDate.of(2015, Month.JANUARY, 1);
+    validTo = LocalDate.of(2015, Month.DECEMBER, 31);
     when(mockedSchedule.getOperatingDay()).thenReturn(Schedule.DayOption.WEEKDAYS);
     when(mockedSchedule.getValidFromDate()).thenReturn(validFrom);
     when(mockedSchedule.getValidToDate()).thenReturn(validTo);

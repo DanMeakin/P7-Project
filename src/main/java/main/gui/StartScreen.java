@@ -1,6 +1,6 @@
 package main.gui;
 
-import main.CapacityCalculator;
+import main.capacitytracker.CapacityCalculator;
 import main.DataLoader;
 import main.Stop;
 import main.routeplanner.ItineraryFinder;
@@ -20,7 +20,7 @@ import java.util.List;
 
 
 /**
- * * @authors Ivo Hendriks, Janus Avbæk Larsen, Helle Hyllested Larsen, Dan Meakin 02-12-2015.
+ * * @authors Ivo Hendriks, Janus AvbÃ¦k Larsen, Helle Hyllested Larsen, Dan Meakin 02-12-2015.
  */
 
 
@@ -144,7 +144,7 @@ public class StartScreen extends JFrame {
         // TODO: Set Default button!
 
         fromBox = new AutoComboBox();
-        // TODO: Udskiftes med resultatsæt fra rejseplanen.
+        // TODO: Udskiftes med resultatsÃ¦t fra rejseplanen.
         List<Stop> stopList = Stop.getAllStops();
         String[] stopArray = new String[Stop.numberOfStops()];
         for (int i = 0; i< stopArray.length; i++){
@@ -174,7 +174,7 @@ public class StartScreen extends JFrame {
 
         destinationBox = new AutoComboBox();
 
-        // TODO: Udskiftes med resultatsæt fra rejseplanen.
+        // TODO: Udskiftes med resultatsÃ¦t fra rejseplanen.
         destinationBox.setKeyWord(stopArray);
         destinationBox.setPreferredSize(new Dimension(230,30));
         destinationBox.setBackground(Color.decode("#FAFAFA"));
@@ -403,9 +403,9 @@ public class StartScreen extends JFrame {
                 JRadioButton green = (JRadioButton)allBusRadioButtons.nextElement();
 
                 if (orange.isSelected()){
-                    itineraryFinder.setFilter(CapacityCalculator.crowdednessIndicator.ORANGE);
+                    itineraryFinder.setFilter(CapacityCalculator.CrowdednessIndicator.ORANGE);
                 } else if(green.isSelected()){
-                    itineraryFinder.setFilter(CapacityCalculator.crowdednessIndicator.GREEN);
+                    itineraryFinder.setFilter(CapacityCalculator.CrowdednessIndicator.GREEN);
                 }
 
 

@@ -119,7 +119,10 @@ public class ItineraryFinder {
     List<Itinerary> bestItineraries = new ArrayList<>();
     List<List<TArc>> bestPaths = calculateKLeastTimePaths(n);
     for (List<TArc> path : bestPaths) {
-      bestItineraries.add(convertTArcsToItinerary(path));
+      Itinerary itinerary = convertTArcsToItinerary(path);
+      if (!itinerary.determineCrowdedness().moreCrowdedThan(getFilter())) {
+        bestItineraries.add(itinerary);
+      }
     }
     return bestItineraries;
   }
@@ -375,7 +378,7 @@ public class ItineraryFinder {
    * Find and set schedule based on instance's date.
    */
   private void setSchedule() {
-    this.schedule = Schedule.findSchedule(Date.from(this.date.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+    this.schedule = Schedule.findSchedule(LocalDate.now());
   }
 
   /**

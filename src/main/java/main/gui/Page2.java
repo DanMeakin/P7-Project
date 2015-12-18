@@ -1,7 +1,7 @@
 package main.gui;
 
 import com.sun.javafx.scene.control.skin.ScrollBarSkin;
-import main.CapacityCalculator;
+import main.capacitytracker.CapacityCalculator;
 import main.routeplanner.Itinerary;
 import main.routeplanner.ItineraryFinder;
 import main.routeplanner.ItineraryLeg;
