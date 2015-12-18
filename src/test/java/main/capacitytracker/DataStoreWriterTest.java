@@ -2,11 +2,11 @@ package main.capacitytracker;
 
 import org.junit.*;
 
+import org.junit.*;
+import org.junit.rules.ExpectedException;
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-import java.lang.reflect.Method;
-
-import java.io.*;
+import static org.mockito.Mockito.*;import java.io.*;
+import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -17,7 +17,8 @@ import main.model.*;
 public class DataStoreWriterTest {
 
   private static DataStoreWriter dataStoreWriter;
-  
+  private static String dataStorePath;
+
   private static List<Bus> buses = new ArrayList<>();
   private static List<String> fleetNumbers = new ArrayList<>();
   private static List<String> rtIDs = new ArrayList<>();
@@ -37,7 +38,8 @@ public class DataStoreWriterTest {
 
   @BeforeClass
   public static void setUpClass() {
-    dataStoreWriter = new DataStoreWriter("data/mock");
+    dataStorePath = "data/mock/writer";
+    dataStoreWriter = new DataStoreWriter(dataStorePath);
 
     for (int i = 0; i < 10; i++) {
       int passengersBoarded = (int) (Math.random() * 20);
@@ -82,7 +84,7 @@ public class DataStoreWriterTest {
       DataStoreWriterTest.rtIDs.add(Integer.toString(rtID));
       DataStoreWriterTest.routeNumbers.add(routeNumber);
       DataStoreWriterTest.routeDescriptions.add(routeDescription);
-      DataStoreWriterTest.startingTimes.add(String.format("%2d:%2d", startingTime / 60, startingTime % 60));
+      DataStoreWriterTest.startingTimes.add(String.format("%02d:%02d", startingTime / 60, startingTime % 60));
       DataStoreWriterTest.operatingDays.add(operatingDay);
       DataStoreWriterTest.stopIDs.add(Integer.toString(stopID));
       DataStoreWriterTest.passengersOnArrival.add(Integer.toString(passengersOnArrival));
@@ -96,17 +98,76 @@ public class DataStoreWriterTest {
     }
   }
 
+  @AfterClass
+  public static void tearDownClass() {
+    File f = new File(dataStorePath, "datastore.csv");
+  }
+
+  /**
+   * Test update method.
+   *
+   * This method tests a standard update call which should write to the
+   * datastore. It also tests writing from a second DataStoreWriter instance
+   * which should also simply write to file.
+   */
+  @Test
+  public void testUpdate() {
+    File f = new File(dataStorePath, "datastore.csv");
+    int preLines = countLines(f);
+    // If no lines in file, then add one to account for header
+    if (preLines == 0) {
+      preLines++;
+    }
+    for (int i = 0; i < buses.size() - 5; i++) {
+      dataStoreWriter.update(buses.get(i), new Object());
+    }
+    for (int i = buses.size() - 5; i < buses.size(); i++) {
+      DataStoreWriter dsw = new DataStoreWriter(dataStorePath);
+      dsw.update(buses.get(i), new Object());
+    }
+    int postLines = countLines(f);
+    assertEquals(postLines, preLines + buses.size());
+  }
+
+  /**
+   * Test update method when passed a non-bus observable object.
+   */
+  @Test
+  public void testUpdateWithNonBusObservable() {
+    Observable o = mock(Observable.class);
+    try {
+      dataStoreWriter.update(o, new Object());
+      fail("expected exception to be thrown on update with non-bus observable");
+    } catch (IllegalArgumentException e) {
+      String msg = "CapacityDataStoreWriter must be attached only to Bus; " + 
+                   "got " + o.getClass().getName();
+      assertEquals(msg, e.getMessage());
+    }
+  }
+
+  /**
+   * Test write method with non-existent datastore file.
+   */
+  @Test
+  public void testWriteWithNonExistentFile() {
+    try {
+      DataStoreWriter ds = new DataStoreWriter("illegalpath/illegalpath");
+    } catch (RuntimeException e) {
+      String msg = "error accessing datastore: " + 
+                   "java.io.FileNotFoundException: " +
+                   "illegalpath/illegalpath/datastore.csv " + 
+                   "(No such file or directory)";
+      assertEquals(msg, e.getMessage());
+    }  
+  }
+
+  /**
+   * Test generateRecord method.
+   */
   @Test
   public void testGenerateRecord() {
     Class<?>[] params = new Class[1];
     params[0] = Bus.class;
-    Method method = null;
-    try {
-      method = dataStoreWriter.getClass().getDeclaredMethod("generateRecord", params);
-      method.setAccessible(true);
-    } catch (NoSuchMethodException e) {
-      fail("unable to set generateRecord accessible");
-    }
     for (int i = 0; i < buses.size(); i++) {
       List<String> expectedRecord = Arrays.asList(
           LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")),
@@ -128,6 +189,23 @@ public class DataStoreWriterTest {
           );
       List<String> actualRecord = dataStoreWriter.generateRecord(buses.get(i));
       assertEquals(expectedRecord, actualRecord);
+    }
+  }
+
+  /**
+   * Counts the number of lines in a file.
+   */
+  private int countLines(File f) {
+    try {
+      BufferedReader reader = new BufferedReader(new FileReader(f));
+    int lines = 0;
+    while (reader.readLine() != null) {
+      lines++;
+    }
+    reader.close();
+    return lines;
+    } catch (Exception e) {
+      throw new RuntimeException(e);
     }
   }
 

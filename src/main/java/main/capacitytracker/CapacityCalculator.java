@@ -1,6 +1,7 @@
 package main.capacitytracker;
 
 import java.util.*;
+import java.io.IOException;
 import java.time.LocalDate;
 
 import main.model.*;
@@ -23,11 +24,11 @@ public class CapacityCalculator {
 
     public boolean moreCrowdedThan(CrowdednessIndicator otherCI) {
       if (this.equals(RED)) {
-        return false;
+        return !(otherCI.equals(RED));
       } else if (this.equals(ORANGE)) {
-        return (otherCI.equals(RED));
+        return (otherCI.equals(GREEN));
       } else {
-        return (otherCI.equals(RED) || otherCI.equals(ORANGE));
+        return false;
       }
     }
 
@@ -39,9 +40,14 @@ public class CapacityCalculator {
    * @param routeTimetable the route timetable for which to calculate likely
    *                       capacity/crowdedness
    * @param stop           the stop for which to calculate likely crowdedness
+   * @throws IOException if datastore file cannot be accessed
    */
-  public CapacityCalculator(RouteTimetable routeTimetable, Stop stop) {
-    this(routeTimetable, stop, true);
+  public CapacityCalculator(RouteTimetable routeTimetable, Stop stop) throws IOException {
+    this(
+        routeTimetable, 
+        stop,
+        true
+        );
   }
 
   /**
@@ -57,12 +63,41 @@ public class CapacityCalculator {
    * @param stop           the stop for which to calculate likely crowdedness
    * @param realTime       flag whether to attempt real-time crowdedness
    *                       calculation
+   * @throws IOException if datastore file cannot be accessed
    */
-  public CapacityCalculator(RouteTimetable routeTimetable, Stop stop, boolean realTime) {
+  public CapacityCalculator(RouteTimetable routeTimetable, Stop stop, boolean realTime) throws IOException {
+    this(
+        routeTimetable, 
+        stop, 
+        realTime, 
+        new DataStoreReader("data", stop, routeTimetable)
+        );
+  }
+
+  /**
+   * Initializes a CapacityCalculator instance.
+   *
+   * This constructor includes the optional realTime flag, which allows the
+   * caller to enable or disable real-time crowdedness calculation. It may be
+   * desirable to disable real-time calculations where a query is for a day
+   * other than the current day.
+   *
+   * This constructor also permits the passing of a DataStoreReader instance
+   * as a source of data for crowdedness calculations.
+   *
+   * @param routeTimetable the route timetable for which to calculate likely
+   *                       capacity/crowdedness
+   * @param stop           the stop for which to calculate likely crowdedness
+   * @param realTime       flag whether to attempt real-time crowdedness
+   *                       calculation
+   * @param dataStore      a DataStoreReader instance to use as a source of
+   *                       crowdedness data
+   */
+  CapacityCalculator(RouteTimetable routeTimetable, Stop stop, boolean realTime, DataStoreReader dataStore) {
     this.routeTimetable = routeTimetable;
     this.stop = stop;
     this.realTime = realTime;
-    this.dataStore = new DataStoreReader("data", stop, routeTimetable);
+    this.dataStore = dataStore;
   }
 
   /**
@@ -72,8 +107,9 @@ public class CapacityCalculator {
    * @return GREEN if there is likely seating available; ORANGE if there is 
    *         likely standing room available but no seating available; and
    *         RED if there is likely no room available
+   * @throws IOException if datastore cannot be read
    */
-  public CrowdednessIndicator crowdedness() {
+  public CrowdednessIndicator crowdedness() throws IOException {
     Map<String, Double> crowdedness;
 
     // Select type of calculation to carry out
@@ -100,8 +136,9 @@ public class CapacityCalculator {
    * in service and the bus has not already passed the desired stop.
    * 
    * @return true if real time data is available, else false
+   * @throws IOException if datastore cannot be read
    */
-  private boolean realTimeAvailable() {
+  private boolean realTimeAvailable() throws IOException {
     if (!getRealTime()) {
       return false;
     }
@@ -159,8 +196,9 @@ public class CapacityCalculator {
    * @return a map containing keys "seatedOccupancy" and "totalOccupancy" with
    *         values being the predicted seatedOccupancy rate and the predicted
    *         totalOccupancy rate for RouteTimetable at Stop
-   */
-  private Map<String, Double> realTimePredictedCrowdedness() {
+   * @throws IOException if datastore cannot be read
+   */ 
+  private Map<String, Double> realTimePredictedCrowdedness() throws IOException {
     List<Number> totalPredictions = new ArrayList<>();
     List<Number> seatedPredictions = new ArrayList<>();
 
@@ -215,8 +253,9 @@ public class CapacityCalculator {
    * @return last Stop for which data is currently available for the bus
    *         currently operating RouteTimetable, or null if the RT is not
    *         currently in operation
+   * @throws IOException if datastore cannot be read
    */
-  private Stop findBusCurrentLocation() {
+  private Stop findBusCurrentLocation() throws IOException {
     // List all stops in reverse, then go backwards through them until
     // the last stop for which data exists is found
     List<Stop> allStops = getRouteTimetable().getStops();

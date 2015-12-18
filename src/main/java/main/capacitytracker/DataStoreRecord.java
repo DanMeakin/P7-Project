@@ -24,7 +24,7 @@ class DataStoreRecord {
   private final int numPassengersExited;
   private final int numPassengersBoarded;
   private final int numPassengersOnDeparture;
-  private final int occupancyLevel;
+  private final double occupancyLevel;
 
   /**
    * Instantiates a DataStoreRecord instance.
@@ -45,7 +45,23 @@ class DataStoreRecord {
     this.numPassengersOnDeparture = Integer.parseInt(record.get("numberPassengersOnDeparture"));
     this.numPassengersExited = Integer.parseInt(record.get("numberPassengersExited"));
     this.numPassengersBoarded = Integer.parseInt(record.get("numberPassengersBoarded"));
-    this.occupancyLevel = Integer.parseInt(record.get("occupancyLevel"));
+    this.occupancyLevel = Double.parseDouble(record.get("occupancyLevel"));
+  }
+
+  /**
+   * Overrides equality testing method.
+   */
+  @Override
+  public boolean equals(Object o) {
+    return (o instanceof DataStoreRecord && equals((DataStoreRecord) o));
+  }
+
+  /**
+   * Determines if two DataStoreRecord instances are identical.
+   */
+  public boolean equals(DataStoreRecord otherDSR) {
+    return (getTimestamp().equals(otherDSR.getTimestamp()) &&
+            getRouteTimetable().equals(otherDSR.getRouteTimetable()));
   }
 
   public LocalDateTime getTimestamp() {
@@ -80,7 +96,7 @@ class DataStoreRecord {
     return numPassengersOnDeparture;
   }
 
-  public int getOccupancyLevel() {
+  public double getOccupancyLevel() {
     return occupancyLevel;
   }
 
@@ -142,7 +158,10 @@ class DataStoreRecord {
     String[] stComps = startTime.split(":");
     int time = Integer.parseInt(stComps[0]) * 60 + Integer.parseInt(stComps[1]);
     Route r = findRoute(routeNumber, routeDescription);
+    System.out.println("Date: " + date);
     Schedule s = Schedule.findSchedule(date);
+    System.out.println("Schedule: " + s);
+    System.out.println("First stop: " + r.getStops().get(0));
     return s.nextDepartureRouteTimetable(time, r.getStops().get(0), r);
   }
 }

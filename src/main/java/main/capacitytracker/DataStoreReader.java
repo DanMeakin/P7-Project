@@ -17,7 +17,8 @@ import main.model.*;
 public class DataStoreReader {
 
   public CSVParser dataStore;
-
+  
+  private final File dataStoreFile;
   private final RouteTimetable routeTimetable;
   private final Stop stop;
 
@@ -29,14 +30,14 @@ public class DataStoreReader {
    * @param stop                the stop for which to obtain data
    * @param routeTimetable      the route timetable on which buses travel for 
    *                            which to obtain data
+   * @throws IOException if datastore cannot be found at dataStoreFolderPath
    */
-  public DataStoreReader(String dataStoreFolderPath, Stop stop, RouteTimetable routeTimetable) {
+  public DataStoreReader(String dataStoreFolderPath, Stop stop, RouteTimetable routeTimetable) throws IOException {
     this.stop = stop;
     this.routeTimetable = routeTimetable;
-    try {
-      initializeDataStore(dataStoreFolderPath);
-    } catch (IOException e) {
-      throw new RuntimeException("error accessing datastore: " + e);
+    this.dataStoreFile = new File(dataStoreFolderPath, "datastore.csv");
+    if (!dataStoreFile.exists()) { 
+      throw new IOException("unable to find datastore file: " + dataStoreFile);
     }
   }
 
@@ -47,15 +48,21 @@ public class DataStoreReader {
    * those passed into the reader.
    *
    * @return CSVRecords containing matching data
+   * @throws RuntimeException if datastore cannot be closed after read
    */
-  public List<DataStoreRecord> read() {
-    List<DataStoreRecord> matchingData = new ArrayList<>();
-    for (CSVRecord record : dataStore) {
-      if (isMatching(record)) {
-        matchingData.add(new DataStoreRecord(record));
+  public List<DataStoreRecord> read() throws RuntimeException {
+    try {
+      initializeDataStore();
+      List<DataStoreRecord> matchingData = new ArrayList<>();
+      for (CSVRecord record : dataStore) {
+        if (isMatching(record)) {
+          matchingData.add(new DataStoreRecord(record));
+        }
       }
+      return matchingData;
+    } catch (IOException e) {
+      throw new RuntimeException("error accessing datastore: " + e);
     }
-    return matchingData;
   }
 
   /**
@@ -69,6 +76,7 @@ public class DataStoreReader {
    */
   public DataStoreRecord selectRecordForDate(LocalDate date) {
     for (DataStoreRecord r : read()) {
+      System.out.println(r.getTimestamp());
       if (r.getTimestamp().toLocalDate().equals(date)) {
         return r;
       }
@@ -81,10 +89,9 @@ public class DataStoreReader {
    *
    * @param dataStoreFolderPath the path to the folder containing the datastore
    */
-  private void initializeDataStore(String dataStoreFolderPath) throws IOException {
-    File dsFile = new File(dataStoreFolderPath, "datastore.csv");
-    BufferedReader br = new BufferedReader(new FileReader(dsFile));
-    dataStore = new CSVParser(br, CSVFormat.DEFAULT);
+  private void initializeDataStore() throws IOException {
+    BufferedReader br = new BufferedReader(new FileReader(dataStoreFile));
+    dataStore = new CSVParser(br, CSVFormat.DEFAULT.withHeader());
   }
 
   /**
