@@ -461,10 +461,20 @@ public class ItineraryFinder {
     // First, add the overall least time path
     leastTimePaths.add(calculateLeastTimePath());
 
+    // If no result found, return null
+    if (leastTimePaths.isEmpty()) {
+      return null;
+    }
+
     // Once the overall least time path has been found, increment starting
     // time and find the next LTP. Repeat until k paths are obtained.
     while (leastTimePaths.size() < k) {
       List<TArc> previousLTP = leastTimePaths.get(leastTimePaths.size()-1);
+      // If previous LTP is empty, then break, remove empty path, and return
+      if (previousLTP.isEmpty()) {
+        leastTimePaths.remove(leastTimePaths.size()-1);
+        break;
+      }
       int previousLTPDeparture = previousLTP.get(0).departureTime();
       setTime(previousLTPDeparture + 1);
       leastTimePaths.add(calculateLeastTimePath());
