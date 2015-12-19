@@ -1,6 +1,8 @@
 package main.gui;
 
 import com.sun.javafx.scene.control.skin.ScrollBarSkin;
+import com.sun.jdi.FloatType;
+import com.sun.tools.javac.comp.Flow;
 import main.capacitytracker.CapacityCalculator;
 import main.routeplanner.Itinerary;
 import main.routeplanner.ItineraryFinder;
@@ -56,7 +58,8 @@ public class Page2 extends JPanel{
 
         // Search Content
         JPanel pSearchContent = new JPanel();
-        pSearchContent.setPreferredSize(new Dimension(SCREEN_WIDTH -30, SCREEN_HEIGHT -600));
+        pSearchContent.setLayout(new FlowLayout(FlowLayout.LEFT));
+        pSearchContent.setPreferredSize(new Dimension(SCREEN_WIDTH -30, 100));
         DropShadowBorder searchShadow = new DropShadowBorder();
         searchShadow.setShadowSize(5);
         searchShadow.setShadowColor(Color.BLACK);
@@ -71,46 +74,58 @@ public class Page2 extends JPanel{
         for (int i = 0; i < pSearchContainer.getComponents().length; i++) {
             pSearchContainer.getComponent(i).setBackground(Color.decode(SECONDARY_COLOR));
         }
-
-        // Search Container - From Label
-        JLabel fromLabel = new JLabel ("From");
-        fromLabel.setFont(h2);
-        fromLabel.setForeground(Color.decode(TEXT_COLOR));
-
-        pSearchContent.add(fromLabel);
-
-        // JLabel which shows the typed From
-
-        JLabel typeFrom = new JLabel(itineraryFinder.getStartingStop().getName());
-
-        typeFrom.setFont(h2);
-        typeFrom.setForeground(Color.decode(FIRST_TEXT_COLOR));
-        pSearchContent.add(typeFrom);
-
         // Search Container - Arrow Icon
         JPanel pSearchIcon = new JPanel();
         pSearchIcon.setLayout(new GridLayout(0,1));
-        pSearchIcon.add(new JLabel(new ImageIcon(getClass().getResource("/main/gui/assets/icons/arrow.png"))));
-        pSearchIcon.setPreferredSize(new Dimension(48, 48));
+        pSearchIcon.add(new JLabel(new ImageIcon(getClass().getResource("/main/gui/assets/icons/circleLine70.png"))));
+        pSearchIcon.setPreferredSize(new Dimension(48, 70));
         pSearchIcon.setBackground(Color.decode(SECONDARY_COLOR));
 
         pSearchContent.add(pSearchIcon);
 
-        // Search Container - To Label
-        JLabel toLabel = new JLabel ("To");
-        toLabel.setForeground(Color.decode(TEXT_COLOR));
+        //Text container
+        JPanel textContainer = new JPanel();
+        textContainer.setLayout(new FlowLayout(FlowLayout.LEFT));
+        textContainer.setPreferredSize(new Dimension(375, 100));
+        textContainer.setBackground(Color.decode(SECONDARY_COLOR));
+
+        pSearchContent.add(textContainer);
+
+        //Text container - From
+        JPanel pFrom = new JPanel();
+        pFrom.setBackground(Color.decode(SECONDARY_COLOR));
+        JLabel fromLabel = new JLabel ("From:");
+        fromLabel.setFont(h2);
+        fromLabel.setForeground(Color.decode(TEXT_COLOR));
+        pFrom.add(fromLabel);
+
+        JLabel typeFrom = new JLabel(itineraryFinder.getStartingStop().getName());
+        typeFrom.setFont(h3);
+        typeFrom.setForeground(Color.decode(FIRST_TEXT_COLOR));
+        pFrom.add(typeFrom);
+
+        textContainer.add(pFrom);
+
+        //Text container - Divider panel
+        JPanel dividerP = new JPanel();
+        dividerP.setPreferredSize(new Dimension(370, 10));
+        dividerP.setBackground(Color.decode(SECONDARY_COLOR));
+        textContainer.add(dividerP);
+
+        //Text container - To
+        JPanel pTo = new JPanel();
+        pTo.setBackground(Color.decode(SECONDARY_COLOR));
+        JLabel toLabel = new JLabel ("To:");
         toLabel.setFont(h2);
+        toLabel.setForeground(Color.decode(TEXT_COLOR));
+        pTo.add(toLabel);
 
-        pSearchContent.add(toLabel);
-
-        // JLabel which shows the typed Destination
         JLabel typeTo = new JLabel(itineraryFinder.getEndingStop().getName());
-
-        typeTo.setFont(h2);
+        typeTo.setFont(h3);
         typeTo.setForeground(Color.decode(FIRST_TEXT_COLOR));
-        pSearchContent.add(typeTo);
+        pTo.add(typeTo);
 
-
+        textContainer.add(pTo);
 
         // Scrollbar
         JScrollPane scrollPane = new JScrollPane();
