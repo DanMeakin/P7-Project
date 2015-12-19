@@ -2,6 +2,8 @@ package main.gui;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
+import java.net.URL;
 
 /**
  * * @authors Ivo Hendriks, Janus Avbæk Larsen, Helle Hyllested Larsen, Dan Meakin 02-12-2015.
@@ -27,7 +29,9 @@ public class TopBar extends JPanel {
 
         // JMenubar - Menu/Button
         JMenu topMenu = new JMenu("");
-        ImageIcon topMenuButtonIcon = new ImageIcon(this.getClass().getResource("/main/gui/assets/icons/menu.png"));
+        URL iconPath = ClassLoader.getSystemClassLoader().getResource("assets/icons/menu.png");
+        System.out.println(iconPath);
+        ImageIcon topMenuButtonIcon = new ImageIcon(iconPath);
         topMenu.setIcon(topMenuButtonIcon);
         topMenu.setOpaque(true);
         topMenu.setBackground(Color.decode(PRIMARY_COLOR));

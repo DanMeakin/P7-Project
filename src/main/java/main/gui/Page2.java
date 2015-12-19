@@ -10,6 +10,7 @@ import javax.swing.plaf.ScrollBarUI;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 import java.awt.*;
 import java.util.List;
+import java.net.URL;
 
 /**
  * * @authors Ivo Hendriks, Janus Avbæk Larsen, Helle Hyllested Larsen, Dan Meakin 02-12-2015.
@@ -60,7 +61,8 @@ public class Page2 extends JPanel{
         // Search Container - Arrow Icon
         JPanel pSearchIcon = new JPanel();
         pSearchIcon.setLayout(new GridLayout(0,1));
-        pSearchIcon.add(new JLabel(new ImageIcon(getClass().getResource("/main/gui/assets/icons/circleLine70.png"))));
+        URL iconPath = ClassLoader.getSystemClassLoader().getResource("assets/icons/circleLine70.png");
+        pSearchIcon.add(new JLabel(new ImageIcon(iconPath)));
         pSearchIcon.setPreferredSize(new Dimension(48, 70));
         pSearchIcon.setBackground(Color.decode(SECONDARY_COLOR));
 
@@ -137,7 +139,7 @@ public class Page2 extends JPanel{
         this.add(scrollPane);
 
         // loop for generation of cards. This is expected to get the best Itineraries given a start stop, destination stop and local date time (Filter)(I get a list, but sometimes i get nothing out of the list. And what exactly is n(4) equal to( Everytime i set n to more than one, i get nothing back, why?)? )
-        List<Itinerary> itineraryList = itineraryFinder.findBestItineraries(4);
+        List<Itinerary> itineraryList = itineraryFinder.findBestItineraries(3);
             for (int i = 0; i < itineraryList.size(); i++) {
                 Itinerary currentItinerary = itineraryList.get(i);
                 List<ItineraryLeg> itineraryLegs = currentItinerary.getLegs();

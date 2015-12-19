@@ -13,6 +13,7 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.*;
 import java.util.List;
+import java.net.URL;
 
 import main.capacitytracker.CapacityCalculator;
 import main.misc.DataLoader;
@@ -60,7 +61,7 @@ public class StartScreen extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
         // Load data
-        dataLoader = new DataLoader("data/mock");
+        dataLoader = new DataLoader("data");
 
         // TopBar
         pTop = new TopBar();
@@ -186,7 +187,8 @@ public class StartScreen extends JFrame {
 
         // edit the Button
         JButton dateBtn = (JButton)datePicker.getComponent(1);
-        Image editImage = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/main/gui/assets/icons/calendarSmall.png"));
+        URL iconPath = ClassLoader.getSystemClassLoader().getResource("assets/icons/calendarSmall.png");
+        Image editImage = Toolkit.getDefaultToolkit().getImage(iconPath);
 
         dateBtn.setIcon(new ImageIcon(editImage));
         dateBtn.setFocusPainted(false);
@@ -302,7 +304,8 @@ public class StartScreen extends JFrame {
 
         // medium Icon container
         JPanel mediumIconContainer = new JPanel();
-        mediumContainer.add(new JLabel(new ImageIcon(getClass().getResource("/main/gui/assets/icons/crowdednessMedium.png"))));
+        iconPath = ClassLoader.getSystemClassLoader().getResource("assets/icons/crowdednessMedium.png");
+        mediumContainer.add(new JLabel(new ImageIcon(iconPath)));
         mediumIconContainer.setPreferredSize(new Dimension(100,50));
 
         // Spacer after medium buses
@@ -326,7 +329,8 @@ public class StartScreen extends JFrame {
 
         // free Icon container
         JPanel freeIconContainer = new JPanel();
-        freeContainer.add(new JLabel(new ImageIcon(getClass().getResource("/main/gui/assets/icons/crowdednessUncrowded.png"))));
+        iconPath = ClassLoader.getSystemClassLoader().getResource("assets/icons/crowdednessUncrowded.png");
+        freeContainer.add(new JLabel(new ImageIcon(iconPath)));
         freeIconContainer.setPreferredSize(new Dimension(200,50));
 
         // Spacer after free buses
