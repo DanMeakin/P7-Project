@@ -13,7 +13,6 @@ import java.util.GregorianCalendar;
 import org.apache.commons.csv.*;
 
 import main.model.*;
-import main.model.Schedule.DayOption;
 
 /**
  * This class loads example Stop, Route, RouteTimetable, Bus and BusType data
@@ -32,6 +31,7 @@ public class DataLoader {
   public String getDataPath() {
     return dataPath;
   }
+
 
   /**
    * Creats a DataLoader instance.
