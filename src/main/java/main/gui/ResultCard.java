@@ -7,11 +7,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Enumeration;
 
 /**
- * Created by janusalarsen on 10/12/2015.
+ * * @authors Ivo Hendriks, Janus Avbæk Larsen, Helle Hyllested Larsen, Dan Meakin 02-12-2015.
  */
+
 public class ResultCard extends JPanel {
 
     private final int CARD_HEIGHT = 175;
@@ -31,7 +31,9 @@ public class ResultCard extends JPanel {
     private Itinerary itinerary;
 
     public ResultCard(CapacityCalculator.CrowdednessIndicator crowdednessIndicator, String busNumber, String date, String departureTime, String busStop, int duration, Itinerary itinerary) {
+
         super();
+
         this.setPreferredSize(new Dimension(CARD_WIDTH, CARD_HEIGHT));
         this.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
         this.setBackground(Color.decode(SECONDARY_COLOR));
@@ -99,8 +101,7 @@ public class ResultCard extends JPanel {
 
         pResultTextContainer.add(resultInfoContainer);
 
-             // Text area That contains the results: Departure time, start busstop and the travel duration.
-        // TODO: Add how many shifts the user needs to get to the destination
+        // Text area That contains the results: Departure time, start busstop and the travel duration.
         JTextArea pResultInfo = new JTextArea("Departure " + departureTime + ", \n"  + busStop+ ", \n" + duration + " min.");
         pResultInfo.setPreferredSize(new Dimension(280,100));
         pResultInfo.setEditable(false);
@@ -124,9 +125,7 @@ public class ResultCard extends JPanel {
         extendResultButton.setForeground(Color.decode(PRIMARY_COLOR));
         extendResultButton.setBackground(Color.decode("#FAFAFA"));
         extendResultButton.setBorder(BorderFactory.createLineBorder(Color.decode("#FAFAFA")));
-        // TODO: add actionlistner that makes it possible to change to ExtendedResult screen
-
-        extendResultButton.addActionListener(new ActionListener() {
+          extendResultButton.addActionListener(new ActionListener() {
 
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -148,14 +147,11 @@ public class ResultCard extends JPanel {
         this.add(detailsSpacer);
         this.add(extendResultButton);
 
-
         JPanel pDivider = new JPanel();
         pDivider.setPreferredSize(new Dimension(CARD_WIDTH, 15));
 
         }
 
-
-    // TODO: Change screen when detail button is pressed
 
     private JPanel getExtendedResult(Itinerary itinerary) {
         JPanel ExtendedResult = new ExtendedResult(itinerary);

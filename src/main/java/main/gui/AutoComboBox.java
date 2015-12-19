@@ -6,7 +6,7 @@ import javax.swing.JComboBox;
 import javax.swing.JTextField;
 
 /**
- * Created by Helle on 07-12-2015.
+ * * @authors Ivo Hendriks, Janus Avbæk Larsen, Helle Hyllested Larsen, Dan Meakin 02-12-2015.
  */
 
 public class AutoComboBox extends JComboBox<Object> {
@@ -31,6 +31,7 @@ public class AutoComboBox extends JComboBox<Object> {
      * set the item list of the AutoComboBox
      * @param keyWord an String array
      */
+
     public void setKeyWord(String[] keyWord) {
         this.keyWord = keyWord;
         setMyVectorInitial();

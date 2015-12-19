@@ -6,8 +6,9 @@ import java.util.Vector;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JTextField;
+
 /**
- * Created by Helle on 07-12-2015.
+ * * @authors Ivo Hendriks, Janus Avbæk Larsen, Helle Hyllested Larsen, Dan Meakin 02-12-2015.
  */
 
 public class ComboListener extends KeyAdapter{
@@ -32,7 +33,6 @@ public class ComboListener extends KeyAdapter{
         ((JTextField)cbListener.getEditor().getEditorComponent()).setText(text);
         cbListener.showPopup();
     }
-
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public Vector getFilteredList(String text)
