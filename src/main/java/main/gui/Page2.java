@@ -1,44 +1,30 @@
 package main.gui;
 
-import com.sun.javafx.scene.control.skin.ScrollBarSkin;
-import main.capacitytracker.CapacityCalculator;
 import main.routeplanner.Itinerary;
 import main.routeplanner.ItineraryFinder;
 import main.routeplanner.ItineraryLeg;
 import org.jdesktop.swingx.border.DropShadowBorder;
 
-import javax.print.DocFlavor;
 import javax.swing.*;
 import javax.swing.plaf.ScrollBarUI;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 import java.awt.*;
 import java.util.List;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.AdjustmentEvent;
-import java.awt.event.AdjustmentListener;
-import java.time.Year;
-
-
 /**
- * Created by janusalarsen on 04/12/2015.
+ * * @authors Ivo Hendriks, Janus Avbæk Larsen, Helle Hyllested Larsen, Dan Meakin 02-12-2015.
  */
+
 public class Page2 extends JPanel{
     private final int SCREEN_HEIGHT = 768;
     private final int SCREEN_WIDTH = 480;
-    private final String PRIMARY_COLOR = "#009688";
     private final String SECONDARY_COLOR = "#FAFAFA";
-    private final String TERTIARY_COLOR = "#D2D4D2";
     private final String TEXT_COLOR = "#616161";
     private final String FIRST_TEXT_COLOR = "#212121";
-    private final Font h1 = new Font("Roboto", Font.PLAIN, 24);
     private final Font h2 = new Font("Roboto", Font.PLAIN, 18);
     private final Font h3 = new Font("Roboto", Font.PLAIN, 14);
 
-
     private ItineraryFinder itineraryFinder;
-
 
     public Page2(ItineraryFinder itineraryFinder){
 
@@ -46,7 +32,6 @@ public class Page2 extends JPanel{
         super();
         this.setLayout(new FlowLayout(FlowLayout.LEADING,0,0));
         this.setPreferredSize(new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT));
-
 
         this.itineraryFinder = itineraryFinder;
 
@@ -56,7 +41,8 @@ public class Page2 extends JPanel{
 
         // Search Content
         JPanel pSearchContent = new JPanel();
-        pSearchContent.setPreferredSize(new Dimension(SCREEN_WIDTH -30, SCREEN_HEIGHT -600));
+        pSearchContent.setLayout(new FlowLayout(FlowLayout.LEFT));
+        pSearchContent.setPreferredSize(new Dimension(SCREEN_WIDTH -30, 100));
         DropShadowBorder searchShadow = new DropShadowBorder();
         searchShadow.setShadowSize(5);
         searchShadow.setShadowColor(Color.BLACK);
@@ -71,46 +57,58 @@ public class Page2 extends JPanel{
         for (int i = 0; i < pSearchContainer.getComponents().length; i++) {
             pSearchContainer.getComponent(i).setBackground(Color.decode(SECONDARY_COLOR));
         }
-
-        // Search Container - From Label
-        JLabel fromLabel = new JLabel ("From");
-        fromLabel.setFont(h2);
-        fromLabel.setForeground(Color.decode(TEXT_COLOR));
-
-        pSearchContent.add(fromLabel);
-
-        // JLabel which shows the typed From
-
-        JLabel typeFrom = new JLabel(itineraryFinder.getStartingStop().getName());
-
-        typeFrom.setFont(h2);
-        typeFrom.setForeground(Color.decode(FIRST_TEXT_COLOR));
-        pSearchContent.add(typeFrom);
-
         // Search Container - Arrow Icon
         JPanel pSearchIcon = new JPanel();
         pSearchIcon.setLayout(new GridLayout(0,1));
-        pSearchIcon.add(new JLabel(new ImageIcon(getClass().getResource("/main/gui/assets/icons/arrow.png"))));
-        pSearchIcon.setPreferredSize(new Dimension(48, 48));
+        pSearchIcon.add(new JLabel(new ImageIcon(getClass().getResource("/main/gui/assets/icons/circleLine70.png"))));
+        pSearchIcon.setPreferredSize(new Dimension(48, 70));
         pSearchIcon.setBackground(Color.decode(SECONDARY_COLOR));
 
         pSearchContent.add(pSearchIcon);
 
-        // Search Container - To Label
-        JLabel toLabel = new JLabel ("To");
-        toLabel.setForeground(Color.decode(TEXT_COLOR));
+        //Text container
+        JPanel textContainer = new JPanel();
+        textContainer.setLayout(new FlowLayout(FlowLayout.LEFT));
+        textContainer.setPreferredSize(new Dimension(375, 100));
+        textContainer.setBackground(Color.decode(SECONDARY_COLOR));
+
+        pSearchContent.add(textContainer);
+
+        //Text container - From
+        JPanel pFrom = new JPanel();
+        pFrom.setBackground(Color.decode(SECONDARY_COLOR));
+        JLabel fromLabel = new JLabel ("From:");
+        fromLabel.setFont(h2);
+        fromLabel.setForeground(Color.decode(TEXT_COLOR));
+        pFrom.add(fromLabel);
+
+        JLabel typeFrom = new JLabel(itineraryFinder.getStartingStop().getName());
+        typeFrom.setFont(h3);
+        typeFrom.setForeground(Color.decode(FIRST_TEXT_COLOR));
+        pFrom.add(typeFrom);
+
+        textContainer.add(pFrom);
+
+        //Text container - Divider panel
+        JPanel dividerP = new JPanel();
+        dividerP.setPreferredSize(new Dimension(370, 10));
+        dividerP.setBackground(Color.decode(SECONDARY_COLOR));
+        textContainer.add(dividerP);
+
+        //Text container - To
+        JPanel pTo = new JPanel();
+        pTo.setBackground(Color.decode(SECONDARY_COLOR));
+        JLabel toLabel = new JLabel ("To:");
         toLabel.setFont(h2);
+        toLabel.setForeground(Color.decode(TEXT_COLOR));
+        pTo.add(toLabel);
 
-        pSearchContent.add(toLabel);
-
-        // JLabel which shows the typed Destination
         JLabel typeTo = new JLabel(itineraryFinder.getEndingStop().getName());
-
-        typeTo.setFont(h2);
+        typeTo.setFont(h3);
         typeTo.setForeground(Color.decode(FIRST_TEXT_COLOR));
-        pSearchContent.add(typeTo);
+        pTo.add(typeTo);
 
-
+        textContainer.add(pTo);
 
         // Scrollbar
         JScrollPane scrollPane = new JScrollPane();
@@ -140,9 +138,9 @@ public class Page2 extends JPanel{
 
         // loop for generation of cards. This is expected to get the best Itineraries given a start stop, destination stop and local date time (Filter)(I get a list, but sometimes i get nothing out of the list. And what exactly is n(4) equal to( Everytime i set n to more than one, i get nothing back, why?)? )
         List<Itinerary> itineraryList = itineraryFinder.findBestItineraries(4);
-        for (int i = 0; i < itineraryList.size(); i++) {
-            Itinerary currentItinerary = itineraryList.get(i);
-            List<ItineraryLeg> itineraryLegs = currentItinerary.getLegs();
+            for (int i = 0; i < itineraryList.size(); i++) {
+                Itinerary currentItinerary = itineraryList.get(i);
+                List<ItineraryLeg> itineraryLegs = currentItinerary.getLegs();
 
             String startTime = getTimeString(itineraryLegs.get(0).getStartTime());
             String startStop = "";
@@ -155,7 +153,7 @@ public class Page2 extends JPanel{
             }
 
             // Empty string is bus name - 0 equals duration time
-            pContent.add(new ResultCard(currentItinerary.crowdedness(),itineraryLegs.get(0).getRouteTimetable().getRoute().getNumber(),currentItinerary.getDate().toString(),startTime,startStop,0,currentItinerary));
+            pContent.add(new ResultCard(currentItinerary.crowdedness(),itineraryLegs.get(0).getRouteTimetable().getRoute().getNumber(),currentItinerary.getDate().toString(),startTime,startStop,currentItinerary.totalDuration(),currentItinerary));
             System.out.println(i);
         }
 
@@ -163,7 +161,7 @@ public class Page2 extends JPanel{
         setVisible(true);
     }
 
-    private String getTimeString(int minutesFromMidnight){
+    public static String getTimeString(int minutesFromMidnight){
 
         String hours = Integer.toString(minutesFromMidnight / 60);
         hours = addZero(hours);
@@ -176,7 +174,7 @@ public class Page2 extends JPanel{
 
     }
 
-    private String addZero(String timeValue){
+    public static String addZero(String timeValue){
         String resultTimeValue = timeValue;
         if (Integer.valueOf(timeValue) < 10){
             resultTimeValue = "0" + resultTimeValue;

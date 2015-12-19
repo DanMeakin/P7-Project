@@ -1,23 +1,16 @@
 package main.gui;
 
-import org.jdesktop.swingx.border.DropShadowBorder;
-
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 /**
- * Created by Helle on 08-12-2015.
+ * * @authors Ivo Hendriks, Janus Avbæk Larsen, Helle Hyllested Larsen, Dan Meakin 02-12-2015.
  */
+
 public class TopBar extends JPanel {
-    private final int SCREEN_HEIGHT = 768;
     private final int SCREEN_WIDTH = 480;
     public static final String PRIMARY_COLOR = "#009688";
-    private final String TEXT_COLOR = "#616161";
     private final Font h1 = new Font("Roboto", Font.PLAIN, 24);
-    private final Font h2 = new Font("Roboto", Font.PLAIN, 18);
-    private final Font h3 = new Font("Roboto", Font.PLAIN, 14);
     public JMenuItem newSearch;
     public JMenuItem settings;
     public JMenuItem about;
@@ -44,20 +37,6 @@ public class TopBar extends JPanel {
         settings = new JMenuItem("Settings");
         about = new JMenuItem("About");
         exit = new JMenuItem("Exit");
-
- /*       newSearch.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                changeScreen(getStartPage());
-            }
-        });
-
-        exit.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dispose();
-            }
-        });*/
 
         topMenu.add(newSearch);
         topMenu.add(settings);

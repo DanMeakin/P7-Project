@@ -23,7 +23,6 @@ import main.routeplanner.ItineraryFinder;
  * * @authors Ivo Hendriks, Janus Avbæk Larsen, Helle Hyllested Larsen, Dan Meakin 02-12-2015.
  */
 
-
 public class StartScreen extends JFrame {
 
     // Constants
@@ -31,10 +30,8 @@ public class StartScreen extends JFrame {
     private final int SCREEN_WIDTH = 480;
     public static final String PRIMARY_COLOR = "#009688";
     private final String TEXT_COLOR = "#616161";
-    private final Font h1 = new Font("Roboto", Font.PLAIN, 24);
     private final Font h2 = new Font("Roboto", Font.PLAIN, 18);
     private final Font h3 = new Font("Roboto", Font.PLAIN, 14);
-
 
     // Private members
     private JPanel startPage;
@@ -48,10 +45,8 @@ public class StartScreen extends JFrame {
     private JXDatePicker datePicker;
     private JTextField timeTextField;
 
-
     private ItineraryFinder itineraryFinder;
     private DataLoader dataLoader;
-
 
     public static void main (String args[]){
         new StartScreen();
@@ -140,17 +135,12 @@ public class StartScreen extends JFrame {
         fromContainer.add(fromLabel);
 
         // From Container - From autocompletionbox
-        // TODO: Make it possible to press enter so the dropdrown disapreares. Find a way to not show suggestions unless he user has begun typing and limit the amount of suggestions shown.
-        // TODO: Set Default button!
-
         fromBox = new AutoComboBox();
-        // TODO: Udskiftes med resultatsæt fra rejseplanen.
         List<Stop> stopList = Stop.getAllStops();
         String[] stopArray = new String[Stop.numberOfStops()];
         for (int i = 0; i< stopArray.length; i++){
             stopArray[i] = stopList.get(i).getName();
         }
-
 
         fromBox.setKeyWord(stopArray);
         fromBox.setPreferredSize(new Dimension(230,30));
@@ -169,12 +159,8 @@ public class StartScreen extends JFrame {
         destinationContainer.add(destinationLabel);
 
         // Destination Container - Destination autocompletionbox
-        // TODO: Make it possible to press enter so the dropdrown disapreares. Find a way to not show suggestions unless he user has begun typing and limit the amount of suggestions shown.
-        // TODO: Set Default button Show all Buses!
-
         destinationBox = new AutoComboBox();
 
-        // TODO: Udskiftes med resultatsæt fra rejseplanen.
         destinationBox.setKeyWord(stopArray);
         destinationBox.setPreferredSize(new Dimension(230,30));
         destinationBox.setBackground(Color.decode("#FAFAFA"));
@@ -219,7 +205,6 @@ public class StartScreen extends JFrame {
         dateContainer.add(datePickerSpacer);
 
         // JRadioButton for leaving/arriving
-        // TODO: Add actionlistener to all RadioButtonGruops
         JRadioButton leavingButton = new JRadioButton("Leaving", true);
         leavingButton.setBackground(Color.decode("#FAFAFA"));
         leavingButton.setFont(h3);
