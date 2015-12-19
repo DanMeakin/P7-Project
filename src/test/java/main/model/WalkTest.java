@@ -1,4 +1,4 @@
-package main;
+package main.model;
 
 import org.junit.*;
 import org.junit.rules.ExpectedException;
@@ -8,8 +8,6 @@ import static org.mockito.Mockito.*;
 
 import java.util.List;
 import java.util.Arrays;
-
-import main.Stop;
 
 public class WalkTest {
 

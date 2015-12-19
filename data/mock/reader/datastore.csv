@@ -1,0 +1,7 @@
+timestamp,busFleetNumber,routeTimetableID,routeNumber,routeDescription,routeTimetableStartTime,scheduleDayType,stopID,numberPassengersOnArrival,numberPassengersExited,numberPassengersBoarded,numberPassengersOnDeparture,maxSeatedPassengers,maxStandingPassengers,maxTotalPassengers,occupancyLevel
+2015-12-17 21:22,571,8935,5,Test Description,13:26,WEEKDAYS,535471,3,18,14,-1,36,30,66,0.9665768458
+2015-12-17 21:22,740,1088,10,Test Description,05:26,WEEKDAYS,2568457,17,19,7,5,22,4,26,0.4452748033
+2015-12-17 21:22,696,7457,15,Test Description,00:45,WEEKDAYS,8895303,5,7,18,16,6,34,40,0.8606762959
+2015-12-17 21:22,603,292,20,Test Description,11:11,WEEKDAYS,9947672,2,10,6,-2,50,19,69,0.6390653839
+2015-12-18 17:41,153,1088,10,Test Description,05:26,WEEKDAYS,987101,17,19,7,5,22,4,26,0.4452748033
+2015-12-18 18:01,491,1088,10,Test Description,05:26,WEEKDAYS,2568457,17,19,7,5,22,4,26,0.4452748033

@@ -1,4 +1,4 @@
-package main;
+package main.model;
 
 import org.junit.*;
 import org.junit.rules.ExpectedException;
@@ -10,11 +10,6 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Observer;
 import java.util.ArrayList;
-
-import main.Bus;
-import main.BusType;
-import main.RouteTimetable;
-import main.Stop;
 
 /**
  * BusTest class contains a series of unit tests for the Bus class.
@@ -324,7 +319,7 @@ public class BusTest {
    */
   @Test
   public void testLeavesStop() {
-    Stop currentStop = stoppedBus.getStop();
+    stoppedBus.getStop();
     stoppedBus.leavesStop();
     assertFalse(stoppedBus.isAtStop());
     assertNull(stoppedBus.getStop());
@@ -491,6 +486,16 @@ public class BusTest {
     Bus thirdBus = new Bus(fleetNumber + 9992, anotherMockedBusType, acquisitionDate);
     assertEquals(Bus.getNumOfBusesPerType(mockedBusType), 3);
     assertEquals(Bus.getNumOfBusesPerType(anotherMockedBusType), 1);
+  }
+
+  /**
+   * testGetOccupancyLevel() method
+   */
+  @Test
+  public void testGetOccupancyLevel() {
+    double expected = (double) initialPassengers / (busTypeSeatedCapacity + busTypeStandingCapacity) ;
+    double actual = bus.getOccupancyLevel();
+    assertEquals(expected, actual, 0.001);
   }
 
   /**

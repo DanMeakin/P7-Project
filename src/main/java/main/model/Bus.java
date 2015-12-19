@@ -1,4 +1,4 @@
-package main;
+package main.model;
 
 import java.text.DecimalFormat;
 import java.util.*;
@@ -9,7 +9,7 @@ import java.util.Observable;
  * The Bus class defines bus objects that hold several
  * characteristics of the bus such as fleetNmumber,
  * busType, numOfPassengers etc. and implement
- * a number of domain specific methods such as addBus,
+ * a number of domain.model specific methods such as addBus,
  * startRoute, arrivesAtStop, passengersBoarding etc.
  */
 public class Bus extends Observable {

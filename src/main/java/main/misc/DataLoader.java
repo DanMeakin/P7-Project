@@ -1,23 +1,19 @@
-package main;
+package main.misc;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.*;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.List;
-import java.util.Scanner;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
 import org.apache.commons.csv.*;
 
-import main.routeplanner.Itinerary;
-import main.routeplanner.ItineraryFinder;
-import main.routeplanner.ItineraryLeg;
+import main.model.*;
+import main.model.Schedule.DayOption;
 
 /**
  * This class loads example Stop, Route, RouteTimetable, Bus and BusType data
@@ -75,55 +71,6 @@ public class DataLoader {
    */
   private File timingsFile() {
     return new File(getDataPath(), "frequencies.csv");
-  }
-
-  public static void main(String[] args) {
-    new DataLoader("data");
-    System.out.println("Got " + Stop.getAllStops().size() + " Stops; got " + Route.getAllRoutes().size() + " Routes; got " + Walk.getAllWalks().size() + " Walks!");
-    System.out.println("Created " + (RouteTimetable.getCounterValue() - 10_000) + " RouteTimetables; " + Bus.getAllBuses().size() + " buses");
-    long startTime = System.nanoTime();
-    ItineraryFinder itf = new ItineraryFinder(null, null, LocalDateTime.now());
-    long endTime = System.nanoTime();
-    System.out.println("Took " + (endTime - startTime) / 1_000_000_000 + "s");
-    Scanner scan = new Scanner(System.in);
-    while (true) {
-      Stop start;
-      Stop end;
-      System.out.println("Please enter starting stop: ");
-      String s = scan.next();
-      if (s.equals("exit")) {
-        break;
-      }
-      List<Stop> starts = Stop.findStop(s);
-      if (starts.size() > 0) {
-        start = starts.get(0);
-      } else {
-        continue;
-      }
-      System.out.println("Got " + start);
-      System.out.println("Please enter ending stop: ");
-      String e = scan.next();
-      List<Stop> ends = Stop.findStop(e);
-      if (ends.size() > 0) {
-        end = ends.get(0);
-      } else {
-        continue;
-      }
-      System.out.println("Got " + end);
-      itf = new ItineraryFinder(start, end, LocalDateTime.of(2015, Calendar.DECEMBER, 1, 10, 0, 0));
-      List<Itinerary> best = itf.findBestItineraries(3);
-      for (int i = 0; i < best.size(); i++) {
-        System.out.println("==== BEST ITINERARY #" + (i+1) + " ====");
-        for (ItineraryLeg leg : best.get(i).getLegs()) {
-          String service = "Walk";
-          if (leg.isBus()) {
-            service = "Bus " + leg.getRouteTimetable().getRoute().getNumber() + " " + leg.getRouteTimetable().getRoute().getNumber();
-          }
-          System.out.println(service + ": " + leg.getOrigin() + " -> " + leg.getDestination() + ", " + leg.getStartTime() / 60 + ":" + leg.getStartTime() % 60);
-        }
-      }
-    }
-    scan.close();
   }
 
   /**
@@ -190,14 +137,9 @@ public class DataLoader {
       for (Route r : Route.findRouteByNumber(number)) {
         int currentTime = startTime;
         while (currentTime <= endTime) {
-          // Rush hour between 8am and 10am, and 4pm and 6pm
-          boolean isRushHour = 
-            (startTime >= 8*60 && startTime <= 10*60) ||
-            (startTime >= 16*60 && startTime <= 18*60);
-          RouteTimetable rt = new RouteTimetable(r, weekdaySchedule, currentTime, isRushHour);
+          RouteTimetable rt = new RouteTimetable(r, weekdaySchedule, currentTime, isRushHour(currentTime));
           Bus bus = new Bus(counter, genericBusType, acquisitionDate);
           weekdaySchedule.allocateBus(rt, bus);
-          System.out.println("Created RT for Route " + r.getNumber() + " " + r.getDescription() + " at " + currentTime);
           currentTime += weekdayFrequency;
           counter++;
         }
@@ -206,7 +148,6 @@ public class DataLoader {
           RouteTimetable rt = new RouteTimetable(r, saturdaySchedule, currentTime, false);
           Bus bus = new Bus(counter, genericBusType, acquisitionDate);
           saturdaySchedule.allocateBus(rt, bus);
-          System.out.println("Created RT for Route " + r.getNumber() + " " + r.getDescription() + " at " + currentTime);
           currentTime += saturdayFrequency;
           counter++;
         }
@@ -215,7 +156,6 @@ public class DataLoader {
           RouteTimetable rt = new RouteTimetable(r, sundaySchedule, currentTime, false);
           Bus bus = new Bus(counter, genericBusType, acquisitionDate);
           sundaySchedule.allocateBus(rt, bus);
-          System.out.println("Created RT for Route " + r.getNumber() + " " + r.getDescription() + " at " + currentTime);
           currentTime += sundayFrequency;
           counter++;
         }
@@ -247,5 +187,17 @@ public class DataLoader {
     } catch (IOException e) {
       throw new RuntimeException("IOException: " + e.getMessage());
     }
+  }
+
+  /**
+   * Determines whether time falls within rush hour.
+   *
+   * Rush hour is defined as being between 8am - 10am, and
+   * 4pm - 6pm.
+   *
+   * @return true if time falls within rush hour, else false
+   */
+  private boolean isRushHour(int time) {
+    return (time >= 8*60 && time <= 10*60) || (time >= 16*60 && time <= 18*60);
   }
 }

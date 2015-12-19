@@ -2,14 +2,14 @@ package main.routeplanner;
 
 import org.junit.*;
 
-import main.capacitytracker.CapacityCalculator;
-import main.Stop;
-
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
 import java.time.*;
+
+import main.capacitytracker.CapacityCalculator;
+import main.model.*;
 
 /**
  * This class contains the unit tests to test the Itinerary class.
@@ -35,6 +35,10 @@ public class ItineraryTest {
       ItineraryLeg il2 = mock(ItineraryLeg.class);
       when(il1.equals(il1)).thenReturn(true);
       when(il2.equals(il2)).thenReturn(true);
+      when(il1.getStartTime()).thenReturn(60*(i+6));
+      when(il1.getEndTime()).thenReturn(60*(i+6) + 55);
+      when(il2.getStartTime()).thenReturn(30*(i+13));
+      when(il2.getEndTime()).thenReturn(30*(i+13) + 25);
       Stop origin1 = mock(Stop.class);
       Stop destination1 = mock(Stop.class);
       Stop origin2 = mock(Stop.class);
@@ -95,7 +99,7 @@ public class ItineraryTest {
   }
 
   /**
-   * Tests the determineCrowdedness method.
+   * Tests the crowdedness method.
    *
    * This method returns the crowdedness value for an itinerary using the
    * CapacityCalculator class.
@@ -129,8 +133,8 @@ public class ItineraryTest {
       CapacityCalculator.CrowdednessIndicator.RED
     };
     for (int i = 0; i < 10; i++) {
-      when(legs1.get(i).calculateCrowdedness()).thenReturn(crowdedness1[i]);
-      when(legs2.get(i).calculateCrowdedness()).thenReturn(crowdedness2[i]);
+      when(legs1.get(i).crowdedness()).thenReturn(crowdedness1[i]);
+      when(legs2.get(i).crowdedness()).thenReturn(crowdedness2[i]);
       // Only process the first nine legs for crowdedness purposes. Ignore the
       // last entry
       if (i < 9) {
@@ -138,7 +142,16 @@ public class ItineraryTest {
         when(legs2.get(i).isBus()).thenReturn(true);
       }
     }
-    assertEquals(CapacityCalculator.CrowdednessIndicator.RED, itinerary1.determineCrowdedness());
-    assertEquals(CapacityCalculator.CrowdednessIndicator.ORANGE, itinerary2.determineCrowdedness());
+    assertEquals(CapacityCalculator.CrowdednessIndicator.RED, itinerary1.crowdedness());
+    assertEquals(CapacityCalculator.CrowdednessIndicator.ORANGE, itinerary2.crowdedness());
+  }
+
+  /**
+   * Test totalDuration method.
+   */
+  @Test
+  public void testTotalDuration() {
+    assertEquals(60*9 + 55, itinerary1.totalDuration());
+    assertEquals(30*9 + 25, itinerary2.totalDuration());
   }
 }

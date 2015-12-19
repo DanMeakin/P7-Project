@@ -1,9 +1,10 @@
 package main.routeplanner;
 
+import java.io.IOException;
+import java.time.LocalDate;
+
 import main.capacitytracker.CapacityCalculator;
-import main.RouteTimetable;
-import main.Stop;
-import main.Walk;
+import main.model.*;
 
 /**
  * This class is used to represent one leg of an itinerary.
@@ -19,10 +20,11 @@ public class ItineraryLeg {
   private RouteTimetable routeTimetable;
   private Walk walk;
 
-  private Stop origin;
-  private Stop destination;
-  private int startTime;
-  private int endTime;
+  private final LocalDate date;
+  private final Stop origin;
+  private final Stop destination;
+  private final int startTime;
+  private final int endTime;
 
   private CapacityCalculator capacityCalculator;
 
@@ -33,14 +35,29 @@ public class ItineraryLeg {
    *
    * This creates an instance of ItineraryLeg, containing a route timetable,
    * and starting and ending stops.
+   *
+   * @param date        the date on which this journey takes place
+   * @param rt          the RouteTimetable on which this journey takes place
+   * @param origin      the stop at which this journey begins
+   * @param destination the stop at which this journey ends
+   * @throws RuntimeException if capacity calculator datastore cannot be accessed
    */
-  public ItineraryLeg(RouteTimetable rt, Stop origin, Stop destination) {
+  public ItineraryLeg(LocalDate date, RouteTimetable rt, Stop origin, Stop destination) throws RuntimeException {
+    this.date = date;
     this.routeTimetable = rt;
     this.origin = origin;
     this.destination = destination;
     this.startTime = rt.timeAtStop(origin);
     this.endTime = rt.timeAtStop(destination);
-    this.capacityCalculator = new CapacityCalculator(rt, origin);
+
+    try {
+      // If ItineraryLeg is for today, try getting real-time capacity data
+      boolean realTime = date.equals(LocalDate.now());
+      this.capacityCalculator = new CapacityCalculator(rt, origin, realTime);
+    } catch (IOException e) {
+      String msg = "unable to access capacity calculator datastore: " + e.getMessage();
+      throw new RuntimeException(msg);
+    }
   }
 
   /**
@@ -49,8 +66,14 @@ public class ItineraryLeg {
    * This creates an instance of ItineraryLeg without a RouteTimetable. Instead,
    * this constructor is used to construct a walking leg of a journey between
    * the origin and destination.
+   *
+   * @param date      the date on which this journey takes place
+   * @param walk      the walk to which this journey relates
+   * @param startTime the start time of this journey (in minutes after
+   *                  midnight)
    */
-  public ItineraryLeg(Walk walk, int startTime) {
+  public ItineraryLeg(LocalDate date, Walk walk, int startTime) {
+    this.date = date;
     this.walk = walk;
     this.origin = walk.getOrigin();
     this.destination = walk.getDestination();
@@ -92,6 +115,7 @@ public class ItineraryLeg {
    * Two ItineraryLeg instances are equal only if they are of the same type, they
    * are from the same origin and to the same destination at the same time.
    *
+   * @param otherItineraryLeg the other ItineraryLeg instance to compare against
    * @return true if equal, else false
    */
   public boolean equals(ItineraryLeg otherItineraryLeg) {
@@ -126,6 +150,15 @@ public class ItineraryLeg {
    */
   public boolean isBus() {
     return journeyLegType().equals(ItineraryLegType.BUS);
+  }
+
+  /**
+   * Gets date of ItineraryLeg.
+   *
+   * @return date of ItineraryLeg
+   */
+  public LocalDate getDate() {
+    return date;
   }
 
   /**
@@ -195,11 +228,17 @@ public class ItineraryLeg {
    *         the bus for this leg
    * @throws IllegalArgumentException if attempting to calculate crowdedness
    *                                  of a walk (only applies to buses)
+   * @throws RuntimeException if capacity calculator datastore cannot be accessed
    * @see CapacityCalculator
    */
-  public CapacityCalculator.CrowdednessIndicator calculateCrowdedness() {
+  public CapacityCalculator.CrowdednessIndicator crowdedness() throws RuntimeException {
     if (isBus()) {
-      return capacityCalculator.getCrowdednessIndicator();
+      try {
+        return capacityCalculator.crowdedness();
+      } catch (IOException e) {
+        String msg = "unable to access capacity calculator datastore: " + e.getMessage();
+        throw new RuntimeException(msg);
+      }
     }
     String msg = "unable to calculate crowdedness of a walk leg";
     throw new IllegalArgumentException(msg);

@@ -119,12 +119,12 @@ public class Itinerary {
    *
    * @return crowdedness level of this itinerary
    */
-  public CapacityCalculator.CrowdednessIndicator determineCrowdedness() {
+  public CapacityCalculator.CrowdednessIndicator crowdedness() {
     CapacityCalculator.CrowdednessIndicator crowdedness = 
       CapacityCalculator.CrowdednessIndicator.GREEN;
     for (ItineraryLeg leg : getLegs()) {
       if (leg.isBus()) {
-        CapacityCalculator.CrowdednessIndicator legCrowdedness = leg.calculateCrowdedness();
+        CapacityCalculator.CrowdednessIndicator legCrowdedness = leg.crowdedness();
         // Unless legCrowdedness is GREEN, set crowdedness to this value. If it
         // is GREEN then this will not change the value of crowdedness. If it
         // is ORANGE or RED then it must be changed to this value. If it turns

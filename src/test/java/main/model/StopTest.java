@@ -1,10 +1,8 @@
-package main; 
+package main.model;
 
 import org.junit.*;
 import org.junit.rules.ExpectedException;
 import static org.junit.Assert.*;
-
-import main.Stop;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -200,7 +198,6 @@ public class StopTest {
   public void testDistanceTo() {
     for (int i = 0; i < 3; i++) {
       for (int j = 0; j < 3; j++) {
-        System.out.println(stops.get(i).distanceTo(stops.get(j)));
         assertEquals(stops.get(i).distanceTo(stops.get(j)), (int) stopDistances.get(i).get(j));
       }
     }

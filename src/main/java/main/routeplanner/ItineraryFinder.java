@@ -1,15 +1,10 @@
 package main.routeplanner;
 
 import main.capacitytracker.CapacityCalculator;
-import main.Path;
-import main.Route;
-import main.Schedule;
-import main.Stop;
-import main.Walk;
+import main.model.*;
 
 import java.time.*;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -59,6 +54,8 @@ public class ItineraryFinder {
     setDate(searchTime);
     setTime(searchTime);
     setSchedule(); 
+    // Set filter to RED, i.e. do not filter anything
+    setFilter(CapacityCalculator.CrowdednessIndicator.RED);
     costEstimator = new CostEstimator(endingStop);
   }
 
@@ -120,7 +117,7 @@ public class ItineraryFinder {
     List<List<TArc>> bestPaths = calculateKLeastTimePaths(n);
     for (List<TArc> path : bestPaths) {
       Itinerary itinerary = convertTArcsToItinerary(path);
-      if (!itinerary.determineCrowdedness().moreCrowdedThan(getFilter())) {
+      if (!itinerary.crowdedness().moreCrowdedThan(getFilter())) {
         bestItineraries.add(itinerary);
       }
     }
@@ -378,7 +375,7 @@ public class ItineraryFinder {
    * Find and set schedule based on instance's date.
    */
   private void setSchedule() {
-    this.schedule = Schedule.findSchedule(LocalDate.now());
+    this.schedule = Schedule.findSchedule(getDate());
   }
 
   /**
@@ -646,10 +643,6 @@ public class ItineraryFinder {
       this.time = time;
     }
 
-    public String toString() {
-      return "t-arc: " + getStartNode() + " -> " + getEndNode() + " (" + getService() + ") at " + getTime();
-    }
-    
     /**
      * Checks for equality of two t-arcs.
      *
@@ -685,11 +678,13 @@ public class ItineraryFinder {
     public ItineraryLeg toItineraryLeg() {
       if (getService() instanceof Walk) {
         return new ItineraryLeg(
+            getDate(),
             (Walk) getService(),
             getTime()
             );
       } else {
         return new ItineraryLeg(
+            getDate(),
             schedule.nextDepartureRouteTimetable(getTime(), getStartNode(), (Route) getService()),
             getStartNode(),
             getEndNode()

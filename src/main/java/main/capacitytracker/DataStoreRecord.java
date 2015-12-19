@@ -7,11 +7,7 @@ import java.util.List;
 
 import org.apache.commons.csv.CSVRecord;
 
-import main.Bus;
-import main.Route;
-import main.RouteTimetable;
-import main.Schedule;
-import main.Stop;
+import main.model.*;
 
 /**
  * This class defines one record in the datastore.
@@ -19,7 +15,6 @@ import main.Stop;
 class DataStoreRecord {
 
   private static DateTimeFormatter timestampFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-
   private final LocalDateTime timestamp;
   private final Bus bus;
   private final RouteTimetable routeTimetable;
@@ -28,7 +23,7 @@ class DataStoreRecord {
   private final int numPassengersExited;
   private final int numPassengersBoarded;
   private final int numPassengersOnDeparture;
-  private final int occupancyLevel;
+  private final double occupancyLevel;
 
   /**
    * Instantiates a DataStoreRecord instance.
@@ -36,6 +31,7 @@ class DataStoreRecord {
    * @param record a CSVRecord representing one row in the dataStore file
    */
   public DataStoreRecord(CSVRecord record) {
+    System.out.println(record);
     this.timestamp = LocalDateTime.parse(record.get("timestamp"), timestampFormat);
     this.bus = Bus.findBus(Integer.parseInt(record.get("busFleetNumber")));
     this.routeTimetable = findRouteTimetable(
@@ -49,7 +45,25 @@ class DataStoreRecord {
     this.numPassengersOnDeparture = Integer.parseInt(record.get("numberPassengersOnDeparture"));
     this.numPassengersExited = Integer.parseInt(record.get("numberPassengersExited"));
     this.numPassengersBoarded = Integer.parseInt(record.get("numberPassengersBoarded"));
-    this.occupancyLevel = Integer.parseInt(record.get("occupancyLevel"));
+    this.occupancyLevel = Double.parseDouble(record.get("occupancyLevel"));
+    System.out.println("Passengers on Arrival: " + numPassengersOnArrival);
+    System.out.println("Passengers on Departure: " + numPassengersOnDeparture);
+  }
+
+  /**
+   * Overrides equality testing method.
+   */
+  @Override
+  public boolean equals(Object o) {
+    return (o instanceof DataStoreRecord && equals((DataStoreRecord) o));
+  }
+
+  /**
+   * Determines if two DataStoreRecord instances are identical.
+   */
+  public boolean equals(DataStoreRecord otherDSR) {
+    return (getTimestamp().equals(otherDSR.getTimestamp()) &&
+            getRouteTimetable().equals(otherDSR.getRouteTimetable()));
   }
 
   public LocalDateTime getTimestamp() {
@@ -84,7 +98,7 @@ class DataStoreRecord {
     return numPassengersOnDeparture;
   }
 
-  public int getOccupancyLevel() {
+  public double getOccupancyLevel() {
     return occupancyLevel;
   }
 
@@ -143,10 +157,14 @@ class DataStoreRecord {
    * @return route timetable matching this record
    */
   private RouteTimetable findRouteTimetable(String routeNumber, String routeDescription, LocalDate date, String startTime) {
+    System.out.println(routeNumber + ", " + routeDescription + ", " + date + ", " + startTime);
     String[] stComps = startTime.split(":");
     int time = Integer.parseInt(stComps[0]) * 60 + Integer.parseInt(stComps[1]);
     Route r = findRoute(routeNumber, routeDescription);
     Schedule s = Schedule.findSchedule(date);
+    System.out.println("Route: " + r);
+    System.out.println(Route.getAllRoutes());
+    System.out.println("Schedule: " + s);
     return s.nextDepartureRouteTimetable(time, r.getStops().get(0), r);
   }
 }

@@ -1,5 +1,8 @@
-package main;
+package main.model;
+
 import java.util.*;
+
+import main.misc.StopPair;
 
 /**
  * The Stop class defines schedule type objects that hold characteristics

@@ -1,4 +1,4 @@
-package main;
+package main.model;
 
 import java.util.*;
 import java.time.LocalDate;
@@ -38,8 +38,8 @@ public class Schedule {
   /**
    * Creates a schedule.
    *
-   * @param validFromLocalDate the date from which this scedule is valid.
-   * @param validToLocalDate   the date to which this scedule is valid.
+   * @param validFromDate the date from which this scedule is valid.
+   * @param validToDate   the date to which this scedule is valid.
    * @param operatingDay  the days for which this schedule is valid.
    */
   public Schedule (LocalDate validFromDate, LocalDate validToDate, DayOption operatingDay) {

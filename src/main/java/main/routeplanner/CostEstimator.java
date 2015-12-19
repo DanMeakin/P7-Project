@@ -2,9 +2,8 @@ package main.routeplanner;
 
 import java.util.HashMap;
 
-import main.Path;
-import main.Stop;
-import main.StopPair;
+import main.model.*;
+import main.misc.StopPair;
 
 /**
  * The CostEstimator class is used to generate and query a static costs table

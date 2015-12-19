@@ -155,7 +155,7 @@ public class Page2 extends JPanel{
             }
 
             // Empty string is bus name - 0 equals duration time
-            pContent.add(new ResultCard(currentItinerary.determineCrowdedness(),itineraryLegs.get(0).getRouteTimetable().getRoute().getNumber(),currentItinerary.getDate().toString(),startTime,startStop,0,currentItinerary));
+            pContent.add(new ResultCard(currentItinerary.crowdedness(),itineraryLegs.get(0).getRouteTimetable().getRoute().getNumber(),currentItinerary.getDate().toString(),startTime,startStop,0,currentItinerary));
             System.out.println(i);
         }
 

@@ -5,8 +5,8 @@ import static org.junit.Assert.*;
 
 import java.util.*;
 
-import main.Stop;
-import main.StopPair;
+import main.model.Stop;
+import main.misc.StopPair;
 
 /**
  * CostEstimatorTest class contains a series of unit tests for the CostEstimator class.
