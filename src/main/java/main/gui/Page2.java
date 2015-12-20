@@ -38,12 +38,12 @@ public class Page2 extends JPanel{
 
         // Search Container
         JPanel pSearchContainer = new JPanel();
-        pSearchContainer.setPreferredSize(new Dimension(SCREEN_WIDTH, 100));
+        pSearchContainer.setPreferredSize(new Dimension(SCREEN_WIDTH, 110));
 
         // Search Content
         JPanel pSearchContent = new JPanel();
         pSearchContent.setLayout(new FlowLayout(FlowLayout.LEFT));
-        pSearchContent.setPreferredSize(new Dimension(SCREEN_WIDTH -30, 100));
+        pSearchContent.setPreferredSize(new Dimension(SCREEN_WIDTH -30, 105));
         DropShadowBorder searchShadow = new DropShadowBorder();
         searchShadow.setShadowSize(5);
         searchShadow.setShadowColor(Color.BLACK);
@@ -71,7 +71,7 @@ public class Page2 extends JPanel{
         //Text container
         JPanel textContainer = new JPanel();
         textContainer.setLayout(new FlowLayout(FlowLayout.LEFT));
-        textContainer.setPreferredSize(new Dimension(375, 100));
+        textContainer.setPreferredSize(new Dimension(375, 90));
         textContainer.setBackground(Color.decode(SECONDARY_COLOR));
 
         pSearchContent.add(textContainer);
@@ -93,7 +93,7 @@ public class Page2 extends JPanel{
 
         //Text container - Divider panel
         JPanel dividerP = new JPanel();
-        dividerP.setPreferredSize(new Dimension(370, 10));
+        dividerP.setPreferredSize(new Dimension(370, 7));
         dividerP.setBackground(Color.decode(SECONDARY_COLOR));
         textContainer.add(dividerP);
 
