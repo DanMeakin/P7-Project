@@ -7,6 +7,7 @@ import javax.swing.JTextField;
 
 /**
  * * @authors Ivo Hendriks, Janus Avbæk Larsen, Helle Hyllested Larsen, Dan Meakin 02-12-2015.
+ * The code for the AutoCombobox is found at http://stackoverflow.com/questions/13681977/jcombobox-autocomplete
  */
 
 public class AutoComboBox extends JComboBox<Object> {

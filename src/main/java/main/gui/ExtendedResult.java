@@ -22,9 +22,9 @@ public class ExtendedResult extends JPanel{
     private final String TEXT_COLOR = "#616161";
     private final Font h2 = new Font("Roboto", Font.PLAIN, 18);
 
-    private ImageIcon green = new ImageIcon(getClass().getResource("assets/icons/small_green.png"));
-    private ImageIcon yellow = new ImageIcon(getClass().getResource("assets/icons/small_yellow.png"));
-    private ImageIcon red = new ImageIcon(getClass().getResource("assets/icons/small_red.png"));
+    private ImageIcon green = new ImageIcon(ClassLoader.getSystemClassLoader().getResource("assets/icons/small_green.png"));
+    private ImageIcon yellow = new ImageIcon(ClassLoader.getSystemClassLoader().getResource("assets/icons/small_yellow.png"));
+    private ImageIcon red = new ImageIcon(ClassLoader.getSystemClassLoader().getResource("assets/icons/small_red.png"));
 
     public ExtendedResult(Itinerary itinerary){
          super();

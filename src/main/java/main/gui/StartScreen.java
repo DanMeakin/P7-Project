@@ -188,7 +188,7 @@ public class StartScreen extends JFrame {
 
         // edit the Button
         JButton dateBtn = (JButton)datePicker.getComponent(1);
-        URL iconPath = getClass().getResource("assets/icons/calendarSmall.png");
+        URL iconPath = ClassLoader.getSystemClassLoader().getResource("assets/icons/calendarSmall.png");
         Image editImage = Toolkit.getDefaultToolkit().getImage(iconPath);
 
         dateBtn.setIcon(new ImageIcon(editImage));
@@ -305,7 +305,7 @@ public class StartScreen extends JFrame {
 
         // medium Icon container
         JPanel mediumIconContainer = new JPanel();
-        iconPath = getClass().getResource("assets/icons/crowdednessMedium.png");
+        iconPath = ClassLoader.getSystemClassLoader().getResource("assets/icons/crowdednessMedium.png");
         mediumContainer.add(new JLabel(new ImageIcon(iconPath)));
         mediumIconContainer.setPreferredSize(new Dimension(100,50));
 
@@ -330,9 +330,11 @@ public class StartScreen extends JFrame {
 
         // free Icon container
         JPanel freeIconContainer = new JPanel();
-        iconPath = getClass().getResource("assets/icons/crowdednessUncrowded.png");
+        iconPath = ClassLoader.getSystemClassLoader().getResource("assets/icons/crowdednessUncrowded.png");
         freeContainer.add(new JLabel(new ImageIcon(iconPath)));
         freeIconContainer.setPreferredSize(new Dimension(200,50));
+
+        //getClass().getResource
 
         // Spacer after free buses
         JPanel freeBusesSpacer = new JPanel();

@@ -61,7 +61,8 @@ public class Page2 extends JPanel{
         // Search Container - Arrow Icon
         JPanel pSearchIcon = new JPanel();
         pSearchIcon.setLayout(new GridLayout(0,1));
-        URL iconPath = getClass().getResource("assets/icons/circleLine70.png");
+        URL iconPath = ClassLoader.getSystemClassLoader().getResource("assets/icons/circleLine70.png");
+        pSearchIcon.add(new JLabel(new ImageIcon(iconPath)));
         pSearchIcon.add(new JLabel(new ImageIcon(iconPath)));
         pSearchIcon.setPreferredSize(new Dimension(48, 70));
         pSearchIcon.setBackground(Color.decode(SECONDARY_COLOR));
@@ -188,6 +189,7 @@ public class Page2 extends JPanel{
 
     /**
      * @return The ScrollBarUI to use
+     * The code for editing the scrollbar is found at: http://www.programcreek.com/java-api-examples/index.php?api=javax.swing.plaf.ScrollBarUI
      */
     // Enables editing of the ScrollBar
     private static ScrollBarUI newScrollBarUI() {
