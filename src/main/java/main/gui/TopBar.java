@@ -29,7 +29,7 @@ public class TopBar extends JPanel {
 
         // JMenubar - Menu/Button
         JMenu topMenu = new JMenu("");
-        URL iconPath = getClass().getResource("assets/icons/menu.png");
+        URL iconPath = ClassLoader.getSystemClassLoader().getResource("assets/icons/menu.png");
         System.out.println(iconPath);
         ImageIcon topMenuButtonIcon = new ImageIcon(iconPath);
         topMenu.setIcon(topMenuButtonIcon);
