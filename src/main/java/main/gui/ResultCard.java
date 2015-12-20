@@ -24,9 +24,9 @@ public class ResultCard extends JPanel {
     private final Font h1 = new Font("Roboto", Font.PLAIN, 24);
     private final Font h2 = new Font("Roboto", Font.PLAIN, 18);
     private final Font h3 = new Font("Roboto", Font.PLAIN, 14);
-    private ImageIcon green = new ImageIcon(ClassLoader.getSystemClassLoader().getResource("assets/icons/crowdednessNotCrowded.png"));
-    private ImageIcon yellow = new ImageIcon(ClassLoader.getSystemClassLoader().getResource("assets/icons/crowdednessMediumCrowded.png"));
-    private ImageIcon red = new ImageIcon(ClassLoader.getSystemClassLoader().getResource("assets/icons/crowdednessCrowded-100x100.png"));
+    private ImageIcon green = new ImageIcon(getClass().getResource("assets/icons/crowdednessNotCrowded.png"));
+    private ImageIcon yellow = new ImageIcon(getClass().getResource("assets/icons/crowdednessMediumCrowded.png"));
+    private ImageIcon red = new ImageIcon(getClass().getResource("assets/icons/crowdednessCrowded-100x100.png"));
 
     private Itinerary itinerary;
 

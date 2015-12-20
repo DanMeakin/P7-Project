@@ -42,6 +42,25 @@ public class Stop {
 	}
 
   /**
+   * Creates a stop and add it to the stops list.
+   *
+   * @param id the stop id.
+   * @param name the stop name.
+   * @param latitude the latitudal coordinate of the stop.
+   * @param longitude the longitudal coordinate of the stop.
+   * @param addToList tells if a stop should be added to list
+   */
+  public Stop(int id, String name, double latitude, double longitude, boolean addToList) {
+    this.id = id;
+    this.name = name;
+    this.latitude = latitude;
+    this.longitude = longitude;
+    if (addToList) {
+      addStop(this);
+    }
+
+  }
+  /**
    * Creates a string representation of a stop.
    *
    * @return string representation of stop

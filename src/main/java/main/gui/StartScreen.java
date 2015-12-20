@@ -132,6 +132,7 @@ public class StartScreen extends JFrame {
         JLabel fromLabel = new JLabel("From:");
         fromLabel.setPreferredSize(new Dimension(120,80));
         fromLabel.setFont(h2);
+
         fromLabel.setForeground(Color.decode(TEXT_COLOR));
         fromContainer.add(fromLabel);
 
@@ -187,7 +188,7 @@ public class StartScreen extends JFrame {
 
         // edit the Button
         JButton dateBtn = (JButton)datePicker.getComponent(1);
-        URL iconPath = ClassLoader.getSystemClassLoader().getResource("assets/icons/calendarSmall.png");
+        URL iconPath = getClass().getResource("assets/icons/calendarSmall.png");
         Image editImage = Toolkit.getDefaultToolkit().getImage(iconPath);
 
         dateBtn.setIcon(new ImageIcon(editImage));
@@ -304,7 +305,7 @@ public class StartScreen extends JFrame {
 
         // medium Icon container
         JPanel mediumIconContainer = new JPanel();
-        iconPath = ClassLoader.getSystemClassLoader().getResource("assets/icons/crowdednessMedium.png");
+        iconPath = getClass().getResource("assets/icons/crowdednessMedium.png");
         mediumContainer.add(new JLabel(new ImageIcon(iconPath)));
         mediumIconContainer.setPreferredSize(new Dimension(100,50));
 
@@ -329,7 +330,7 @@ public class StartScreen extends JFrame {
 
         // free Icon container
         JPanel freeIconContainer = new JPanel();
-        iconPath = ClassLoader.getSystemClassLoader().getResource("assets/icons/crowdednessUncrowded.png");
+        iconPath = getClass().getResource("assets/icons/crowdednessUncrowded.png");
         freeContainer.add(new JLabel(new ImageIcon(iconPath)));
         freeIconContainer.setPreferredSize(new Dimension(200,50));
 
@@ -365,14 +366,25 @@ public class StartScreen extends JFrame {
         findBusButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                Stop selectedFromStop = new Stop(0,"",0,0,false);
 
-                // Get selected stop object (From)
-                int fromBoxSelectionIndex = fromBox.getSelectedIndex();
-                Stop selectedFromStop = Stop.getAllStops().get(fromBoxSelectionIndex);
+                for (Stop stop : Stop.getAllStops()){
+                    if (stop.getName().equals(fromBox.getSelectedItem().toString())){
+                        selectedFromStop = stop;
+                    }
+                }
 
-                // Get selected stop object (Destination)
-                int destinationBoxSelectionIndex = destinationBox.getSelectedIndex();
-                Stop selectedDestinationStop = Stop.getAllStops().get(destinationBoxSelectionIndex);
+
+                Stop selectedDestinationStop = new Stop(0,"",0,0,false);
+
+                for (Stop stop : Stop.getAllStops()){
+                    if (stop.getName().equals(destinationBox.getSelectedItem().toString())){
+                        selectedDestinationStop = stop;
+
+                        //Stop.removeStop();
+                    }
+                }
+
 
                 Date date = datePicker.getDate();
                 // Time is chosen by the system default timezone
