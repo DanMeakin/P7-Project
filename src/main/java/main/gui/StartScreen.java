@@ -62,6 +62,9 @@ public class StartScreen extends JFrame {
 
         // Load data
         dataLoader = new DataLoader("data");
+        BusType bt = new BusType("Volvo", "100", 50, 30);
+        Calendar cal = new GregorianCalendar(2015, 1, 1);
+        Bus bus = new Bus(100, bt, cal.getTime());
 
         // TopBar
         pTop = new TopBar();
