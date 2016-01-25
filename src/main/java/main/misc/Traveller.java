@@ -78,7 +78,8 @@ public class Traveller {
     LocalDate localDate = getDateInput();
     Route route = getRouteInput();
     Stop stop = getStopInput();
-    createTraveller(localDate, bus, route, stop);
+    int time = getTimeInput();
+    createTraveller(localDate, bus, route, stop, time);
   }
 
   public static LocalDate getDateInput() {
@@ -131,11 +132,18 @@ public class Traveller {
     return stops.get(selection);
   }
 
-  public static void createTraveller(LocalDate ld, Bus b, Route r, Stop s) {
-    Schedule sched = Schedule.findSchedule(LocalDate.of(2016, Month.JANUARY, 27));
-    Route route = Route.findRouteByNumber("23").get(1);
-    Stop stop = Stop.findStop("Jomfru Ane Gade").get(0);
-    RouteTimetable rt = sched.nextDepartureRouteTimetable(10*60+14, stop, route);
+  public static int getTimeInput() {
+    Scanner reader = new Scanner(System.in);
+    System.out.println("Please enter hour of day (using 24 hour clock): ");
+    int hour = reader.nextInt();
+    System.out.println("Please enter minute of hour: ");
+    int minute = reader.nextInt();
+    return (hour * 60) + minute;
+  }
+
+  public static void createTraveller(LocalDate ld, Bus b, Route r, Stop s, int time) {
+    Schedule sched = Schedule.findSchedule(ld);
+    RouteTimetable rt = sched.nextDepartureRouteTimetable(time, s, r);
     sched.allocateBus(rt, b);
     new Traveller(rt, b).travel();
   }
