@@ -738,17 +738,21 @@ public class ItineraryFinder {
      *         this t-arc
      */
     public int departureTime() {
-      try {
-        int nextDepartureTime = schedule.nextDepartureTime(
-            getTime(), 
-            getStartNode(), (Route) getService()
-            );
-        return nextDepartureTime;
-      } catch (IllegalArgumentException e) {
-        // If this is caught, it means there is no next departure time info
-        // available. This should return a very large value for the purpose
-        // of route planning calculations.
-        return CostEstimator.UNCONNECTED;
+      if (getService() instanceof Walk) {
+        return getTime();
+      } else {
+        try {
+          int nextDepartureTime = schedule.nextDepartureTime(
+              getTime(), 
+              getStartNode(), (Route) getService()
+              );
+          return nextDepartureTime;
+        } catch (IllegalArgumentException e) {
+          // If this is caught, it means there is no next departure time info
+          // available. This should return a very large value for the purpose
+          // of route planning calculations.
+          return CostEstimator.UNCONNECTED;
+        }
       }
     }
 
