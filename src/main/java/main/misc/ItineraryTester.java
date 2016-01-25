@@ -25,10 +25,10 @@ public class ItineraryTester {
         int endIndex = (int) (Math.random() * numStops);
         Stop start = Stop.getAllStops().get(startIndex);
         Stop end = Stop.getAllStops().get(endIndex);
-        System.out.println("Querying " + start + " -> " + end);
+        System.out.print("Running Query #" + i + "\r");
         startTime = System.nanoTime();
         itf = new ItineraryFinder(start, end, LocalDateTime.of(2015, Month.DECEMBER, 1, 10, 0, 0));
-        itf.findBestItineraries(1);
+        itf.findBestItineraries(3);
         endTime = System.nanoTime();
         double duration = (endTime - startTime) / 1_000_000_000;
         counter += duration;
